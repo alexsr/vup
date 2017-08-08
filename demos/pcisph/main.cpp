@@ -1,6 +1,12 @@
-#include <iostream>
+#include "vup/Core/utils.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    GLFWwindow* window = vup::createWindow(800,600,"PCISPH", 0, 0);
+    vup::initGLEW();
+    while(!glfwWindowShouldClose(window)) {
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+    glfwTerminate();
     return 0;
 }

@@ -76,30 +76,6 @@ ELSEIF (APPLE)
             "The directory where GLFW/glfw3.h resides"
             )
 
-ELSEIF (UNIX)
-
-    FIND_PATH(GLFW3_INCLUDE_PATH
-            NAMES
-            GLFW/glfw3.h
-            PATHS
-            ${GLFW3_SEARCH_PATHS}
-            PATH_SUFFIXES
-            include
-            DOC
-            "The directory where GLFW/glfw3.h resides"
-            )
-
-    FIND_LIBRARY(GLFW3_LIBRARY
-            NAMES
-            libglfw3.a glfw
-            PATHS
-            ${GLFW3_SEARCH_PATHS}
-            PATH_SUFFIXES
-            lib
-            DOC
-            "The directory where GLFW/glfw3.h resides"
-            )
-
 ELSE ()
     FIND_PATH(GLFW3_INCLUDE_PATH GLFW/glfw3.h)
     FIND_LIBRARY(GLFW3_LIBRARY

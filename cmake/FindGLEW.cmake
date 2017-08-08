@@ -26,7 +26,7 @@ IF (WIN32)
             )
 
 
-ELSEIF (APPLE OR UNIX)
+ELSEIF (APPLE)
     FIND_PATH(GLEW_INCLUDE_PATH
             NAMES
             GL/glew.h

@@ -1,3 +1,7 @@
+cmake_policy(SET CMP0022 OLD)
+if (${CMAKE_MAJOR_VERSION} GREATER 2)
+    cmake_policy(SET CMP0038 OLD)
+endif ()
 get_filename_component(ProjectId ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 string(REPLACE " " "_" ProjectId ${ProjectId})
 project(${ProjectId})
@@ -8,7 +12,6 @@ include_directories(
         ${GLFW3_INCLUDE_PATH}
         ${GLM_INCLUDE_PATH}
         ${RAPIDJSON_INCLUDE_PATH}
-        ${INCLUDES_PATH}
         ${EXTERNAL_LIBRARY_PATHS}
         ${LIBRARIES_PATH}
 )
@@ -27,6 +30,7 @@ add_executable(${ProjectId} ${SOURCES} ${HEADER})
 target_link_libraries(
         ${ProjectId}
         ${ALL_LIBRARIES}
+        ${GLFW_STATIC_LIBRARIES}
         ${GLFW3_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${OPENGL_LIBRARIES}

@@ -1,3 +1,9 @@
+//
+// Alexander Scheid-Rehder
+// alexanderb@scheid-rehder.de
+// https://www.alexsr.de
+// https://github.com/alexsr
+//
 #include "Trackball_camera.h"
 
 vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float r,
@@ -97,9 +103,8 @@ void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
 
 }
 
-void vup::Trackball_camera::resize(GLFWwindow* window, int width, int height) {
+void vup::Trackball_camera::resize(int width, int height) {
     m_width = width;
     m_height = height;
     m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height), m_near, m_far);
-    glViewport( 0, 0, m_width, m_height);
 }

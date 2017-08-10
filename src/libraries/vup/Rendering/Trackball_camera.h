@@ -43,7 +43,7 @@ namespace vup {
         // * GLFWwindow* window - window to access mouse position and controls
         // * float dt - delta time between camera updates
         void update(GLFWwindow* window, float dt);
-        void resize(GLFWwindow* window, int width, int height);
+        void resize(int width, int height);
 
     private:
 

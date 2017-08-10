@@ -28,7 +28,7 @@ vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float
 
     m_view = glm::lookAt(m_camera_pos, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
     m_projection = glm::perspective(m_fov,
-                                    m_width / (float) m_height, m_near, m_far);
+                                    m_width / static_cast<float>(m_height), m_near, m_far);
 }
 
 vup::Trackball_camera::~Trackball_camera() = default;
@@ -97,8 +97,9 @@ void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
 
 }
 
-void vup::Trackball_camera::resize(int width, int height) {
+void vup::Trackball_camera::resize(GLFWwindow* window, int width, int height) {
     m_width = width;
     m_height = height;
-    m_projection = glm::perspective(m_fov, m_width / (float) m_height, m_near, m_far);
+    m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height), m_near, m_far);
+    glViewport( 0, 0, m_width, m_height);
 }

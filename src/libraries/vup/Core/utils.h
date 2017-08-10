@@ -13,9 +13,8 @@
 
 namespace vup
 {
-    GLFWwindow*
-    create_window(int width, int height, const char* title, GLFWmonitor* monitor,
-                 GLFWwindow* share) {
+    GLFWwindow* create_window(int width, int height, const char* title,
+                              GLFWmonitor* monitor, GLFWwindow* share) {
         GLint glfw_error = glfwInit();
         if (glfw_error == GLFW_FALSE)
         {

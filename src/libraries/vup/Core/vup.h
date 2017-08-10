@@ -1,7 +1,8 @@
 //
-// Author: Alexander Scheid-Rehder
-// Email: alexsr@uni-koblenz.de
-// Github: https://github.com/alexsr
+// Alexander Scheid-Rehder
+// alexanderb@scheid-rehder.de
+// https://www.alexsr.de
+// https://github.com/alexsr
 //
 #ifndef VUP_VUP_H
 #define VUP_VUP_H

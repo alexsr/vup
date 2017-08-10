@@ -1,24 +1,32 @@
-// 
-// Author: Alexander Scheid-Rehder
-// Email: alexsr@uni-koblenz.de
-// Github: https://github.com/alexsr
+//
+// Alexander Scheid-Rehder
+// alexanderb@scheid-rehder.de
+// https://www.alexsr.de
+// https://github.com/alexsr
 //
 #ifndef VUP_UTILS_H
 #define VUP_UTILS_H
 
 #include "vup.h"
+#include <stdexcept>
 #include <iostream>
 
-namespace vup {
-    GLFWwindow* createWindow(int width, int height, const char* title, GLFWmonitor* monitor,
-            GLFWwindow* share) {
-        GLint glfwError = glfwInit();
+namespace vup
+{
+    GLFWwindow*
+    create_window(int width, int height, const char* title, GLFWmonitor* monitor,
+                 GLFWwindow* share) {
+        GLint glfw_error = glfwInit();
+        if (glfw_error == GLFW_FALSE)
+        {
+            throw std::runtime_error{"Failed to initialize GLFW."};
+        }
         GLFWwindow* window = glfwCreateWindow(width, height, title, monitor,
                                               share);
-        if (window == nullptr) {
-            std::cout << "Failed to create window" << std::endl;
+        if (window == nullptr)
+        {
             glfwTerminate();
-            exit(-1);
+            throw std::runtime_error{"Failed to create GLFWwindow."};
         }
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -28,12 +36,12 @@ namespace vup {
         glfwSwapInterval(0);
         return window;
     }
-    void initGLEW() {
-        GLenum glewError = glewInit();
-        if (GLEW_OK != glewError) {
-            std::cout << "Failed to initialize GLEW: "
-                      << glewGetErrorString(glewError) << std::endl;
-            exit(-1);
+
+    void init_GLEW() {
+        GLenum glew_error = glewInit();
+        if (GLEW_OK != glew_error)
+        {
+            throw std::runtime_error{"Failed to initialize GLEW."};
         }
     }
 }

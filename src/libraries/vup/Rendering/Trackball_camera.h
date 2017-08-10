@@ -1,10 +1,11 @@
 //
-// Author: Alexander Scheid-Rehder
-// Email: alexsr@uni-koblenz.de
-// Github: https://github.com/alexsr
+// Alexander Scheid-Rehder
+// alexanderb@scheid-rehder.de
+// https://www.alexsr.de
+// https://github.com/alexsr
 //
-#ifndef VUP_TRACKBALLCAMERA_H
-#define VUP_TRACKBALLCAMERA_H
+#ifndef VUP_TRACKBALL_CAMERA_H
+#define VUP_TRACKBALL_CAMERA_H
 
 #include "vup/Core/vup.h"
 
@@ -14,7 +15,7 @@ namespace vup {
 // The view matrix for the current camera view is calculated and
 // is accessable as well as the projection.
 // A lot of parameters of this camera can be specified.
-    class TrackballCamera {
+    class Trackball_camera {
     public:
         // Creates an instance of a trackball camera
         // The default options proved to be reasonable
@@ -27,37 +28,35 @@ namespace vup {
         // * float fov - field of view in degree
         // * float near - near value for projection
         // * float far - far value for projection
-        TrackballCamera(int width, int height, float sens = 0.01f, float r = 2.0,
-                float zoomsens = 1.0f,
+        Trackball_camera(int width, int height, float sens = 0.01f, float r = 2.0,
+                float zoom_sens = 1.0f,
                 glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
                 float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
 
-        ~TrackballCamera();
+        ~Trackball_camera();
 
-        glm::mat4 getView();
+        glm::mat4 get_view();
 
-        glm::mat4 getProjection();
+        glm::mat4 get_projection();
 
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls
         // * float dt - delta time between camera updates
         void update(GLFWwindow* window, float dt);
-
-
         void resize(int width, int height);
 
     private:
 
         glm::vec3 m_center;
-        glm::vec3 m_cameraPos;
+        glm::vec3 m_camera_pos;
         glm::mat4 m_view;
         glm::mat4 m_projection;
 
         float m_sens;
-        float m_zoomsens;
+        float m_zoom_sens;
         float m_radius;
-        double m_theta;
-        double m_phi;
+        float m_theta;
+        float m_phi;
         double m_x;
         double m_y;
         double m_oldX;
@@ -74,4 +73,4 @@ namespace vup {
 
 }
 
-#endif //VUP_TRACKBALLCAMERA_H
+#endif //VUP_TRACKBALL_CAMERA_H

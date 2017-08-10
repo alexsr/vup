@@ -4,8 +4,8 @@
 // https://www.alexsr.de
 // https://github.com/alexsr
 //
-#ifndef VUP_UTILS_H
-#define VUP_UTILS_H
+#ifndef VUP_DEMO_UTILS_H
+#define VUP_DEMO_UTILS_H
 
 #include "vup.h"
 #include <stdexcept>
@@ -45,4 +45,4 @@ namespace vup
     }
 }
 
-#endif //VUP_UTILS_H
+#endif //VUP_DEMO_UTILS_H

@@ -1,14 +1,21 @@
+//
+// Alexander Scheid-Rehder
+// alexanderb@scheid-rehder.de
+// https://www.alexsr.de
+// https://github.com/alexsr
+//
+
 #include "File_loader.h"
 
-File_loader::File_loader() {
+vup::File_loader::File_loader() {
     m_source = "";
 }
 
-File_loader::File_loader(const std::string &path) {
+vup::File_loader::File_loader(const std::string &path) {
     load(path);
 }
 
-void File_loader::load(const std::string &path) {
+void vup::File_loader::load(const std::string &path) {
     std::ifstream in(path);
     if (!in.is_open())
     {
@@ -21,10 +28,10 @@ void File_loader::load(const std::string &path) {
     in.close();
 }
 
-std::string File_loader::get_source() {
+std::string vup::File_loader::get_source() {
     return m_source;
 }
 
-unsigned long File_loader::get_size() {
+unsigned long vup::File_loader::get_size() {
     return m_source.size();
 }

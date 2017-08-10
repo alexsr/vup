@@ -7,19 +7,19 @@
 
 #include "Shader.h"
 
-Shader::Shader(std::string path, GLenum type) {
+vup::Shader::Shader(std::string path, GLenum type) {
     m_path = std::move(path);
     m_type = type;
     m_shader_id = glCreateShader(type);
     load_shader(m_path);
 }
 
-void Shader::reload() {
+void vup::Shader::reload() {
     load_shader(m_path);
 }
 
-void Shader::load_shader(const std::string &path) {
-    File_loader f(path);
+void vup::Shader::load_shader(const std::string &path) {
+    vup::File_loader f(path);
     const GLchar* source = f.get_source().c_str();
     GLint size = f.get_size();
     glShaderSource(m_shader_id, 1, &source, &size);
@@ -40,4 +40,3 @@ void Shader::load_shader(const std::string &path) {
                                  + std::string(error_log.begin(), error_log.end())};
     }
 }
-

@@ -4,6 +4,7 @@
 // https://www.alexsr.de
 // https://github.com/alexsr
 //
+
 #ifndef VUP_TRACKBALL_CAMERA_H
 #define VUP_TRACKBALL_CAMERA_H
 

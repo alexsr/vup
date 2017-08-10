@@ -4,6 +4,7 @@
 // https://www.alexsr.de
 // https://github.com/alexsr
 //
+
 #include "Trackball_camera.h"
 
 vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float r,

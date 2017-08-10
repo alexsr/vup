@@ -4,6 +4,7 @@
 // https://www.alexsr.de
 // https://github.com/alexsr
 //
+
 #include "vup/Core/demo_utils.h"
 #include "vup/Rendering/Trackball_camera.h"
 #include <memory>

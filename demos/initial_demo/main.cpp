@@ -17,12 +17,10 @@ void resize_callback(GLFWwindow* w, int width, int height) {
 }
 
 int main() {
-    GLFWwindow* window = vup::create_window(800, 600, "Initial Testing",
-                                            nullptr, nullptr);
+    auto window = vup::create_window(800, 600, "Initial Testing", nullptr, nullptr);
     vup::init_GLEW();
     glfwSetWindowSizeCallback(window, resize_callback);
-    while (!glfwWindowShouldClose(window))
-    {
+    while (glfwWindowShouldClose(window) == GLFW_FALSE) {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

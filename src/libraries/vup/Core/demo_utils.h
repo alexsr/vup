@@ -16,15 +16,12 @@ namespace vup
 {
     GLFWwindow* create_window(int width, int height, const char* title,
                               GLFWmonitor* monitor, GLFWwindow* share) {
-        GLint glfw_error = glfwInit();
-        if (glfw_error == GLFW_FALSE)
-        {
+        int glfw_error = glfwInit();
+        if (glfw_error == GLFW_FALSE) {
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
-        GLFWwindow* window = glfwCreateWindow(width, height, title, monitor,
-                                              share);
-        if (window == nullptr)
-        {
+        auto window = glfwCreateWindow(width, height, title, monitor, share);
+        if (window == nullptr) {
             glfwTerminate();
             throw std::runtime_error{"Failed to create GLFWwindow."};
         }
@@ -39,8 +36,7 @@ namespace vup
 
     void init_GLEW() {
         GLenum glew_error = glewInit();
-        if (GLEW_OK != glew_error)
-        {
+        if (GLEW_OK != glew_error) {
             throw std::runtime_error{"Failed to initialize GLEW."};
         }
     }

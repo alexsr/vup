@@ -19,12 +19,13 @@ namespace vup
     class Shader {
     public:
         Shader(std::string path, GLenum type);
-
+        ~Shader();
+        GLuint get_id();
+        std::string get_path();
         void reload();
 
     private:
-        void load_shader(const std::string &path);
-
+        void load_shader(const std::string& path);
         std::string m_path;
         GLenum m_type;
         GLuint m_shader_id;

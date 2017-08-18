@@ -14,12 +14,17 @@
 namespace vup
 {
     std::string shader_type_to_string(GLenum type) {
-        switch (type)
-        {
+        switch (type) {
             case GL_VERTEX_SHADER:
                 return "vertex shader";
             case GL_FRAGMENT_SHADER:
                 return "fragment shader";
+            case GL_GEOMETRY_SHADER:
+                return "geometry shader";
+            case GL_TESS_CONTROL_SHADER:
+                return "tessellation control shader";
+            case GL_TESS_EVALUATION_SHADER:
+                return "tessellation evaluation shader";
             case GL_COMPUTE_SHADER:
                 return "compute shader";
             default:

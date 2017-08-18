@@ -15,13 +15,12 @@ namespace vup
 {
     class File_loader {
     public:
-        File_loader();
-        explicit File_loader(const std::string &path);
-        void load(const std::string &path);
+        explicit File_loader(const std::string& path);
+        void load(const std::string& path);
         std::string get_source();
         unsigned long get_size();
     private:
-        std::string m_source;
+        std::string m_source{""};
     };
 }
 

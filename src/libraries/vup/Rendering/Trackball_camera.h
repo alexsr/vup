@@ -10,7 +10,8 @@
 
 #include "vup/Core/vup.h"
 
-namespace vup {
+namespace vup
+{
 
 // Provides the functionality of a trackball camera.
 // The view matrix for the current camera view is calculated and
@@ -30,9 +31,8 @@ namespace vup {
         // * float near - near value for projection
         // * float far - far value for projection
         Trackball_camera(int width, int height, float sens = 0.01f, float r = 2.0,
-                float zoom_sens = 1.0f,
-                glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
-                float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
+                         float zoom_sens = 1.0f, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
+                         float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
 
         ~Trackball_camera();
 

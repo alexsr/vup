@@ -7,18 +7,13 @@
 
 #include "File_loader.h"
 
-vup::File_loader::File_loader() {
-    m_source = "";
-}
-
-vup::File_loader::File_loader(const std::string &path) {
+vup::File_loader::File_loader(const std::string& path) {
     load(path);
 }
 
-void vup::File_loader::load(const std::string &path) {
+void vup::File_loader::load(const std::string& path) {
     std::ifstream in(path);
-    if (!in.is_open())
-    {
+    if (!in.is_open()) {
         throw std::runtime_error{"Error loading file from " + path};
     }
     in.seekg(0, std::ios::end);

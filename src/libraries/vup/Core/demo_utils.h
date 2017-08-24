@@ -17,7 +17,7 @@ namespace vup
     GLFWwindow* create_window(int width, int height, const char* title,
                               GLFWmonitor* monitor, GLFWwindow* share) {
         int glfw_error = glfwInit();
-        if (glfw_error == GLFW_FALSE) {
+        if (glfw_error == 0) {
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
         auto window = glfwCreateWindow(width, height, title, monitor, share);

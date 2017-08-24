@@ -20,7 +20,7 @@ int main() {
     auto window = vup::create_window(800, 600, "Initial Testing", nullptr, nullptr);
     vup::init_GLEW();
     glfwSetWindowSizeCallback(window, resize_callback);
-    while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+    while (glfwWindowShouldClose(window) == 0) {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

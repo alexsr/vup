@@ -42,5 +42,5 @@ void vup::V_T_F_shader_program::detach_shaders() {
     glDetachShader(m_program_id, m_vertex->get_id());
     glDetachShader(m_program_id, m_control->get_id());
     glDetachShader(m_program_id, m_evaluation->get_id());
-    glDetachShader(m_program_id, m_fragment->get_id())
+    glDetachShader(m_program_id, m_fragment->get_id());
 }

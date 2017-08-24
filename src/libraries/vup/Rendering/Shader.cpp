@@ -48,6 +48,6 @@ void vup::Shader::load_shader(const std::string& path) {
                                  + vup::shader_type_to_string(m_type) + ".\n"
                                  + "Path: " + m_path + "\n"
                                  + "Error log: \n"
-                                 + std::string(begin(error_log), end(error_log))};
+                                 + std::string(std::begin(error_log), std::end(error_log))};
     }
 }

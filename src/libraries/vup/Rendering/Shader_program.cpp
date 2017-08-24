@@ -11,6 +11,10 @@ vup::Shader_program::Shader_program() {
     m_program_id = glCreateProgram();
 }
 
+vup::Shader_program::~Shader_program() {
+    glDeleteProgram(m_program_id);
+}
+
 void vup::Shader_program::use() {
     glUseProgram(m_program_id);
 }

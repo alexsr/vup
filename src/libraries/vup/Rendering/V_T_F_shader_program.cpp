@@ -20,6 +20,15 @@ vup::V_T_F_shader_program::V_T_F_shader_program(
     link_program();
 }
 
+void vup::V_T_F_shader_program::reload() {
+    m_vertex->reload();
+    m_control->reload();
+    m_evaluation->reload();
+    m_fragment->reload();
+    attach_shaders();
+    link_program();
+}
+
 void vup::V_T_F_shader_program::attach_shaders() {
     glAttachShader(m_program_id, m_vertex->get_id());
     glAttachShader(m_program_id, m_control->get_id());

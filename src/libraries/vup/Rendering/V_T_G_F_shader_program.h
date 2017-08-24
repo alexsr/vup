@@ -19,6 +19,7 @@ namespace vup
                                const std::shared_ptr<vup::Shader>& evaluation,
                              const std::shared_ptr<vup::Shader>& geometry,
                              const std::shared_ptr<vup::Shader>& fragment);
+        void reload() override;
     protected:
         void attach_shaders() override;
     private:

@@ -15,9 +15,11 @@ namespace vup
 {
     class Shader_program {
     public:
-        Shader_program();
         void use();
+        virtual void reload() = 0;
     protected:
+        Shader_program();
+        ~Shader_program();
         void link_program();
         virtual void attach_shaders()= 0;
         GLuint m_program_id;

@@ -25,13 +25,14 @@ void vup::Shader_program::link_program() {
     if (link_status == GL_FALSE) {
         GLint length = 0;
         glGetProgramiv(m_program_id, GL_INFO_LOG_LENGTH, &length);
-        std::vector<GLchar> error_log(static_cast<unsigned long>(length));
+        std::string error_log;
+        error_log.resize(static_cast<unsigned long>(length));
         glGetProgramInfoLog(m_program_id, length, &length, &error_log[0]);
         glDeleteProgram(m_program_id);
         throw std::runtime_error{"Error while linking shader program "
                                  + vup::shader_type_to_string(m_program_id) +
                                  ".\n"
                                  + "Error log: \n"
-                                 + std::string(begin(error_log), end(error_log))};
+                                 + error_log};
     }
 }

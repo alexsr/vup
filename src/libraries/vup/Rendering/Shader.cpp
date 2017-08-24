@@ -41,13 +41,14 @@ void vup::Shader::load_shader(const std::string& path) {
     if (compile_status == GL_FALSE) {
         GLint log_size = 0;
         glGetShaderiv(m_shader_id, GL_INFO_LOG_LENGTH, &log_size);
-        std::vector<GLchar> error_log(static_cast<unsigned long>(log_size));
+        std::string error_log;
+        error_log.resize(static_cast<unsigned long>(log_size));
         glGetShaderInfoLog(m_shader_id, log_size, &log_size, &error_log[0]);
         glDeleteShader(m_shader_id);
         throw std::runtime_error{"Error while compiling "
                                  + vup::shader_type_to_string(m_type) + ".\n"
                                  + "Path: " + m_path + "\n"
                                  + "Error log: \n"
-                                 + std::string(std::begin(error_log), std::end(error_log))};
+                                 + error_log};
     }
 }

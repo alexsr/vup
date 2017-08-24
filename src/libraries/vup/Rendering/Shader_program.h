@@ -22,6 +22,7 @@ namespace vup
         ~Shader_program();
         void link_program();
         virtual void attach_shaders()= 0;
+        virtual void detach_shaders() = 0;
         GLuint m_program_id;
     };
 }

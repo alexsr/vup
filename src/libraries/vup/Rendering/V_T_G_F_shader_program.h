@@ -22,6 +22,7 @@ namespace vup
         void reload() override;
     protected:
         void attach_shaders() override;
+        void detach_shaders() override;
     private:
         std::shared_ptr<vup::Shader> m_vertex;
         std::shared_ptr<vup::Shader> m_control;

@@ -17,7 +17,7 @@ namespace vup
     public:
         explicit File_loader(const std::string& path);
         void load(const std::string& path);
-        std::string get_source();
+        std::string& get_source();
         unsigned long get_size();
     private:
         std::string m_source{""};

@@ -7,11 +7,7 @@
 
 #include "Shader.h"
 
-vup::Shader::Shader(std::string path, GLenum type) {
-    m_path = std::move(path);
-    m_type = type;
-    m_shader_id = glCreateShader(type);
-    load_shader(m_path);
+vup::Shader::Shader(const std::string& path, GLenum type) : m_path(path), m_type(type) {
 }
 
 vup::Shader::~Shader() {
@@ -51,4 +47,30 @@ void vup::Shader::load_shader(const std::string& path) {
                                  + "Error log: \n"
                                  + error_log};
     }
+}
+
+vup::Vertex_shader::Vertex_shader(const std::string& path) : vup::Shader(path, GL_VERTEX_SHADER) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
+}
+
+vup::Control_shader::Control_shader(const std::string& path) : vup::Shader(path, GL_TESS_CONTROL_SHADER) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
+}
+
+vup::Evaluation_shader::Evaluation_shader(const std::string& path)
+        : vup::Shader(path, GL_TESS_EVALUATION_SHADER) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
+}
+
+vup::Geometry_shader::Geometry_shader(const std::string& path) : vup::Shader(path, GL_GEOMETRY_SHADER) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
+}
+
+vup::Fragment_shader::Fragment_shader(const std::string& path) : vup::Shader(path, GL_FRAGMENT_SHADER) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
 }

@@ -20,6 +20,7 @@ void vup::Shader_program::use() {
 }
 
 void vup::Shader_program::link_program() {
+    glLinkProgram(m_program_id);
     GLint link_status = 0;
     glGetProgramiv(m_program_id, GL_LINK_STATUS, &link_status);
     if (link_status == GL_FALSE) {

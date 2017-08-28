@@ -6,8 +6,8 @@
 //
 #include "V_F_shader_program.h"
 
-vup::V_F_shader_program::V_F_shader_program(const std::shared_ptr<vup::Shader>& vertex,
-                                            const std::shared_ptr<vup::Shader>& fragment) {
+vup::V_F_shader_program::V_F_shader_program(const std::shared_ptr<vup::Vertex_shader>& vertex,
+                                            const std::shared_ptr<vup::Fragment_shader>& fragment) {
     m_vertex = vertex;
     m_fragment = fragment;
     attach_shaders();

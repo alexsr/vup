@@ -8,9 +8,9 @@
 #include "V_G_F_shader_program.h"
 
 vup::V_G_F_shader_program::V_G_F_shader_program(
-        const std::shared_ptr<vup::Shader>& vertex,
-        const std::shared_ptr<vup::Shader>& geometry,
-        const std::shared_ptr<vup::Shader>& fragment) {
+        const std::shared_ptr<vup::Vertex_shader>& vertex,
+        const std::shared_ptr<vup::Geometry_shader>& geometry,
+        const std::shared_ptr<vup::Fragment_shader>& fragment) {
     m_vertex = vertex;
     m_geometry = geometry;
     m_fragment = fragment;

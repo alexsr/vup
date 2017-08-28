@@ -8,13 +8,13 @@
 #ifndef VUP_DEMO_UTILS_H
 #define VUP_DEMO_UTILS_H
 
-#include "vup.h"
+#include "vup/Core/vup.h"
 #include <stdexcept>
 #include <iostream>
 
 namespace vup
 {
-    GLFWwindow* create_window(int width, int height, const char* title,
+    inline GLFWwindow* create_window(int width, int height, const char* title,
                               GLFWmonitor* monitor, GLFWwindow* share) {
         int glfw_error = glfwInit();
         if (glfw_error == 0) {
@@ -34,7 +34,7 @@ namespace vup
         return window;
     }
 
-    void init_GLEW() {
+    inline void init_GLEW() {
         GLenum glew_error = glewInit();
         if (GLEW_OK != glew_error) {
             throw std::runtime_error{"Failed to initialize GLEW."};

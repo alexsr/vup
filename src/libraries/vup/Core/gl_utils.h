@@ -8,12 +8,12 @@
 #ifndef VUP_GL_UTILS_H
 #define VUP_GL_UTILS_H
 
-#include <GL/glew.h>
+#include "vup/Core/vup.h"
 #include <string>
 
 namespace vup
 {
-    std::string shader_type_to_string(GLenum type) {
+    inline std::string shader_type_to_string(GLenum type) {
         switch (type) {
             case GL_VERTEX_SHADER:
                 return "vertex shader";

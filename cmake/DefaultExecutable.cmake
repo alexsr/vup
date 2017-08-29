@@ -1,7 +1,3 @@
-cmake_policy(SET CMP0022 OLD)
-if (${CMAKE_MAJOR_VERSION} GREATER 2)
-    cmake_policy(SET CMP0038 OLD)
-endif ()
 get_filename_component(ProjectId ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 string(REPLACE " " "_" ProjectId ${ProjectId})
 project(${ProjectId})
@@ -29,9 +25,9 @@ add_executable(${ProjectId} ${SOURCES} ${HEADER})
 
 target_link_libraries(
         ${ProjectId}
-        ${ALL_LIBRARIES}
-        ${GLFW_STATIC_LIBRARIES}
-        ${GLFW3_LIBRARIES}
-        ${GLEW_LIBRARIES}
-        ${OPENGL_LIBRARIES}
+        PRIVATE ${ALL_LIBRARIES}
+		PUBLIC ${GLFW_STATIC_LIBRARIES}
+        PUBLIC ${GLFW3_LIBRARIES}
+        PUBLIC ${GLEW_LIBRARIES}
+        PUBLIC ${OPENGL_LIBRARIES}
 )

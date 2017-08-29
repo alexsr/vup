@@ -15,11 +15,11 @@ vup::Shader_program::~Shader_program() {
     glDeleteProgram(m_program_id);
 }
 
-void vup::Shader_program::use() {
+void vup::Shader_program::use() const {
     glUseProgram(m_program_id);
 }
 
-void vup::Shader_program::link_program() {
+void vup::Shader_program::link_program() const {
     glLinkProgram(m_program_id);
     GLint link_status = 0;
     glGetProgramiv(m_program_id, GL_LINK_STATUS, &link_status);

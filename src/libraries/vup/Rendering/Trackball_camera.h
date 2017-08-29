@@ -36,9 +36,9 @@ namespace vup
 
         ~Trackball_camera();
 
-        glm::mat4 get_view();
+        glm::mat4 get_view() const;
 
-        glm::mat4 get_projection();
+        glm::mat4 get_projection() const;
 
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls

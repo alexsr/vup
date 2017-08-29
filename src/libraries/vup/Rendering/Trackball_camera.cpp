@@ -42,11 +42,11 @@ vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float
 
 vup::Trackball_camera::~Trackball_camera() = default;
 
-glm::mat4 vup::Trackball_camera::get_view() {
+glm::mat4 vup::Trackball_camera::get_view() const {
     return m_view;
 }
 
-glm::mat4 vup::Trackball_camera::get_projection() {
+glm::mat4 vup::Trackball_camera::get_projection() const {
     return m_projection;
 }
 

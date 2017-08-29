@@ -14,19 +14,19 @@ vup::Shader::~Shader() {
     glDeleteShader(m_shader_id);
 }
 
-GLuint vup::Shader::get_id() {
+const GLuint vup::Shader::get_id() const {
     return m_shader_id;
 }
 
-std::string vup::Shader::get_path() {
+const std::string vup::Shader::get_path() const {
     return m_path;
 }
 
-void vup::Shader::reload() {
+void vup::Shader::reload() const {
     load_shader(m_path);
 }
 
-void vup::Shader::load_shader(const std::string& path) {
+void vup::Shader::load_shader(const std::string& path) const {
     vup::File_loader f(path);
     const GLchar* source = f.get_source().c_str();
     auto size = static_cast<GLint>(f.get_size());

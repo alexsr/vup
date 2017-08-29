@@ -23,7 +23,7 @@ vup::V_T_G_F_shader_program::V_T_G_F_shader_program(
     detach_shaders();
 }
 
-void vup::V_T_G_F_shader_program::reload() {
+void vup::V_T_G_F_shader_program::reload() const {
     m_vertex->reload();
     m_control->reload();
     m_evaluation->reload();
@@ -34,7 +34,7 @@ void vup::V_T_G_F_shader_program::reload() {
     detach_shaders();
 }
 
-void vup::V_T_G_F_shader_program::attach_shaders() {
+void vup::V_T_G_F_shader_program::attach_shaders() const {
     glAttachShader(m_program_id, m_vertex->get_id());
     glAttachShader(m_program_id, m_control->get_id());
     glAttachShader(m_program_id, m_evaluation->get_id());
@@ -42,7 +42,7 @@ void vup::V_T_G_F_shader_program::attach_shaders() {
     glAttachShader(m_program_id, m_fragment->get_id());
 }
 
-void vup::V_T_G_F_shader_program::detach_shaders() {
+void vup::V_T_G_F_shader_program::detach_shaders() const {
     glDetachShader(m_program_id, m_vertex->get_id());
     glDetachShader(m_program_id, m_control->get_id());
     glDetachShader(m_program_id, m_evaluation->get_id());

@@ -40,6 +40,19 @@ namespace vup
             throw std::runtime_error{"Failed to initialize GLEW."};
         }
     }
+
+    inline void set_viewport(int width, int height) {
+        glViewport(0, 0, width, height);
+    }
+
+    inline void init_demo_OpenGL_params() {
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    inline void clear_buffers() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 }
 
 #endif //VUP_DEMO_UTILS_H

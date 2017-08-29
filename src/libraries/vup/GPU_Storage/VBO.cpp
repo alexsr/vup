@@ -9,8 +9,9 @@
 
 vup::VBO::VBO(GLint vertex_size, GLenum format, GLenum draw_usage)
         : Buffer(GL_ARRAY_BUFFER, draw_usage), m_vertex_size(vertex_size),
-          m_format(format), m_stride(vertex_size) {
-    calculate_stride();
+          m_format(format) {
+    m_format_size = determine_format_size();
+    m_stride = m_format_size * m_vertex_size;
 }
 
 GLint vup::VBO::get_vertex_size() const {
@@ -21,24 +22,25 @@ GLenum vup::VBO::get_format() const {
     return m_format;
 }
 
+int vup::VBO::get_format_size() const {
+    return m_format_size;
+}
+
 int vup::VBO::get_stride() const {
     return m_stride;
 }
 
-void vup::VBO::calculate_stride() {
+int vup::VBO::determine_format_size() {
     switch (m_format) {
         case GL_DOUBLE:
-            m_stride *= sizeof(double);
-            break;
+            return sizeof(double);
         case GL_BYTE:
         case GL_UNSIGNED_BYTE:
-            m_stride *= sizeof(char);
-            break;
+            return sizeof(char);
         case GL_SHORT:
         case GL_UNSIGNED_SHORT:
-            m_stride *= sizeof(short);
-            break;
+            return sizeof(short);
         default:
-            m_stride *= sizeof(float);
+            return sizeof(float);
     }
 }

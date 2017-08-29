@@ -29,12 +29,11 @@ int main() {
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
-    vup::VAO vao({vup::VBO(vup::Quad().vertices)});
+    vup::VAO vao(vup::VBO(vup::Quad().vertices), {});
     while (glfwWindowShouldClose(window) == 0) {
         vup::clear_buffers();
         minimal.use();
-        vao.bind();
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 16);
+        vao.render(GL_TRIANGLE_STRIP);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

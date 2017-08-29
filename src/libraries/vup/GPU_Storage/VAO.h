@@ -17,16 +17,19 @@ namespace vup
 {
     class VAO {
     public:
-        explicit VAO(const std::initializer_list<vup::VBO>& vbos);
+        explicit VAO(const vup::VBO& main_vbo, const std::initializer_list<vup::VBO>& vbos = {});
         void bind();
         void unbind();
+        void render(GLenum render_mode);
     private:
+        void set_attrib_buffer(const vup::VBO& v, unsigned int i);
         void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);
         void set_divisor_qualifier(const vup::Instanced_VBO& v,
                                    unsigned int index);
         void set_divisor_qualifier(const vup::VBO& v,
                                    unsigned int index);
-        GLuint m_name;
+        GLuint m_name = 0;
+        GLsizei m_count = 0;
         std::vector<std::shared_ptr<vup::VBO>> m_vbos;
     };
 }

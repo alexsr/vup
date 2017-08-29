@@ -7,14 +7,13 @@
 
 #include "VAO.h"
 
-vup::VAO::VAO(const std::initializer_list<vup::VBO>& vbos) {
+vup::VAO::VAO(const vup::VBO& main_vbo, const std::initializer_list<vup::VBO>& vbos) {
     glCreateVertexArrays(1, &m_name);
-    unsigned int i = 0;
+    set_attrib_buffer(main_vbo, 0);
+    m_count = main_vbo.get_buffer_size() / main_vbo.get_stride();
+    unsigned int i = 1;
     for (auto&& v : vbos) {
-        glEnableVertexArrayAttrib(m_name, i);
-        glVertexArrayVertexBuffer(m_name, i, v.get_name(), 0, v.get_stride());
-        set_attrib_format(i, v.get_vertex_size(), v.get_format());
-        glVertexArrayAttribBinding(m_name, i, i);
+        set_attrib_buffer(v, i);
         set_divisor_qualifier(v, i);
         i++;
     }
@@ -26,6 +25,13 @@ void vup::VAO::bind() {
 
 void vup::VAO::unbind() {
     glBindVertexArray(0);
+}
+
+void vup::VAO::set_attrib_buffer(const vup::VBO& v, unsigned int i) {
+    glEnableVertexArrayAttrib(m_name, i);
+    glVertexArrayVertexBuffer(m_name, i, v.get_name(), 0, v.get_stride());
+    set_attrib_format(i, v.get_vertex_size(), v.get_format());
+    glVertexArrayAttribBinding(m_name, i, i);
 }
 
 void vup::VAO::set_attrib_format(unsigned int index, GLint vertex_size, GLenum format) {
@@ -50,4 +56,9 @@ void vup::VAO::set_divisor_qualifier(const vup::Instanced_VBO& v,
 void vup::VAO::set_divisor_qualifier(const vup::VBO& v,
                                      unsigned int index) {
 
+}
+
+void vup::VAO::render(GLenum render_mode) {
+    bind();
+    glDrawArrays(render_mode, 0, m_count);
 }

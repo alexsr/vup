@@ -21,8 +21,8 @@ int main() {
     auto window = vup::create_window(800, 600, "Initial Testing", nullptr, nullptr);
     vup::init_GLEW();
     glfwSetWindowSizeCallback(window, resize_callback);
-    auto minimal_vertex = std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert");
-    auto minimal_fragment = std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag");
+    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert"));
+    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
     while (glfwWindowShouldClose(window) == 0) {
         glfwSwapBuffers(window);

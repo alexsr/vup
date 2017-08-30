@@ -19,6 +19,8 @@ add_definitions(-DSHADER_PATH="${SHADER_PATH}")
 add_definitions(-DCOMPUTE_SHADER_PATH="${COMPUTE_SHADER_PATH}")
 add_definitions(-DRESOURCES_PATH="${RESOURCES_PATH}")
 add_definitions(-DGLEW_STATIC)
+add_definitions(-DGLFW_INCLUDE_GLCOREARB)
+add_definitions(-DGLEW_NO_GLU)
 
 add_library(${ProjectId} ${SOURCES} ${HEADER})
 
@@ -30,5 +32,3 @@ target_link_libraries(
         PUBLIC ${GLEW_LIBRARIES}
         PUBLIC ${OPENGL_LIBRARIES}
 )
-
-set_target_properties(${ProjectId} PROPERTIES LINKER_LANGUAGE CXX)

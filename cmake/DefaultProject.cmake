@@ -12,6 +12,14 @@ project(${ProjectId})
 
 include(${CMAKE_MODULE_PATH}/macros.cmake)
 
+if(MSVC)
+    add_compile_options("/std:c++latest")
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX )
+    add_compile_options("-std=c++1z")
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES Debug;Release)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -24,11 +32,7 @@ find_package(GLFW3 REQUIRED)
 find_package(GLM REQUIRED)
 #find_package(RapidJSON REQUIRED)
 #find_package(assimp REQUIRED)
-#
-#if ("${CMAKE_SYSTEM}" MATCHES "Linux")
-#    find_package(X11)
-#    set(ALL_LIBRARIES ${ALL_LIBRARIES} ${X11_LIBRARIES} Xrandr Xxf86vm Xi pthread)
-#endif ()
+
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 GENERATE_SUBDIRS(ALL_LIBRARIES ${LIBRARIES_PATH} ${PROJECT_BINARY_DIR}/libraries)
 

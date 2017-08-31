@@ -8,8 +8,7 @@
 #ifndef VUP_BUFFER_H
 #define VUP_BUFFER_H
 
-//#include "vup/Core/gl_utils.h"
-#include <GL/glew.h>
+#include "vup/Core/gl_utils.h"
 #include <vector>
 #include <cstring>
 

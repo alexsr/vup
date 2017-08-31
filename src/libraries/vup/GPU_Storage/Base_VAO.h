@@ -10,7 +10,7 @@
 
 #include <initializer_list>
 #include <memory>
-#include "Instanced_VBO.h"
+#include "VBO.h"
 
 namespace vup
 {

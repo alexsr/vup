@@ -11,6 +11,8 @@
 #include "vup/Core/vup.h"
 #include <stdexcept>
 #include <iostream>
+#include <vector>
+#include <random>
 
 namespace vup
 {
@@ -52,6 +54,18 @@ namespace vup
 
     inline void clear_buffers() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    inline std::vector<float> generate_random_data(int n, float lower_boundary,
+                                                   float upper_boundary) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(lower_boundary, upper_boundary);
+        std::vector<float> result(static_cast<unsigned long>(n));
+        for (auto& r: result) {
+            r = dis(gen);
+        }
+        return result;
     }
 }
 

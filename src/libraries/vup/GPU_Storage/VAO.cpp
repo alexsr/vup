@@ -17,7 +17,7 @@ void vup::VAO::render(GLenum render_mode) {
     glDrawArrays(render_mode, 0, m_count);
 }
 
-void vup::VAO::render(GLenum render_mode, int offset, int count) {
+void vup::VAO::render(GLenum render_mode, int offset, unsigned int count) {
     bind();
     glDrawArrays(render_mode, offset, count);
 }

@@ -14,18 +14,20 @@ namespace vup
 {
     class Instanced_VBO : public vup::VBO {
     public:
-        explicit Instanced_VBO(GLuint divisor = 1, GLint vertex_size = 4, GLenum type = GL_FLOAT, GLenum draw_usage = GL_STATIC_DRAW);
-        template <typename T>
-        explicit Instanced_VBO(const std::vector<T> &data, GLuint divisor = 1, GLint vertex_size = 4,
+        explicit Instanced_VBO(GLint vertex_size = 4, GLuint divisor = 1,
                                GLenum type = GL_FLOAT, GLenum draw_usage = GL_STATIC_DRAW);
+        template <typename T>
+        explicit Instanced_VBO(const std::vector<T> &data, GLint vertex_size = 4,
+                               GLuint divisor = 1, GLenum type = GL_FLOAT,
+                               GLenum draw_usage = GL_STATIC_DRAW);
         GLuint get_divisor() const;
     private:
         GLuint m_divisor;
     };
 
     template<typename T>
-    vup::Instanced_VBO::Instanced_VBO(const std::vector<T>& data, GLuint divisor,
-                                      GLint vertex_size, GLenum type, GLenum draw_usage)
+    vup::Instanced_VBO::Instanced_VBO(const std::vector<T>& data, GLint vertex_size,
+                                      GLuint divisor, GLenum type, GLenum draw_usage)
             : VBO(data, vertex_size, type, draw_usage), m_divisor(divisor) {
 
     }

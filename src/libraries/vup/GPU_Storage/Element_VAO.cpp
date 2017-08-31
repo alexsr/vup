@@ -20,7 +20,7 @@ void vup::Element_VAO::render(GLenum render_mode) {
     glDrawElements(render_mode, m_count, GL_UNSIGNED_INT, nullptr);
 }
 
-void vup::Element_VAO::render(GLenum render_mode, int offset, int count) {
+void vup::Element_VAO::render(GLenum render_mode, int offset, unsigned int count) {
     bind();
     glDrawElements(render_mode, count, GL_UNSIGNED_INT, &offset);
 }

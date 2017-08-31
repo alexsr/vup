@@ -21,9 +21,9 @@ namespace vup
                                 GLenum draw_usage = GL_STATIC_DRAW);
         void set_data(const std::vector<unsigned int> &data);
         void set_data(const std::vector<unsigned int> &data, GLenum draw_usage);
-        int get_count() const;
+        unsigned int get_count() const;
     private:
-        int m_count;
+        unsigned int m_count;
     };
 }
 

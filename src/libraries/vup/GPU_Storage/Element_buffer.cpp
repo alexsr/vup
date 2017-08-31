@@ -28,6 +28,6 @@ void vup::Element_buffer::set_data(const std::vector<unsigned int>& data,
     m_count = static_cast<int>(data.size());
 }
 
-int vup::Element_buffer::get_count() const {
+unsigned int vup::Element_buffer::get_count() const {
     return m_count;
 }

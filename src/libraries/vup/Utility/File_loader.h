@@ -15,8 +15,9 @@ namespace vup
 {
     class File_loader {
     public:
-        explicit File_loader(const std::string& path);
-        void load(const std::string& path);
+        explicit File_loader(const std::string& path,
+                             std::ios_base::openmode mode = std::ios::in);
+        void load(const std::string& path, std::ios_base::openmode mode = std::ios::in);
         std::string& get_source();
         unsigned long get_size();
     private:

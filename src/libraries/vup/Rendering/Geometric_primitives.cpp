@@ -8,9 +8,19 @@
 #include "Geometric_primitives.h"
 
 vup::Quad::Quad(float x, float y) {
-    vertices = {-x/2.0f, -y/2.0f, 0.0f, 1.0f,
-            x/2.0f, -y/2.0f, 0.0f, 1.0f,
-            -x/2.0f, y/2.0f, 0.0f, 1.0f,
-            x/2.0f, y/2.0f, 0.0f, 1.0f
+    vertices = {{-x/2.0f, -y/2.0f, 0.0f, 1.0f},
+                {x/2.0f, -y/2.0f, 0.0f, 1.0f},
+                {-x/2.0f, y/2.0f, 0.0f, 1.0f},
+                {x/2.0f, y/2.0f, 0.0f, 1.0f}
+    };
+    normal = {{0.0f, 0.0f, 1.0f},
+              {0.0f, 0.0f, 1.0f},
+              {0.0f, 0.0f, 1.0f},
+              {0.0f, 0.0f, 1.0f}
+    };
+    uv = {{0.0f, 0.0f},
+          {1.0f, 0.0f},
+          {0.0f, 1.0f},
+          {1.0f, 1.0f}
     };
 }

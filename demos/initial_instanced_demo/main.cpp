@@ -31,7 +31,7 @@ int main() {
     unsigned int instances = 10;
     vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1, 1), 2);
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0, 1), 3);
-    vup::Instanced_VAO vao(vup::VBO(vup::Quad().vertices), {offset, color});
+    vup::Instanced_VAO vao(vup::Quad(1.0f), {offset, color});
     bool allow_reset = true;
     while (glfwWindowShouldClose(window) == 0) {
         vup::clear_buffers();

@@ -15,6 +15,14 @@ vup::Element_VAO::Element_VAO(const vup::VBO& main_vbo,
     m_count = element_vbo.get_count();
 }
 
+vup::Element_VAO::Element_VAO(const vup::Geometric_primitive& primitive,
+                              const std::initializer_list<vup::VBO>& vbos)
+        : VAO(primitive, vbos) {
+    vup::Element_buffer element_vbo(primitive.indices);
+    glVertexArrayElementBuffer(m_name, element_vbo.get_name());
+    m_count = element_vbo.get_count();
+}
+
 void vup::Element_VAO::render(GLenum render_mode) {
     bind();
     glDrawElements(render_mode, m_count, GL_UNSIGNED_INT, nullptr);

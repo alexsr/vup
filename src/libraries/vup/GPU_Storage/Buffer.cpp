@@ -15,7 +15,7 @@ GLuint vup::Buffer::get_name() const {
     return m_name;
 }
 
-int vup::Buffer::get_buffer_size() const {
+unsigned int vup::Buffer::get_buffer_size() const {
     return m_buffer_size;
 }
 

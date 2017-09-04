@@ -16,10 +16,15 @@ namespace vup
     class Instanced_VAO : public vup::Base_VAO {
     public:
         explicit Instanced_VAO(const vup::VBO& main_vbo,
+                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_VAO(const vup::VBO& main_vbo,
                                const std::initializer_list<vup::VBO>& vbos,
                                const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
-        explicit Instanced_VAO(const vup::VBO& main_vbo,
+        explicit Instanced_VAO(const vup::Geometric_primitive& primitive,
                                const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_VAO(const vup::Geometric_primitive& primitive,
+                               const std::initializer_list<vup::VBO>& vbos,
+                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
         virtual void render(GLenum render_mode, unsigned int instances);
         virtual void render(GLenum render_mode, int offset, unsigned int count,
                             unsigned int instances);

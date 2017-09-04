@@ -5,6 +5,7 @@
 // https://github.com/alexsr
 //
 
+#include "vup/Rendering/Geometric_primitives.h"
 #include "Base_VAO.h"
 
 vup::Base_VAO::Base_VAO(const vup::VBO& main_vbo,
@@ -13,6 +14,20 @@ vup::Base_VAO::Base_VAO(const vup::VBO& main_vbo,
     set_attrib_buffer(main_vbo, 0);
     m_count = main_vbo.get_buffer_size() / main_vbo.get_stride();
     unsigned int i = 1;
+    for (auto&& v : vbos) {
+        set_attrib_buffer(v, i);
+        i++;
+    }
+}
+
+vup::Base_VAO::Base_VAO(const vup::Geometric_primitive& primitive,
+                        const std::initializer_list<vup::VBO>& vbos) {
+    glCreateVertexArrays(1, &m_name);
+    set_attrib_buffer(vup::VBO(primitive.vertices), 0);
+    m_count = static_cast<unsigned int>(primitive.vertices.size());
+    set_attrib_buffer(vup::VBO(primitive.normal, 3), 1);
+    set_attrib_buffer(vup::VBO(primitive.uv, 2), 2);
+    unsigned int i = 3;
     for (auto&& v : vbos) {
         set_attrib_buffer(v, i);
         i++;

@@ -23,7 +23,7 @@ namespace vup
         template <typename T>
         void set_data(const std::vector<T> &data, GLenum draw_usage);
         GLuint get_name() const;
-        int get_buffer_size() const;
+        unsigned int get_buffer_size() const;
         void bind();
         void unbind();
     protected:
@@ -33,7 +33,7 @@ namespace vup
         GLuint m_name = 0;
         GLenum m_draw_usage = GL_STATIC_DRAW;
         GLenum m_target = 0;
-        int m_buffer_size = 0;
+        unsigned int m_buffer_size = 0;
     };
 }
 

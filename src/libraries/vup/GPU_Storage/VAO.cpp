@@ -12,6 +12,11 @@ vup::VAO::VAO(const vup::VBO& main_vbo,
 : Base_VAO(main_vbo, vbos) {
 }
 
+vup::VAO::VAO(const vup::Geometric_primitive& primitive,
+              const std::initializer_list<vup::VBO>& vbos)
+        : Base_VAO(primitive, vbos) {
+}
+
 void vup::VAO::render(GLenum render_mode) {
     bind();
     glDrawArrays(render_mode, 0, m_count);

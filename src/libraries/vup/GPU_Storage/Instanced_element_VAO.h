@@ -17,11 +17,16 @@ namespace vup
     public:
         explicit Instanced_element_VAO(const vup::VBO& main_vbo,
                                        const vup::Element_buffer& element_vbo,
-                               const std::initializer_list<vup::VBO>& vbos,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
+                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_element_VAO(const vup::VBO& main_vbo,
                                        const vup::Element_buffer& element_vbo,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
+                                       const std::initializer_list<vup::VBO>& vbos,
+                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
+        explicit Instanced_element_VAO(const vup::Geometric_primitive& primitive,
+                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_element_VAO(const vup::Geometric_primitive& primitive,
+                                       const std::initializer_list<vup::VBO>& vbos,
+                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
         void render(GLenum render_mode, unsigned int instances) override;
         void render(GLenum render_mode, int offset, unsigned int count,
                     unsigned int instances) override;

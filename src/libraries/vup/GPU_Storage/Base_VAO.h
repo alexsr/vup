@@ -11,6 +11,7 @@
 #include <initializer_list>
 #include <memory>
 #include "VBO.h"
+#include "vup/Rendering/Geometric_primitives.h"
 
 namespace vup
 {
@@ -20,6 +21,8 @@ namespace vup
         void unbind();
     protected:
         explicit Base_VAO(const vup::VBO& main_vbo,
+                          const std::initializer_list<vup::VBO>& vbos = {});
+        explicit Base_VAO(const vup::Geometric_primitive& primitive,
                           const std::initializer_list<vup::VBO>& vbos = {});
         void set_attrib_buffer(const vup::VBO& v, unsigned int i);
         void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);

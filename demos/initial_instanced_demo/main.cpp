@@ -8,9 +8,9 @@
 #include "vup/Core/demo_utils.h"
 #include "vup/Rendering/Trackball_camera.h"
 #include <memory>
-#include <vup/Rendering/V_F_shader_program.h>
-#include <vup/Rendering/Geometry_primitives.h>
-#include <vup/GPU_Storage/Instanced_VAO.h>
+#include "vup/Rendering/V_F_shader_program.h"
+#include "vup/Rendering/Geometric_primitives.h"
+#include "vup/GPU_Storage/Instanced_VAO.h"
 
 auto cam = std::make_unique<vup::Trackball_camera>(800, 600);
 

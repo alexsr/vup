@@ -12,6 +12,7 @@
 
 namespace vup
 {
+    
     struct Quad {
         explicit Quad(float x = 1.0f, float y = 1.0f);
         std::vector<float> vertices;

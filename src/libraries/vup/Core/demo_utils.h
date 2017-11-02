@@ -16,24 +16,11 @@
 
 namespace vup
 {
-    inline GLFWwindow* create_window(int width, int height, const char* title,
-                              GLFWmonitor* monitor, GLFWwindow* share) {
+    inline void init_GLFW() {
         int glfw_error = glfwInit();
         if (glfw_error == 0) {
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
-        auto window = glfwCreateWindow(width, height, title, monitor, share);
-        if (window == nullptr) {
-            glfwTerminate();
-            throw std::runtime_error{"Failed to create GLFWwindow."};
-        }
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(0);
-        return window;
     }
 
     inline void init_GLEW() {

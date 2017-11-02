@@ -26,4 +26,3 @@ void vup::Buffer::bind() {
 void vup::Buffer::unbind() {
     glBindBuffer(m_target, 0);
 }
-

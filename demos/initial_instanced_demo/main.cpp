@@ -8,44 +8,43 @@
 #include "vup/Core/demo_utils.h"
 #include "vup/Rendering/Trackball_camera.h"
 #include <memory>
+#include <vup/Core/Window.h>
 #include "vup/Rendering/V_F_shader_program.h"
 #include "vup/Rendering/Geometric_primitives.h"
 #include "vup/GPU_Storage/Instanced_VAO.h"
 
-auto cam = std::make_unique<vup::Trackball_camera>(800, 600);
-
-void resize_callback(GLFWwindow* w, int width, int height) {
-    cam->resize(width, height);
-    glViewport(0, 0, width, height);
-}
-
 int main() {
-    auto window = vup::create_window(800, 600, "Initial Instanced Rendering Test", nullptr, nullptr);
+    vup::init_GLFW();
+    vup::Window window(800, 600, "Initial instanced rendering demo");
+    vup::Trackball_camera cam(800, 600);
     vup::init_GLEW();
     vup::set_viewport(800, 600);
     vup::init_demo_OpenGL_params();
-    glfwSetWindowSizeCallback(window, resize_callback);
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal_instanced.vert"));
+    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_instanced.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal_instanced.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
     unsigned int instances = 10;
-    vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1, 1), 2);
-    vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0, 1), 3);
+    std::vector<float> x = vup::generate_random_data(instances * 2, -1.0f, 1.0f);
+    vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
+    vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
     vup::Instanced_VAO vao(vup::Quad(1.0f), {offset, color});
     bool allow_reset = true;
-    while (glfwWindowShouldClose(window) == 0) {
+    while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
+        cam.update(window.get_GLFWwindow(), 0.01f);
+        minimal.update_uniform("view", cam.get_view());
+        minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLE_STRIP, instances);
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
-            offset.update_data(vup::generate_random_data(instances * 2, -1, 1));
-            color.update_data(vup::generate_random_data(instances * 3, 0, 1));
+        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
+            offset.update_data(vup::generate_random_data(instances * 2, -1.0f, 1.0f));
+            color.update_data(vup::generate_random_data(instances * 3, 0.0f, 1.0f));
             allow_reset = false;
         }
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_RELEASE) {
+        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_RELEASE) {
             allow_reset = true;
         }
-        glfwSwapBuffers(window);
+        window.swap_buffer();
         glfwPollEvents();
     }
     glfwTerminate();

@@ -28,7 +28,7 @@ void vup::Shader::reload() const {
 
 void vup::Shader::load_shader(const std::string& path) const {
     vup::File_loader f(path);
-    const GLchar* source = f.get_source().c_str();
+    const GLchar* source = f.get_source_view().data();
     auto size = static_cast<GLint>(f.get_size());
     glShaderSource(m_shader_id, 1, &source, &size);
     glCompileShader(m_shader_id);

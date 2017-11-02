@@ -10,6 +10,7 @@
 
 #include <string>
 #include <fstream>
+#include <string_view>
 
 namespace vup
 {
@@ -18,7 +19,8 @@ namespace vup
         explicit File_loader(const std::string& path,
                              std::ios_base::openmode mode = std::ios::in);
         void load(const std::string& path, std::ios_base::openmode mode = std::ios::in);
-        std::string& get_source();
+        const std::string& get_source();
+        std::string_view get_source_view();
         unsigned long get_size();
     private:
         std::string m_source{""};

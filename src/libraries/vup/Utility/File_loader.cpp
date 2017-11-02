@@ -24,8 +24,12 @@ void vup::File_loader::load(const std::string& path, std::ios_base::openmode mod
     in.close();
 }
 
-std::string& vup::File_loader::get_source() {
+[[maybe_unused]] const std::string& vup::File_loader::get_source() {
     return m_source;
+}
+
+std::string_view vup::File_loader::get_source_view() {
+    return std::string_view(m_source);
 }
 
 unsigned long vup::File_loader::get_size() {

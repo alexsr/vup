@@ -9,6 +9,8 @@
 #define VUP_TRACKBALL_CAMERA_H
 
 #include "vup/Core/vup.h"
+#include <iostream>
+#include <array>
 
 namespace vup
 {
@@ -30,29 +32,26 @@ namespace vup
         // * float fov - field of view in degree
         // * float near - near value for projection
         // * float far - far value for projection
-        Trackball_camera(int width, int height, float sens = 0.01f, float r = 2.0,
-                         float zoom_sens = 1.0f, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
+        Trackball_camera(int width, int height, float sens = 0.1f, float r = 2.0,
+                         float zoom_sens = 1.0f, glm::vec3 center = glm::vec3(0.0f, 0.0f, 1.0f),
+                         glm::vec3 view_direction = glm::vec3(0.0f, 0.0f, -1.0f),
                          float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
 
         ~Trackball_camera();
 
         glm::mat4 get_view() const;
-
         glm::mat4 get_projection() const;
 
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls
         // * float dt - delta time between camera updates
         void update(GLFWwindow* window, float dt);
-        void resize(int width, int height);
+        void resize();
 
     private:
-
         glm::vec3 m_center;
-        glm::vec3 m_camera_pos;
         glm::mat4 m_view;
         glm::mat4 m_projection;
-
         float m_sens;
         float m_zoom_sens;
         float m_radius;
@@ -60,15 +59,14 @@ namespace vup
         float m_phi;
         double m_x;
         double m_y;
-        double m_oldX;
-        double m_oldY;
         float m_fov;
         float m_near;
         float m_far;
         int m_width;
         int m_height;
-        bool m_lmb_pressed;
 
+        void update_view();
+        void move_camera(GLFWwindow* window, float dt);
     };
 
 

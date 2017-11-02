@@ -9,33 +9,12 @@
 
 vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float r,
                                         float zoom_sens, glm::vec3 center,
-                                        float fov, float near, float far) {
-    m_sens = sens;
-    m_zoom_sens = zoom_sens;
-    m_width = width;
-    m_height = height;
-    m_fov = glm::radians(m_fov);
-    m_near = near;
-    m_far = far;
-    m_center = center;
-
-    m_width = width;
-    m_height = height;
-    m_oldX = 0.0;
-    m_oldY = 0.0;
-    m_x = 0.0;
-    m_y = 0.0;
-
+                                        glm::vec3 view_direction, float fov, float near, float far)
+        : m_width(width), m_height(height), m_sens(sens), m_radius(r), m_zoom_sens(zoom_sens),
+          m_center(center), m_fov(glm::radians(fov)), m_near(near), m_far(far) {
     m_theta = glm::pi<float>() / 2.0f;
-    m_phi = 0.0;
-    m_radius = r;
-
-    m_camera_pos = m_center +
-                   glm::vec3(m_radius * glm::sin(m_theta) * glm::sin(m_phi),
-                             m_radius * glm::cos(m_theta),
-                             m_radius * glm::sin(m_theta) * glm::cos(m_phi));
-
-    m_view = glm::lookAt(m_camera_pos, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_phi = 0.0f;
+    update_view();
     m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height),
                                     m_near, m_far);
 }
@@ -53,17 +32,9 @@ glm::mat4 vup::Trackball_camera::get_projection() const {
 void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
     double x, y;
     glfwGetCursorPos(window, &x, &y);
-
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (!m_lmb_pressed) {
-            m_lmb_pressed = true;
-            m_oldX = x;
-            m_oldY = y;
-        }
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         double changeX = (x - m_x) * m_sens * dt;
         double changeY = (y - m_y) * m_sens * dt;
-
         m_theta -= changeY;
         if (m_theta < 0.01) {
             m_theta = 0.01;
@@ -71,7 +42,6 @@ void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
         else if (m_theta > glm::pi<float>() - 0.01f) {
             m_theta = glm::pi<float>() - 0.01f;
         }
-
         m_phi -= changeX;
         if (m_phi < 0) {
             m_phi += 2 * glm::pi<float>();
@@ -83,15 +53,32 @@ void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
         m_y = y;
     }
     else {
-        if (m_lmb_pressed) {
-            m_lmb_pressed = false;
-            glfwSetCursorPos(window, m_oldX, m_oldY);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
         m_x = x;
         m_y = y;
     }
+    move_camera(window, dt);
+    update_view();
+    resize();
+}
 
+void vup::Trackball_camera::resize() {
+    std::array<int, 4> viewport{};
+    glGetIntegerv(GL_VIEWPORT, viewport.data());
+    m_width = viewport.at(2);
+    m_height = viewport.at(3);
+    m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height),
+                                    m_near, m_far);
+}
+
+void vup::Trackball_camera::update_view() {
+    glm::vec3 eye = m_center +
+               glm::vec3(m_radius * glm::sin(m_theta) * glm::sin(m_phi),
+                         m_radius * glm::cos(m_theta),
+                         m_radius * glm::sin(m_theta) * glm::cos(m_phi));
+    m_view = glm::lookAt(eye, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+void vup::Trackball_camera::move_camera(GLFWwindow* window, float dt) {
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         m_radius -= m_zoom_sens * dt;
     }
@@ -101,19 +88,4 @@ void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
     if (m_radius < 0.1f) {
         m_radius = 0.1f;
     }
-
-    m_camera_pos = m_center +
-                   glm::vec3(m_radius * glm::sin(m_theta) * glm::sin(m_phi),
-                             m_radius * glm::cos(m_theta),
-                             m_radius * glm::sin(m_theta) * glm::cos(m_phi));
-
-    m_view = glm::lookAt(m_camera_pos, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
-
-}
-
-void vup::Trackball_camera::resize(int width, int height) {
-    m_width = width;
-    m_height = height;
-    m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height),
-                                    m_near, m_far);
 }

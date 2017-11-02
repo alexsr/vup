@@ -9,7 +9,7 @@
 
 vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float r,
                                         float zoom_sens, glm::vec3 center,
-                                        glm::vec3 view_direction, float fov, float near, float far)
+                                        float fov, float near, float far)
         : m_width(width), m_height(height), m_sens(sens), m_radius(r), m_zoom_sens(zoom_sens),
           m_center(center), m_fov(glm::radians(fov)), m_near(near), m_far(far) {
     m_theta = glm::pi<float>() / 2.0f;

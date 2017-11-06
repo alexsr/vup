@@ -10,8 +10,9 @@
 
 #include <initializer_list>
 #include <memory>
+#include <vup/Geometry/Mesh.h>
 #include "VBO.h"
-#include "vup/Rendering/Geometric_primitives.h"
+#include "vup/Geometry/Geometric_primitives.h"
 
 namespace vup
 {
@@ -24,6 +25,7 @@ namespace vup
                           const std::initializer_list<vup::VBO>& vbos = {});
         explicit Base_VAO(const vup::Geometric_primitive& primitive,
                           const std::initializer_list<vup::VBO>& vbos = {});
+        explicit Base_VAO(vup::Mesh mesh);
         void set_attrib_buffer(const vup::VBO& v, unsigned int i);
         void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);
         GLuint m_name = 0;

@@ -1,31 +1,8 @@
-# Copyright (C) 2014 Barry Deeney
-# Copyright (C) 2014 Benny Bobaganoosh
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-#############################################
-# Try to find ASSMIP and set the following: #
-#                                           #
-# ASSIMP_FOUND                              #
-# ASSIMP_INCLUDE_DIRS                       #
-# ASSIMP_LIBRARIES                          #
-#############################################
-
 SET(ASSIMP_SEARCH_PATHS
         ${DEPENDENCIES_ROOT}
         )
 
-FIND_PATH(ASSIMP_INCLUDE_DIRS
+FIND_PATH(ASSIMP_INCLUDE_PATH
         NAMES
         assimp/mesh.h
         PATHS
@@ -38,7 +15,7 @@ FIND_PATH(ASSIMP_INCLUDE_DIRS
 
 FIND_LIBRARY(ASSIMP_LIBRARIES
         NAMES
-        assimp ASSIMP libassimp.a
+        assimp ASSIMP libassimp.so
         PATHS
         ${ASSIMP_SEARCH_PATHS}
         PATH_SUFFIXES
@@ -50,11 +27,10 @@ FIND_LIBRARY(ASSIMP_LIBRARIES
         "The ASSIMP library"
         )
 
-# Check if we found it!
-IF (ASSIMP_INCLUDE_DIRS AND ASSIMP_LIBRARIES)
+SET(ASSIMP_FOUND FALSE)
+IF (ASSIMP_INCLUDE_PATH AND ASSIMP_LIBRARIES)
     SET(ASSIMP_FOUND TRUE)
-    MESSAGE(STATUS "Looking for ASSIMP - found")
-ELSE (ASSIMP_INCLUDE_DIRS AND ASSIMP_LIBRARIES)
-    SET(ASSIMP_FOUND FALSE)
-    MESSAGE(STATUS "Looking for ASSIMP - not found")
-ENDIF (ASSIMP_INCLUDE_DIRS AND ASSIMP_LIBRARIES)
+    message("EXTERNAL LIBRARY 'ASSIMP' FOUND")
+ELSE (ASSIMP_INCLUDE_PATH AND ASSIMP_LIBRARIES)
+    message("ERROR: EXTERNAL LIBRARY 'ASSIMP' NOT FOUND")
+ENDIF (ASSIMP_INCLUDE_PATH AND ASSIMP_LIBRARIES)

@@ -23,6 +23,11 @@ vup::Element_VAO::Element_VAO(const vup::Geometric_primitive& primitive,
     m_count = element_vbo.get_count();
 }
 
+vup::Element_VAO::Element_VAO(vup::Mesh mesh) : VAO(mesh) {
+    glVertexArrayElementBuffer(m_name, mesh.get_indices().get_name());
+    m_count = mesh.get_indices().get_count();
+}
+
 void vup::Element_VAO::render(GLenum render_mode) {
     bind();
     glDrawElements(render_mode, m_count, GL_UNSIGNED_INT, nullptr);

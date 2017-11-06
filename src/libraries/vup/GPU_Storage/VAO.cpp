@@ -17,6 +17,9 @@ vup::VAO::VAO(const vup::Geometric_primitive& primitive,
         : Base_VAO(primitive, vbos) {
 }
 
+vup::VAO::VAO(vup::Mesh mesh) : Base_VAO(mesh) {
+}
+
 void vup::VAO::render(GLenum render_mode) {
     bind();
     glDrawArrays(render_mode, 0, m_count);

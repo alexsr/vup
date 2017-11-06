@@ -18,6 +18,7 @@ namespace vup
                      const std::initializer_list<vup::VBO>& vbos = {});
         explicit VAO(const vup::Geometric_primitive& primitive,
                      const std::initializer_list<vup::VBO>& vbos = {});
+        explicit VAO(vup::Mesh mesh);
         virtual void render(GLenum render_mode);
         virtual void render(GLenum render_mode, int offset, unsigned int count);
     };

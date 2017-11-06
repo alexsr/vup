@@ -7,7 +7,7 @@ include_directories(
         ${GLEW_INCLUDE_PATH}
         ${GLFW3_INCLUDE_PATH}
         ${GLM_INCLUDE_PATH}
-        ${RAPIDJSON_INCLUDE_PATH}
+        ${ASSIMP_INCLUDE_PATH}
         ${EXTERNAL_LIBRARY_PATHS}
         ${LIBRARIES_PATH}
 )
@@ -31,4 +31,5 @@ target_link_libraries(
         PUBLIC ${GLFW3_LIBRARIES}
         PUBLIC ${GLEW_LIBRARIES}
         PUBLIC ${OPENGL_LIBRARIES}
+        PUBLIC ${ASSIMP_LIBRARIES}
 )

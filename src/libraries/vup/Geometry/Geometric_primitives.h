@@ -15,8 +15,8 @@ namespace vup
 {
     struct Geometric_primitive {
         std::vector<glm::vec4> vertices;
-        std::vector<glm::vec3> normal;
-        std::vector<glm::vec2> uv;
+        std::vector<glm::vec3> normals;
+        std::vector<glm::vec2> uv_coords;
         std::vector<unsigned int> indices;
     };
 

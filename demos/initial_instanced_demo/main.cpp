@@ -10,7 +10,7 @@
 #include <memory>
 #include <vup/Core/Window.h>
 #include "vup/Rendering/V_F_shader_program.h"
-#include "vup/Rendering/Geometric_primitives.h"
+#include "vup/Geometry/Geometric_primitives.h"
 #include "vup/GPU_Storage/Instanced_VAO.h"
 
 int main() {

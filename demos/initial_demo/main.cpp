@@ -10,7 +10,7 @@
 #include <memory>
 #include <vup/Core/Window.h>
 #include "vup/Rendering/V_F_shader_program.h"
-#include "vup/Rendering/Geometric_primitives.h"
+#include "vup/Geometry/Geometric_primitives.h"
 #include "vup/GPU_Storage/VAO.h"
 
 int main() {
@@ -23,13 +23,14 @@ int main() {
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
-    vup::VAO vao(vup::VBO(vup::Quad().vertices));
+    vup::Quad q;
+    vup::VBO vertices(q.vertices);
+    vup::VBO normals(q.normals, 3);
+    vup::VBO uv_coords(q.uv_coords, 2);
+    vup::VAO vao(vertices, {normals, uv_coords});
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
-        cam.update(window.get_GLFWwindow(), 0.01f);
-        minimal.update_uniform("view", cam.get_view());
-        minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLE_STRIP);
         window.swap_buffer();
         glfwPollEvents();

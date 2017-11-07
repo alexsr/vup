@@ -16,8 +16,8 @@ namespace vup
 {
     class Window {
     public:
-        Window(int width, int height, const std::string& title, int gl_major = 4,
-               int gl_minor = 5, GLFWmonitor* monitor = nullptr,
+        Window(int width, int height, const std::string& title, bool debug = false,
+               int gl_major = 4, int gl_minor = 5, GLFWmonitor* monitor = nullptr,
                GLFWwindow* share = nullptr, int swap_interval = 0);
         void make_current();
         bool should_close();

@@ -9,12 +9,13 @@
 #include "vup/Rendering/Trackball_camera.h"
 #include <vup/Core/Window.h>
 #include <vup/GPU_Storage/Element_VAO.h>
+#include <vup/Utility/OpenGL_debug_logger.h>
 #include "vup/Rendering/V_F_shader_program.h"
 #include "vup/Geometry/Mesh_loader.h"
 
 int main() {
     vup::init_GLFW();
-    vup::Window window(800, 600, "Initial instanced rendering demo");
+    vup::Window window(800, 600, "Initial instanced rendering demo", true);
     vup::Trackball_camera cam(800, 600);
     vup::init_GLEW();
     vup::set_viewport(800, 600);
@@ -24,6 +25,7 @@ int main() {
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
     vup::Mesh_loader bunny(RESOURCES_PATH "/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));
+    vup::OpenGL_debug_logger gl_debug_logger;
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
@@ -31,6 +33,7 @@ int main() {
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLES);
+        gl_debug_logger.retrieve_log(std::cout);
         window.swap_buffer();
         glfwPollEvents();
     }

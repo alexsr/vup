@@ -39,83 +39,179 @@ void vup::Shader_program::link_program() const {
     }
 }
 
-void vup::Shader_program::update_uniform(const GLchar* name, bool b) {
-    glProgramUniform1i(m_program_id, find_uniform_location(name), b);
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, int i) {
-    glProgramUniform1i(m_program_id, find_uniform_location(name), i);
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, float f) {
-    glProgramUniform1f(m_program_id, find_uniform_location(name), f);
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, double d) {
-    glProgramUniform1d(m_program_id, find_uniform_location(name), d);
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::vec2 v) {
-    glProgramUniform2fv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::vec3 v) {
-    glProgramUniform3fv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::vec4 v) {
-    glProgramUniform4fv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::ivec2 v) {
-    glProgramUniform2iv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::ivec3 v) {
-    glProgramUniform3iv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::ivec4 v) {
-    glProgramUniform4iv(m_program_id, find_uniform_location(name), 1, glm::value_ptr(v));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name,
-                                         std::vector<glm::vec2> v) {
-    glProgramUniform2fv(m_program_id, find_uniform_location(name),
-                        static_cast<GLsizei>(v.size()), glm::value_ptr(v.data()[0]));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name,
-                                         std::vector<glm::vec3> v) {
-    glProgramUniform3fv(m_program_id, find_uniform_location(name),
-                        static_cast<GLsizei>(v.size()), glm::value_ptr(v.data()[0]));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name,
-                                         std::vector<glm::vec4> v) {
-    glProgramUniform4fv(m_program_id, find_uniform_location(name),
-                        static_cast<GLsizei>(v.size()), glm::value_ptr(v.data()[0]));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::mat2 m) {
-    glProgramUniformMatrix2fv(m_program_id, find_uniform_location(name), 1,
-                              GL_FALSE, glm::value_ptr(m));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::mat3 m) {
-    glProgramUniformMatrix3fv(m_program_id, find_uniform_location(name), 1,
-                              GL_FALSE, glm::value_ptr(m));
-}
-
-void vup::Shader_program::update_uniform(const GLchar* name, glm::mat4 m) {
-    glProgramUniformMatrix4fv(m_program_id, find_uniform_location(name), 1,
-                              GL_FALSE, glm::value_ptr(m));
-}
-
-GLint vup::Shader_program::find_uniform_location(const GLchar* name) {
-    GLint loc = glGetUniformLocation(m_program_id, name);
-    if (loc == -1) {
-        std::cout << "Uniform not found.\n";
+void vup::Shader_program::analyze_uniforms() {
+    GLint uniform_count = 0;
+    glGetProgramInterfaceiv(m_program_id, GL_UNIFORM, GL_ACTIVE_RESOURCES, &uniform_count);
+    std::array<GLenum, 4> properties{GL_BLOCK_INDEX, GL_TYPE, GL_NAME_LENGTH, GL_LOCATION};
+    for (unsigned int i = 0; i < uniform_count; i++) {
+        std::array<GLint, 4> info{};
+        glGetProgramResourceiv(m_program_id, GL_UNIFORM, i, 4, properties.data(), 4, nullptr, info.data());
+        if (info.at(0) != -1) {
+            continue; // skip block uniforms
+        }
+        std::vector<char> name_data(static_cast<unsigned long>(info.at(2)));
+        glGetProgramResourceName(m_program_id, GL_UNIFORM, i, static_cast<GLsizei>(name_data.size()),
+                                 nullptr, name_data.data());
+        std::string name(name_data.begin(), name_data.end()-1);
+        add_uniform(name, info.at(1), info.at(3));
     }
-    return loc;
+}
+
+void vup::Shader_program::add_uniform(const std::string& name, GLint type,
+                                      GLint location) {
+    switch (type) {
+        case GL_BOOL:
+        case GL_INT:
+        case GL_SAMPLER_1D:
+        case GL_SAMPLER_2D:
+        case GL_SAMPLER_3D:
+        case GL_SAMPLER_CUBE:
+            m_int_uniforms.emplace(name, location);
+            break;
+        case GL_INT_VEC2:
+            m_ivec2_uniforms.emplace(name, location);
+            break;
+        case GL_INT_VEC3:
+            m_ivec3_uniforms.emplace(name, location);
+            break;
+        case GL_INT_VEC4:
+            m_ivec4_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT:
+            m_float_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_VEC2:
+            m_vec2_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_VEC3:
+            m_vec3_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_VEC4:
+            m_vec4_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_MAT2:
+            m_mat2_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_MAT3:
+            m_mat3_uniforms.emplace(name, location);
+            break;
+        case GL_FLOAT_MAT4:
+            m_mat4_uniforms.emplace(name, location);
+            break;
+        default:
+            std::cout << "Uniform type unknown: " << type << std::endl;
+            break;
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, bool v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_int_uniforms)) {
+        m_int_uniforms.at(name).update({static_cast<const int>(v)});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, int v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_int_uniforms)) {
+        m_int_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, float v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_float_uniforms)) {
+        m_float_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, double v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_float_uniforms)) {
+        m_float_uniforms.at(name).update({static_cast<float>(v)});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::vec2 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec2_uniforms)) {
+        m_vec2_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::vec3 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec3_uniforms)) {
+        m_vec3_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::vec4 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec4_uniforms)) {
+        m_vec4_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::ivec2 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_ivec2_uniforms)) {
+        m_ivec2_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::ivec3 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_ivec3_uniforms)) {
+        m_ivec3_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::ivec4 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_ivec4_uniforms)) {
+        m_ivec4_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, std::vector<glm::vec2> v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec2_uniforms)) {
+        m_vec2_uniforms.at(name).update(v);
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, std::vector<glm::vec3> v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec3_uniforms)) {
+        m_vec3_uniforms.at(name).update(v);
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, std::vector<glm::vec4> v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_vec4_uniforms)) {
+        m_vec4_uniforms.at(name).update(v);
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::mat2 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_mat2_uniforms)) {
+        m_mat2_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::mat3 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_mat3_uniforms)) {
+        m_mat3_uniforms.at(name).update({v});
+    }
+}
+
+void vup::Shader_program::update_uniform(const std::string& name, glm::mat4 v) {
+    glUseProgram(m_program_id);
+    if (find_uniform_location(name, m_mat4_uniforms)) {
+        m_mat4_uniforms.at(name).update({v});
+    }
 }

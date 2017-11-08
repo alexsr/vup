@@ -16,7 +16,7 @@ namespace vup
     public:
         V_F_shader_program(const std::shared_ptr<vup::Vertex_shader>& vertex,
                            const std::shared_ptr<vup::Fragment_shader>& fragment);
-        void reload() const override;
+        void reload() override;
     protected:
         void attach_shaders() const override;
         void detach_shaders() const override;

@@ -13,14 +13,16 @@ vup::V_F_shader_program::V_F_shader_program(const std::shared_ptr<vup::Vertex_sh
     attach_shaders();
     link_program();
     detach_shaders();
+    analyze_uniforms();
 }
 
-void vup::V_F_shader_program::reload() const {
+void vup::V_F_shader_program::reload() {
     m_vertex->reload();
     m_fragment->reload();
     attach_shaders();
     link_program();
     detach_shaders();
+    analyze_uniforms();
 }
 
 void vup::V_F_shader_program::attach_shaders() const {

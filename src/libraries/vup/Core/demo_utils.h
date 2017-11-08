@@ -22,27 +22,29 @@ namespace vup
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
     }
-
     inline void init_GLEW() {
         GLenum glew_error = glewInit();
         if (GLEW_OK != glew_error) {
             throw std::runtime_error{"Failed to initialize GLEW."};
         }
     }
-
-    inline void set_viewport(int width, int height) {
-        glViewport(0, 0, width, height);
+    inline void print_context_info() {
+        GLint major;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        GLint minor;
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        std::cout << "OpenGL Version: " << major << "." << minor << "\n";
+        std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+        std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
+        std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
     }
-
     inline void init_demo_OpenGL_params() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
-
     inline void clear_buffers() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-
     inline std::vector<float> generate_random_data(int n, float lower_boundary,
                                                    float upper_boundary) {
         std::random_device rd;

@@ -21,37 +21,37 @@ namespace vup
         const std::string get_path() const;
         void reload() const;
     protected:
-        Shader(const std::string& path, GLenum type);
+        Shader(const filesystem::path& path, GLenum type);
         ~Shader();
-        void load_shader(const std::string& path) const;
-        std::string m_path;
+        void load_shader(const filesystem::path& path) const;
+        filesystem::path m_path;
         GLenum m_type = 0;
         GLuint m_shader_id;
     };
 
     class Vertex_shader : public vup::Shader {
     public:
-        explicit Vertex_shader(const std::string& path);
+        explicit Vertex_shader(const filesystem::path& path);
     };
 
     class Control_shader : public vup::Shader {
     public:
-        explicit Control_shader(const std::string& path);
+        explicit Control_shader(const filesystem::path& path);
     };
 
     class Evaluation_shader : public vup::Shader {
     public:
-        explicit Evaluation_shader(const std::string& path);
+        explicit Evaluation_shader(const filesystem::path& path);
     };
 
     class Geometry_shader : public vup::Shader {
     public:
-        explicit Geometry_shader(const std::string& path);
+        explicit Geometry_shader(const filesystem::path& path);
     };
 
     class Fragment_shader : public vup::Shader {
     public:
-        explicit Fragment_shader(const std::string& path);
+        explicit Fragment_shader(const filesystem::path& path);
     };
 }
 

@@ -7,16 +7,16 @@
 
 #include "File_loader.h"
 
-vup::File_loader::File_loader(const std::string& path, std::ios_base::openmode mode) {
+vup::File_loader::File_loader(const filesystem::path& path, std::ios_base::openmode mode) {
     load(path, mode);
 }
 
-void vup::File_loader::load(const std::string& path, std::ios_base::openmode mode) {
+void vup::File_loader::load(const filesystem::path& path, std::ios_base::openmode mode) {
     std::ifstream in;
     in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     in.open(path, std::ios::ate | mode);
     if (!in.is_open()) {
-        throw std::runtime_error{"Error loading file from " + path};
+        throw std::runtime_error{"Error loading file from " + path.string()};
     }
     m_source.resize(static_cast<unsigned long>(in.tellg()));
     in.seekg(0, std::ios::beg);

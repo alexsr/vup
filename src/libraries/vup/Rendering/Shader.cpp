@@ -7,7 +7,7 @@
 
 #include "Shader.h"
 
-vup::Shader::Shader(const std::string& path, GLenum type) : m_path(path), m_type(type) {
+vup::Shader::Shader(const filesystem::path& path, GLenum type) : m_path(path), m_type(type) {
 }
 
 vup::Shader::~Shader() {
@@ -26,7 +26,7 @@ void vup::Shader::reload() const {
     load_shader(m_path);
 }
 
-void vup::Shader::load_shader(const std::string& path) const {
+void vup::Shader::load_shader(const filesystem::path& path) const {
     vup::File_loader f(path);
     const GLchar* source = f.get_source_view().data();
     auto size = static_cast<GLint>(f.get_size());
@@ -39,38 +39,38 @@ void vup::Shader::load_shader(const std::string& path) const {
         glGetShaderiv(m_shader_id, GL_INFO_LOG_LENGTH, &log_size);
         std::string error_log;
         error_log.resize(static_cast<unsigned long>(log_size));
-        glGetShaderInfoLog(m_shader_id, log_size, &log_size, &error_log[0]);
+        glGetShaderInfoLog(m_shader_id, log_size, &log_size, error_log.data());
         glDeleteShader(m_shader_id);
         throw std::runtime_error{"Error while compiling "
                                  + vup::shader_type_to_string(m_type) + ".\n"
-                                 + "Path: " + m_path + "\n"
+                                 + "Path: " + m_path.string() + "\n"
                                  + "Error log: \n"
                                  + error_log};
     }
 }
 
-vup::Vertex_shader::Vertex_shader(const std::string& path) : vup::Shader(path, GL_VERTEX_SHADER) {
+vup::Vertex_shader::Vertex_shader(const filesystem::path& path) : vup::Shader(path, GL_VERTEX_SHADER) {
     m_shader_id = glCreateShader(m_type);
     load_shader(m_path);
 }
 
-vup::Control_shader::Control_shader(const std::string& path) : vup::Shader(path, GL_TESS_CONTROL_SHADER) {
+vup::Control_shader::Control_shader(const filesystem::path& path) : vup::Shader(path, GL_TESS_CONTROL_SHADER) {
     m_shader_id = glCreateShader(m_type);
     load_shader(m_path);
 }
 
-vup::Evaluation_shader::Evaluation_shader(const std::string& path)
+vup::Evaluation_shader::Evaluation_shader(const filesystem::path& path)
         : vup::Shader(path, GL_TESS_EVALUATION_SHADER) {
     m_shader_id = glCreateShader(m_type);
     load_shader(m_path);
 }
 
-vup::Geometry_shader::Geometry_shader(const std::string& path) : vup::Shader(path, GL_GEOMETRY_SHADER) {
+vup::Geometry_shader::Geometry_shader(const filesystem::path& path) : vup::Shader(path, GL_GEOMETRY_SHADER) {
     m_shader_id = glCreateShader(m_type);
     load_shader(m_path);
 }
 
-vup::Fragment_shader::Fragment_shader(const std::string& path) : vup::Shader(path, GL_FRAGMENT_SHADER) {
+vup::Fragment_shader::Fragment_shader(const filesystem::path& path) : vup::Shader(path, GL_FRAGMENT_SHADER) {
     m_shader_id = glCreateShader(m_type);
     load_shader(m_path);
 }

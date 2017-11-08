@@ -12,15 +12,21 @@ vup::File_loader::File_loader(const filesystem::path& path, std::ios_base::openm
 }
 
 void vup::File_loader::load(const filesystem::path& path, std::ios_base::openmode mode) {
+    if (!filesystem::exists(path)) {
+        throw std::runtime_error{"File at " + path.string() + " not found."};
+    }
+    if (filesystem::is_empty(path)) {
+        throw std::runtime_error{"File at " + path.string() + " is empty."};
+    }
+    auto size = filesystem::file_size(path);
     std::ifstream in;
     in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    in.open(path, std::ios::ate | mode);
+    in.open(path, mode);
     if (!in.is_open()) {
         throw std::runtime_error{"Error loading file from " + path.string()};
     }
-    m_source.resize(static_cast<unsigned long>(in.tellg()));
-    in.seekg(0, std::ios::beg);
-    in.read(&m_source[0], m_source.size());
+    m_source.resize(static_cast<unsigned long>(size));
+    in.read(m_source.data(), m_source.size());
     in.close();
 }
 

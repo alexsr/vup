@@ -28,6 +28,7 @@ int main() {
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
     vup::Instanced_VAO vao(vup::Quad(1.0f), {offset, color});
     bool allow_reset = true;
+    minimal.update_uniform("model", glm::mat4(1.0f));
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();

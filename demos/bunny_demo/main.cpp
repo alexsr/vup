@@ -26,10 +26,12 @@ int main() {
     vup::Mesh_loader bunny(RESOURCES_PATH "/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));
     vup::OpenGL_debug_logger gl_debug_logger;
+    glm::mat4 model(1.0f);
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
         cam.update(window.get_GLFWwindow(), 0.01f);
+        minimal.update_uniform("model", model);
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLES);

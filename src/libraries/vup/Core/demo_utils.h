@@ -9,10 +9,12 @@
 #define VUP_DEMO_UTILS_H
 
 #include "vup/Core/vup.h"
+#include "Window.h"
 #include <stdexcept>
 #include <iostream>
 #include <vector>
 #include <random>
+#include <functional>
 
 namespace vup
 {
@@ -55,6 +57,26 @@ namespace vup
             r = dis(gen);
         }
         return result;
+    }
+    inline void run_main_loop_fixed(float dt, Window w, std::function<void(float)> loop) {
+        while (!w.should_close()) {
+            vup::clear_buffers();
+            loop(dt);
+            w.swap_buffer();
+            glfwPollEvents();
+        }
+    }
+    inline void run_main_loop_accumulated(float dt, Window w, std::function<void(float)> loop) {
+        while (!w.should_close()) {
+            vup::clear_buffers();
+            loop(dt);
+            w.swap_buffer();
+            glfwPollEvents();
+        }
+    }
+    inline void run_main_loop(float dt, Window w, std::function<void(float)> loop) {
+        run_main_loop_accumulated(dt, std::forward<Window>(w),
+                                  std::forward<std::function<void(float)>>(loop));
     }
 }
 

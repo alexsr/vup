@@ -15,7 +15,6 @@
 int main() {
     vup::init_GLFW();
     vup::Window window(800, 600, "Initial instanced rendering demo", true);
-    vup::init_GLEW();
     vup::Trackball_camera cam(800, 600);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
@@ -35,7 +34,7 @@ int main() {
         vao.render(GL_TRIANGLES);
         gl_debug_logger.retrieve_log(std::cout);
     };
-    run_main_loop_fixed(0.01f, window, loop);
+    window.run_loop_fixed(0.01f, loop);
     glfwTerminate();
     return 0;
 }

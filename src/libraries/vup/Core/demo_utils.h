@@ -22,12 +22,6 @@ namespace vup
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
     }
-    inline void init_GLEW() {
-        GLenum glew_error = glewInit();
-        if (GLEW_OK != glew_error) {
-            throw std::runtime_error{"Failed to initialize GLEW."};
-        }
-    }
     inline void print_context_info() {
         GLint major;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -42,9 +36,6 @@ namespace vup
         glEnable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
-    inline void clear_buffers() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
     inline std::vector<float> generate_random_data(int n, float lower_boundary,
                                                    float upper_boundary) {
         std::random_device rd;
@@ -55,26 +46,6 @@ namespace vup
             r = dis(gen);
         }
         return result;
-    }
-    inline void run_main_loop_fixed(float dt, Window w, std::function<void(float)> loop) {
-        while (!w.should_close()) {
-            vup::clear_buffers();
-            loop(dt);
-            w.swap_buffer();
-            glfwPollEvents();
-        }
-    }
-    inline void run_main_loop_accumulated(float dt, Window w, std::function<void(float)> loop) {
-        while (!w.should_close()) {
-            vup::clear_buffers();
-            loop(dt);
-            w.swap_buffer();
-            glfwPollEvents();
-        }
-    }
-    inline void run_main_loop(float dt, Window w, std::function<void(float)> loop) {
-        run_main_loop_accumulated(dt, std::forward<Window>(w),
-                                  std::forward<std::function<void(float)>>(loop));
     }
 }
 

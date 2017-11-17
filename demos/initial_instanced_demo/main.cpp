@@ -14,7 +14,6 @@ int main() {
     vup::init_GLFW();
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
-    vup::init_GLEW();
     vup::init_demo_OpenGL_params();
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_instanced.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal_instanced.frag"));

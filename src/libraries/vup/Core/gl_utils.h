@@ -9,10 +9,19 @@
 #define VUP_GL_UTILS_H
 
 #include "vup.h"
-#include <string>
+#include <stdexcept>
 
 namespace vup
 {
+    inline void init_GLEW() {
+        GLenum glew_error = glewInit();
+        if (GLEW_OK != glew_error) {
+            throw std::runtime_error{"Failed to initialize GLEW."};
+        }
+    }
+    inline void clear_buffers() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
     inline std::string shader_type_to_string(GLenum type) {
         switch (type) {
             case GL_VERTEX_SHADER:

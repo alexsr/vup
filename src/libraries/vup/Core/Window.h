@@ -9,7 +9,9 @@
 #define VUP_WINDOW_H
 
 #include "vup.h"
+#include "gl_utils.h"
 #include <stdexcept>
+#include <functional>
 
 namespace vup
 {
@@ -21,8 +23,13 @@ namespace vup
         void make_current();
         bool should_close();
         void swap_buffer();
+        void run_loop_fixed(float dt, std::function<void(float)> loop);
+        void step_loop_fixed(float dt, std::function<void(float)> loop);
+        int get_id();
         GLFWwindow* get();
     private:
+        static int next_id;
+        int m_id;
         GLFWwindow* m_window;
         int m_width;
         int m_height;

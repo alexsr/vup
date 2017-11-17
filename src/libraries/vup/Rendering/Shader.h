@@ -8,10 +8,9 @@
 #ifndef VUP_SHADER_H
 #define VUP_SHADER_H
 
+#include <vup/Core/gl_utils.h>
+#include <vup/Utility/File_loader.h>
 #include <string>
-#include <vector>
-#include "vup/Core/gl_utils.h"
-#include "vup/Utility/File_loader.h"
 
 namespace vup
 {

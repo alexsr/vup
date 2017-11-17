@@ -8,7 +8,7 @@
 #ifndef VUP_BUFFER_H
 #define VUP_BUFFER_H
 
-#include "vup/Core/gl_utils.h"
+#include <vup/Core/vup.h>
 #include <vector>
 #include <cstring>
 
@@ -48,7 +48,7 @@ template<typename T>
 void vup::Buffer::update_data(const std::vector<T>& data) {
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
                                                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-    memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
+    std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
     glUnmapNamedBuffer(m_name);
 }
 

@@ -5,7 +5,6 @@
 // https://github.com/alexsr
 //
 
-#include <iostream>
 #include "Shader_program.h"
 
 vup::Shader_program::Shader_program() {

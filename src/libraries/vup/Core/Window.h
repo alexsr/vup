@@ -8,9 +8,8 @@
 #ifndef VUP_WINDOW_H
 #define VUP_WINDOW_H
 
-#include <string>
-#include <stdexcept>
 #include "vup.h"
+#include <stdexcept>
 
 namespace vup
 {

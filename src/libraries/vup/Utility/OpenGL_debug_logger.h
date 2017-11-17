@@ -8,9 +8,10 @@
 #ifndef VUP_OPENGL_DEBUG_LOGGER_H
 #define VUP_OPENGL_DEBUG_LOGGER_H
 
-#include <iostream>
+#include <vup/Core/gl_utils.h>
 #include <memory>
-#include "vup/Core/gl_utils.h"
+#include <vector>
+#include <iostream>
 
 namespace vup
 {

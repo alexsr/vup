@@ -8,8 +8,8 @@
 #ifndef VUP_GEOMETRIC_PRIMITIVES_H
 #define VUP_GEOMETRIC_PRIMITIVES_H
 
+#include <vup/Core/vup.h>
 #include <vector>
-#include "vup/Core/vup.h"
 
 namespace vup
 {

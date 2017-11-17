@@ -5,7 +5,6 @@
 // https://github.com/alexsr
 //
 
-#include "vup/Geometry/Geometric_primitives.h"
 #include "Base_VAO.h"
 
 vup::Base_VAO::Base_VAO(const vup::VBO& main_vbo,

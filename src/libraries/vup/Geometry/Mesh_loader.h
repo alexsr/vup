@@ -8,17 +8,17 @@
 #ifndef VUP_MESH_LOADER_H
 #define VUP_MESH_LOADER_H
 
-#include <string_view>
-#include <stdexcept>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include "Mesh.h"
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <stdexcept>
+#include <string_view>
 
 namespace vup
 {
     class Mesh_loader {
     public:
-        Mesh_loader(std::string_view path);
+        explicit Mesh_loader(std::string_view path);
         const std::vector<Mesh>& get_meshes();
         Mesh get_mesh(unsigned long i);
     private:

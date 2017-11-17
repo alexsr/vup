@@ -8,10 +8,11 @@
 #ifndef VUP_SHADER_PROGRAM_H
 #define VUP_SHADER_PROGRAM_H
 
-#include <memory>
+#include <vup/Rendering/Shader.h>
+#include <vup/GPU_Storage/Uniform.h>
 #include <map>
-#include "vup/Rendering/Shader.h"
-#include "vup/GPU_Storage/Uniform.h"
+#include <memory>
+#include <iostream>
 
 namespace vup
 {

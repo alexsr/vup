@@ -8,7 +8,6 @@
 #ifndef VUP_FILE_LOADER_H
 #define VUP_FILE_LOADER_H
 
-#include <string>
 #include <fstream>
 #include <string_view>
 #include <experimental/filesystem>

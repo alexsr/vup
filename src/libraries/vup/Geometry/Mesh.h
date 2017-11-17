@@ -8,10 +8,10 @@
 #ifndef VUP_MESH_H
 #define VUP_MESH_H
 
-#include <iostream>
-#include <assimp/mesh.h>
 #include <vup/GPU_Storage/VBO.h>
 #include <vup/GPU_Storage/Element_buffer.h>
+#include <assimp/mesh.h>
+#include <iostream>
 
 namespace vup
 {

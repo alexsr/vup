@@ -5,13 +5,10 @@
 // https://github.com/alexsr
 //
 
-#include "vup/Core/demo_utils.h"
-#include "vup/Rendering/Trackball_camera.h"
-#include <memory>
-#include <vup/Core/Window.h>
-#include "vup/Rendering/V_F_shader_program.h"
-#include "vup/Geometry/Geometric_primitives.h"
-#include "vup/GPU_Storage/VAO.h"
+#include <vup/Core/demo_utils.h>
+#include <vup/Rendering/Trackball_camera.h>
+#include <vup/Rendering/V_F_shader_program.h>
+#include <vup/GPU_Storage/VAO.h>
 
 int main() {
     vup::init_GLFW();

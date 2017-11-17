@@ -8,9 +8,9 @@
 #ifndef VUP_UNIFORM_H
 #define VUP_UNIFORM_H
 
-#include <vector>
-#include "vup/Core/vup.h"
+#include <vup/Core/vup.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
 
 namespace vup
 {

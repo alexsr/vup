@@ -8,11 +8,9 @@
 #ifndef VUP_DEMO_UTILS_H
 #define VUP_DEMO_UTILS_H
 
-#include "vup/Core/vup.h"
+#include "vup.h"
 #include "Window.h"
-#include <stdexcept>
 #include <iostream>
-#include <vector>
 #include <random>
 #include <functional>
 

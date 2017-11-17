@@ -8,10 +8,10 @@
 #ifndef VUP_TRACKBALL_CAMERA_H
 #define VUP_TRACKBALL_CAMERA_H
 
-#include <vup/Core/Window.h>
 #include <vup/Core/vup.h>
-#include <iostream>
+#include <vup/Core/Window.h>
 #include <array>
+#include <iostream>
 
 namespace vup
 {

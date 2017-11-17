@@ -8,11 +8,10 @@
 #ifndef VUP_BASE_VAO_H
 #define VUP_BASE_VAO_H
 
-#include <initializer_list>
-#include <memory>
 #include <vup/Geometry/Mesh.h>
-#include "VBO.h"
-#include "vup/Geometry/Geometric_primitives.h"
+#include <vup/Geometry/Geometric_primitives.h>
+#include <memory>
+#include <initializer_list>
 
 namespace vup
 {

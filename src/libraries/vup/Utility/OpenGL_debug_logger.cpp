@@ -5,7 +5,6 @@
 // https://github.com/alexsr
 //
 
-#include <vector>
 #include "OpenGL_debug_logger.h"
 
 vup::OpenGL_debug_logger::OpenGL_debug_logger(GLenum source, GLenum type,

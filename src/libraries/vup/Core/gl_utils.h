@@ -8,7 +8,7 @@
 #ifndef VUP_GL_UTILS_H
 #define VUP_GL_UTILS_H
 
-#include "vup/Core/vup.h"
+#include "vup.h"
 #include <string>
 
 namespace vup

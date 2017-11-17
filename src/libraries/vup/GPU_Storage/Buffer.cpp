@@ -9,7 +9,7 @@
 
 vup::Buffer::Buffer(GLenum target, GLbitfield flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    m_dynamically_updatable = static_cast<bool>(flags & GL_DYNAMIC_STORAGE_BIT);
+    m_dynamically_updatable = static_cast<bool>(m_storage_flags & GL_DYNAMIC_STORAGE_BIT);
 }
 
 GLuint vup::Buffer::get_name() const {

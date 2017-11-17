@@ -19,8 +19,7 @@ namespace vup
         explicit Element_buffer(GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         explicit Element_buffer(const std::vector<unsigned int>& indices,
                                 GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
-        void set_data(const std::vector<unsigned int> &data);
-        void set_data(const std::vector<unsigned int> &data, GLbitfield flags);
+        void set_data(const std::vector<unsigned int>& data);
         unsigned int get_count() const;
     private:
         unsigned int m_count;

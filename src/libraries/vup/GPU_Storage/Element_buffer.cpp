@@ -22,12 +22,6 @@ void vup::Element_buffer::set_data(const std::vector<unsigned int>& data) {
     m_count = static_cast<int>(data.size());
 }
 
-void vup::Element_buffer::set_data(const std::vector<unsigned int>& data,
-                                   GLbitfield flags) {
-    Buffer::set_data(data, flags);
-    m_count = static_cast<int>(data.size());
-}
-
 unsigned int vup::Element_buffer::get_count() const {
     return m_count;
 }

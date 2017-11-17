@@ -11,6 +11,7 @@
 #include <vup/Core/vup.h>
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 namespace vup
 {
@@ -21,27 +22,30 @@ namespace vup
         template <typename T>
         void set_data(const std::vector<T> &data);
         template <typename T>
-        void set_data(const std::vector<T> &data, GLenum draw_usage);
+        void set_data(const std::vector<T> &data, GLbitfield flags);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
         void bind();
         void unbind();
     protected:
-        explicit Buffer(GLenum target, GLenum draw_usage = GL_STATIC_DRAW);
+        explicit Buffer(GLenum target, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         template <typename T>
-        explicit Buffer(GLenum target, const std::vector<T> &data, GLenum draw_usage = GL_STATIC_DRAW);
+        explicit Buffer(GLenum target, const std::vector<T> &data, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         GLuint m_name = 0;
-        GLenum m_draw_usage = GL_STATIC_DRAW;
+        GLenum m_storage_flags;
         GLenum m_target = 0;
+        bool m_dynamically_updatable = false;
         unsigned int m_buffer_size = 0;
     };
 }
 
 template<typename T>
-vup::Buffer::Buffer(GLenum target, const std::vector<T> &data, GLenum draw_usage)
-        : m_target(target), m_draw_usage(draw_usage) {
+vup::Buffer::Buffer(GLenum target, const std::vector<T> &data, GLbitfield flags)
+        : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    set_data(data);
+    m_buffer_size = sizeof(T) * data.size();
+    glNamedBufferStorage(m_name, m_buffer_size, data.data(), m_storage_flags);
+    m_dynamically_updatable = static_cast<bool>(flags & GL_DYNAMIC_STORAGE_BIT);
 }
 
 template<typename T>
@@ -54,13 +58,15 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
 
 template<typename T>
 void vup::Buffer::set_data(const std::vector<T>& data) {
-    m_buffer_size = sizeof(T) * data.size();
-    glNamedBufferData(m_name, m_buffer_size, data.data(), m_draw_usage);
+    if (!m_dynamically_updatable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
+    }
+    glNamedBufferSubData(m_name, 0, m_buffer_size, data.data());
 }
 
 template<typename T>
-void vup::Buffer::set_data(const std::vector<T>& data, GLenum draw_usage) {
-    m_draw_usage = draw_usage;
+void vup::Buffer::set_data(const std::vector<T>& data, GLbitfield flags) {
+    m_storage_flags = flags;
     set_data(data);
 }
 

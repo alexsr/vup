@@ -7,8 +7,9 @@
 
 #include "Buffer.h"
 
-vup::Buffer::Buffer(GLenum target, GLenum draw_usage) : m_target(target), m_draw_usage(draw_usage) {
+vup::Buffer::Buffer(GLenum target, GLbitfield flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
+    m_dynamically_updatable = static_cast<bool>(flags & GL_DYNAMIC_STORAGE_BIT);
 }
 
 GLuint vup::Buffer::get_name() const {

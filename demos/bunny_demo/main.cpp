@@ -11,6 +11,13 @@
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
+#include <vup/GPU_Storage/Storage_buffer.h>
+
+struct MVP {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 projection;
+};
 
 int main() {
     vup::init_GLFW();
@@ -25,6 +32,9 @@ int main() {
     vup::VAO vao(bunny.get_mesh(0));
     vup::OpenGL_debug_logger gl_debug_logger;
     glm::mat4 model(1.0f);
+    MVP mats{model, cam.get_view(), cam.get_projection()};
+    std::vector<MVP> mat_vec{mats};
+    vup::UBO(mat_vec, 0, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
     auto loop = [&minimal, &model, &cam, &vao, &window, &gl_debug_logger](float dt) {
         minimal.use();
         cam.update(window, dt);

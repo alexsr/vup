@@ -14,10 +14,11 @@ namespace vup
 {
     class VBO : public vup::Buffer {
     public:
-        explicit VBO(GLint vertex_size = 4, GLenum type = GL_FLOAT, GLenum draw_usage = GL_STATIC_DRAW);
+        explicit VBO(GLint vertex_size = 4, GLenum type = GL_FLOAT,
+                     GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         template <typename T>
-        explicit VBO(const std::vector<T>& data, GLint vertex_size = 4,
-                     GLenum format = GL_FLOAT, GLenum draw_usage = GL_STATIC_DRAW);
+        explicit VBO(const std::vector<T>& data, GLint vertex_size = 4, GLenum format = GL_FLOAT,
+                     GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         GLint get_vertex_size() const;
         GLenum get_format() const;
         int get_format_size() const;

@@ -7,8 +7,8 @@
 
 #include "VBO.h"
 
-vup::VBO::VBO(GLint vertex_size, GLenum format, GLenum draw_usage)
-        : Buffer(GL_ARRAY_BUFFER, draw_usage), m_vertex_size(vertex_size),
+vup::VBO::VBO(GLint vertex_size, GLenum format, GLbitfield flags)
+        : Buffer(GL_ARRAY_BUFFER, flags), m_vertex_size(vertex_size),
           m_format(format) {
     m_format_size = determine_format_size();
     m_stride = m_format_size * m_vertex_size;

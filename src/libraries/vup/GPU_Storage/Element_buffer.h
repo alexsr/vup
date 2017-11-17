@@ -16,11 +16,11 @@ namespace vup
 {
     class Element_buffer : public vup::Buffer {
     public:
-        explicit Element_buffer(GLenum draw_usage = GL_STATIC_DRAW);
+        explicit Element_buffer(GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         explicit Element_buffer(const std::vector<unsigned int>& indices,
-                                GLenum draw_usage = GL_STATIC_DRAW);
+                                GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         void set_data(const std::vector<unsigned int> &data);
-        void set_data(const std::vector<unsigned int> &data, GLenum draw_usage);
+        void set_data(const std::vector<unsigned int> &data, GLbitfield flags);
         unsigned int get_count() const;
     private:
         unsigned int m_count;

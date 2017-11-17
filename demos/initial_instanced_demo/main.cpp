@@ -8,7 +8,6 @@
 #include "vup/Core/demo_utils.h"
 #include "vup/Rendering/Trackball_camera.h"
 #include <memory>
-#include <vup/Core/Window.h>
 #include "vup/Rendering/V_F_shader_program.h"
 #include "vup/Geometry/Geometric_primitives.h"
 #include "vup/GPU_Storage/Instanced_VAO.h"
@@ -32,7 +31,7 @@ int main() {
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
-        cam.update(window.get_GLFWwindow(), 0.01f);
+        cam.update(window, 0.01f);
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLE_STRIP, instances);

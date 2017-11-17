@@ -8,7 +8,8 @@
 #ifndef VUP_TRACKBALL_CAMERA_H
 #define VUP_TRACKBALL_CAMERA_H
 
-#include "vup/Core/vup.h"
+#include <vup/Core/Window.h>
+#include <vup/Core/vup.h>
 #include <iostream>
 #include <array>
 
@@ -44,7 +45,7 @@ namespace vup
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls
         // * float dt - delta time between camera updates
-        void update(GLFWwindow* window, float dt);
+        void update(Window window, float dt);
         void resize();
 
     private:
@@ -65,7 +66,7 @@ namespace vup
         int m_height;
 
         void update_view();
-        void move_camera(GLFWwindow* window, float dt);
+        void move_camera(Window window, float dt);
     };
 
 

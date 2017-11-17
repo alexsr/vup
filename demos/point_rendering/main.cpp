@@ -9,7 +9,6 @@
 #include "vup/Rendering/Trackball_camera.h"
 #include <memory>
 #include <vup/GPU_Storage/VAO.h>
-#include <vup/Core/Window.h>
 #include "vup/Rendering/V_F_shader_program.h"
 
 int main() {
@@ -31,7 +30,7 @@ int main() {
     while (window.should_close()) {
         vup::clear_buffers();
         minimal.use();
-        cam.update(window.get_GLFWwindow(), 0.01f);
+        cam.update(window, 0.01f);
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_POINTS);

@@ -29,10 +29,10 @@ glm::mat4 vup::Trackball_camera::get_projection() const {
     return m_projection;
 }
 
-void vup::Trackball_camera::update(GLFWwindow* window, float dt) {
+void vup::Trackball_camera::update(vup::Window window, float dt) {
     double x, y;
-    glfwGetCursorPos(window, &x, &y);
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    glfwGetCursorPos(window.get(), &x, &y);
+    if (glfwGetMouseButton(window.get(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         double changeX = (x - m_x) * m_sens * dt;
         double changeY = (y - m_y) * m_sens * dt;
         m_theta -= changeY;
@@ -78,11 +78,11 @@ void vup::Trackball_camera::update_view() {
     m_view = glm::lookAt(eye, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void vup::Trackball_camera::move_camera(GLFWwindow* window, float dt) {
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+void vup::Trackball_camera::move_camera(Window window, float dt) {
+    if (glfwGetKey(window.get(), GLFW_KEY_UP) == GLFW_PRESS) {
         m_radius -= m_zoom_sens * dt;
     }
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    else if (glfwGetKey(window.get(), GLFW_KEY_DOWN) == GLFW_PRESS) {
         m_radius += m_zoom_sens * dt;
     }
     if (m_radius < 0.1f) {

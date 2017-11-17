@@ -26,7 +26,7 @@ int main() {
     vup::VBO color(vup::generate_random_data(instances * 3, 0, 1), 3);
     vup::VAO vao(positions, {color});
     bool allow_reset = true;
-    while (window.should_close()) {
+    while (!window.should_close()) {
         vup::clear_buffers();
         minimal.use();
         cam.update(window, 0.01f);

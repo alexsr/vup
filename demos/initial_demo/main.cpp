@@ -24,7 +24,7 @@ int main() {
     vup::VBO normals(q.normals, 3);
     vup::VBO uv_coords(q.uv_coords, 2);
     vup::VAO vao(vertices, {normals, uv_coords});
-    while (window.should_close()) {
+    while (!window.should_close()) {
         vup::clear_buffers();
         minimal.use();
         vao.render(GL_TRIANGLE_STRIP);

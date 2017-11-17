@@ -26,7 +26,7 @@ int main() {
     vup::Instanced_VAO vao(vup::Quad(1.0f), {offset, color});
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
-    while (window.should_close()) {
+    while (!window.should_close()) {
         vup::clear_buffers();
         minimal.use();
         cam.update(window, 0.01f);

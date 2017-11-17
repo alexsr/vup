@@ -22,7 +22,7 @@ namespace vup
         void make_current();
         bool should_close();
         void swap_buffer();
-        GLFWwindow* get_GLFWwindow();
+        GLFWwindow* get();
     private:
         GLFWwindow* m_window;
         int m_width;

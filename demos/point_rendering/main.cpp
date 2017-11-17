@@ -35,12 +35,12 @@ int main() {
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_POINTS);
-        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
+        if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
             positions.update_data(vup::generate_random_data(instances * 3, -1, 1));
             color.update_data(vup::generate_random_data(instances * 3, 0, 1));
             allow_reset = false;
         }
-        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_RELEASE) {
+        if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {
             allow_reset = true;
         }
         window.swap_buffer();

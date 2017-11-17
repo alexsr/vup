@@ -36,12 +36,12 @@ int main() {
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLE_STRIP, instances);
-        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
+        if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
             offset.update_data(vup::generate_random_data(instances * 2, -1.0f, 1.0f));
             color.update_data(vup::generate_random_data(instances * 3, 0.0f, 1.0f));
             allow_reset = false;
         }
-        if (glfwGetKey(window.get_GLFWwindow(), GLFW_KEY_X) == GLFW_RELEASE) {
+        if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {
             allow_reset = true;
         }
         window.swap_buffer();

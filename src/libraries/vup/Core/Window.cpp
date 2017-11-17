@@ -41,6 +41,6 @@ void vup::Window::swap_buffer() {
     glfwSwapBuffers(m_window);
 }
 
-GLFWwindow* vup::Window::get_GLFWwindow() {
+GLFWwindow* vup::Window::get() {
     return m_window;
 }

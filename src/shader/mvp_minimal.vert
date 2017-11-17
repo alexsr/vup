@@ -8,9 +8,9 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
-out vec4 pass_color;
+out vec3 pass_normal;
 
 void main() {
-    pass_color = vec4(uv, 0, 1);
+    pass_normal = vec3(transpose(inverse(view * model)) * vec4(normal, 0));
 	gl_Position = proj * view * model * position;
 }

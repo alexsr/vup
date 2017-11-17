@@ -20,7 +20,7 @@ int main() {
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_minimal.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/uv_test.frag"));
+    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
     vup::Mesh_loader bunny(RESOURCES_PATH "/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));

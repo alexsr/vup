@@ -34,7 +34,7 @@ void vup::Window::make_current() {
 }
 
 bool vup::Window::should_close() {
-    return glfwWindowShouldClose(m_window) == 0;
+    return glfwWindowShouldClose(m_window) == 1;
 }
 
 void vup::Window::swap_buffer() {

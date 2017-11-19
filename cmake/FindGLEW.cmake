@@ -6,7 +6,7 @@ find_path(GLEW_INCLUDE_PATH
     PATH_SUFFIXES include)
 
 find_library(GLEW_LIBRARIES
-    NAMES glew glew32s glew32sd
+    NAMES libGLEW.a glew glew32s.lib glew32sd.lib
     PATHS ${GLEW_SEARCH_PATHS}
     PATH_SUFFIXES lib)
 

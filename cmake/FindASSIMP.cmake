@@ -6,7 +6,7 @@ find_path(ASSIMP_INCLUDE_PATH
     PATH_SUFFIXES include)
 
 find_library(ASSIMP_LIBRARIES
-    NAMES assimp
+    NAMES assimp libassimp.so
     PATHS ${ASSIMP_SEARCH_PATHS}
     PATH_SUFFIXES lib)
 

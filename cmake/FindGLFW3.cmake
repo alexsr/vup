@@ -4,11 +4,17 @@ find_path(GLFW3_INCLUDE_PATH
     NAMES GLFW/glfw3.h
     PATHS ${GLFW3_SEARCH_PATHS}
     PATH_SUFFIXES include)
-find_library(GLFW3_LIBRARIES
-    NAMES glfw3
-    PATHS ${GLFW3_SEARCH_PATHS}
-    PATH_SUFFIXES lib
-)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    find_library(GLFW3_LIBRARIES
+        NAMES glfw3 glfw
+        PATH_SUFFIXES dynamic)
+else()
+    find_library(GLFW3_LIBRARIES
+        NAMES libglfw3.a glfw3
+        PATHS ${GLFW3_SEARCH_PATHS}
+        PATH_SUFFIXES lib)
+endif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
 
 set(GLFW3_FOUND "NO")
 if (GLFW3_INCLUDE_PATH AND GLFW3_LIBRARIES)

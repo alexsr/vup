@@ -11,6 +11,7 @@
 #include <vup/Core/gl_utils.h>
 #include <vup/Utility/File_loader.h>
 #include <string>
+#include <iostream>
 
 namespace vup
 {

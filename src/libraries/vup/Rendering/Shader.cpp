@@ -7,7 +7,10 @@
 
 #include "Shader.h"
 
-vup::Shader::Shader(const filesystem::path& path, GLenum type) : m_path(path), m_type(type) {
+vup::Shader::Shader(const filesystem::path& path, GLenum type)
+        : m_path(path), m_type(type) {
+    m_shader_id = glCreateShader(m_type);
+    load_shader(m_path);
 }
 
 vup::Shader::~Shader() {
@@ -27,6 +30,7 @@ void vup::Shader::reload() const {
 }
 
 void vup::Shader::load_shader(const filesystem::path& path) const {
+    std::cout << "Loading shader from file: " << path.string() << "\n";
     vup::File_loader f(path);
     const GLchar* source = f.get_source_view().data();
     auto size = static_cast<GLint>(f.get_size());
@@ -49,28 +53,22 @@ void vup::Shader::load_shader(const filesystem::path& path) const {
     }
 }
 
-vup::Vertex_shader::Vertex_shader(const filesystem::path& path) : vup::Shader(path, GL_VERTEX_SHADER) {
-    m_shader_id = glCreateShader(m_type);
-    load_shader(m_path);
+vup::Vertex_shader::Vertex_shader(const filesystem::path& path)
+        : vup::Shader(path, GL_VERTEX_SHADER) {
 }
 
-vup::Control_shader::Control_shader(const filesystem::path& path) : vup::Shader(path, GL_TESS_CONTROL_SHADER) {
-    m_shader_id = glCreateShader(m_type);
-    load_shader(m_path);
+vup::Control_shader::Control_shader(const filesystem::path& path)
+        : vup::Shader(path, GL_TESS_CONTROL_SHADER) {
 }
 
 vup::Evaluation_shader::Evaluation_shader(const filesystem::path& path)
         : vup::Shader(path, GL_TESS_EVALUATION_SHADER) {
-    m_shader_id = glCreateShader(m_type);
-    load_shader(m_path);
 }
 
-vup::Geometry_shader::Geometry_shader(const filesystem::path& path) : vup::Shader(path, GL_GEOMETRY_SHADER) {
-    m_shader_id = glCreateShader(m_type);
-    load_shader(m_path);
+vup::Geometry_shader::Geometry_shader(const filesystem::path& path)
+        : vup::Shader(path, GL_GEOMETRY_SHADER) {
 }
 
-vup::Fragment_shader::Fragment_shader(const filesystem::path& path) : vup::Shader(path, GL_FRAGMENT_SHADER) {
-    m_shader_id = glCreateShader(m_type);
-    load_shader(m_path);
+vup::Fragment_shader::Fragment_shader(const filesystem::path& path)
+        : vup::Shader(path, GL_FRAGMENT_SHADER) {
 }

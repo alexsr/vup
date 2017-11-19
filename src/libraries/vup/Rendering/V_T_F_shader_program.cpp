@@ -20,6 +20,7 @@ vup::V_T_F_shader_program::V_T_F_shader_program(
     link_program();
     detach_shaders();
     analyze_uniforms();
+    analyze_uniform_blocks();
 }
 
 void vup::V_T_F_shader_program::reload() {
@@ -31,6 +32,7 @@ void vup::V_T_F_shader_program::reload() {
     link_program();
     detach_shaders();
     analyze_uniforms();
+    analyze_uniform_blocks();
 }
 
 void vup::V_T_F_shader_program::attach_shaders() const {

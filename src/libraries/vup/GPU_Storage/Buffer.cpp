@@ -27,3 +27,11 @@ void vup::Buffer::bind() {
 void vup::Buffer::unbind() {
     glBindBuffer(m_target, 0);
 }
+
+void vup::Buffer::initialize_storage(unsigned int size, GLbitfield flags) {
+    if (size != 0) {
+        m_buffer_size = size;
+        glNamedBufferStorage(m_name, m_buffer_size, nullptr, m_storage_flags);
+        m_storage_initialized = true;
+    }
+}

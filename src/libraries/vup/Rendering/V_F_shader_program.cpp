@@ -14,6 +14,7 @@ vup::V_F_shader_program::V_F_shader_program(const std::shared_ptr<vup::Vertex_sh
     link_program();
     detach_shaders();
     analyze_uniforms();
+    analyze_uniform_blocks();
 }
 
 void vup::V_F_shader_program::reload() {
@@ -23,6 +24,7 @@ void vup::V_F_shader_program::reload() {
     link_program();
     detach_shaders();
     analyze_uniforms();
+    analyze_uniform_blocks();
 }
 
 void vup::V_F_shader_program::attach_shaders() const {

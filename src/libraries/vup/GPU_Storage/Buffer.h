@@ -36,6 +36,7 @@ namespace vup
         explicit Buffer(GLenum target, const T& data, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
         template <typename T>
         explicit Buffer(GLenum target, const std::vector<T>& data, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+        void initialize_storage(unsigned int size, GLbitfield flags);
         template <typename T>
         void initialize_storage(const T& data, GLbitfield flags);
         template <typename T>

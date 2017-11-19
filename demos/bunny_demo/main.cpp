@@ -17,7 +17,7 @@ struct MVP {
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-    void update(glm::mat4 m, glm::mat4 v, glm::mat4 p) {
+    void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
         model = m;
         view = v;
         projection = p;
@@ -36,14 +36,14 @@ int main() {
     vup::Mesh_loader bunny("../../resources/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));
     vup::OpenGL_debug_logger gl_debug_logger;
+    gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};
-    vup::UBO mvp(mats, 0, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
     auto loop = [&](float dt) {
         minimal.use();
         cam.update(window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
-        mvp.update_data(mats);
+        minimal.update_ubo("mvp", mats);
         vao.render(GL_TRIANGLES);
         gl_debug_logger.retrieve_log(std::cout);
     };

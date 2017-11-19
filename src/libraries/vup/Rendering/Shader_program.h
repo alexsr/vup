@@ -10,6 +10,7 @@
 
 #include <vup/Rendering/Shader.h>
 #include <vup/GPU_Storage/Uniform.h>
+#include <vup/GPU_Storage/Storage_buffer.h>
 #include <map>
 #include <memory>
 #include <iostream>
@@ -21,6 +22,8 @@ namespace vup
     public:
         void use() const;
         virtual void reload() = 0;
+        template <typename T>
+        void update_ubo(const std::string& name, const T& data);
         void update_uniform(const std::string& name, bool v);
         void update_uniform(const std::string& name, int v);
         void update_uniform(const std::string& name, float v);
@@ -44,12 +47,14 @@ namespace vup
         void analyze_uniforms();
         void add_uniform(const std::string& name, GLint type, GLint location);
         void analyze_uniform_blocks();
+        void add_uniform_block(const std::string& name, GLuint binding, unsigned int size);
         template <typename T>
-        bool find_uniform_location(const std::string& name,
-                                   const std::map<std::string, Uniform<T>>& m);
+        bool find_map_entry(const std::string& name,
+                            const std::map<std::string, T>& m);
         virtual void attach_shaders() const = 0;
         virtual void detach_shaders() const = 0;
         GLuint m_program_id;
+        std::map<std::string, vup::UBO> m_ubos;
         std::map<std::string, Uniform<int>> m_int_uniforms;
         std::map<std::string, Uniform<glm::ivec2>> m_ivec2_uniforms;
         std::map<std::string, Uniform<glm::ivec3>> m_ivec3_uniforms;
@@ -63,9 +68,17 @@ namespace vup
         std::map<std::string, Uniform<glm::mat4>> m_mat4_uniforms;
     };
 
+
     template<typename T>
-    bool vup::Shader_program::find_uniform_location(const std::string& name,
-                                                    const std::map<std::string, Uniform<T>>& m) {
+    void vup::Shader_program::update_ubo(const std::string& name, const T& data) {
+        if (find_map_entry(name, m_ubos)) {
+            m_ubos.at(name).update_data(data);
+        }
+    }
+
+    template<typename T>
+    bool vup::Shader_program::find_map_entry(const std::string& name,
+                                             const std::map<std::string, T>& m) {
         return m.end() != m.find(name);
     }
 

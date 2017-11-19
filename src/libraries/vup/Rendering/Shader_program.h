@@ -24,6 +24,8 @@ namespace vup
         virtual void reload() = 0;
         template <typename T>
         void update_ubo(const std::string& name, const T& data);
+        template <typename T>
+        void update_ssbo(const std::string& name, const T& data);
         void update_uniform(const std::string& name, bool v);
         void update_uniform(const std::string& name, int v);
         void update_uniform(const std::string& name, float v);
@@ -48,7 +50,7 @@ namespace vup
         void inspect_uniforms();
         void add_uniform(const std::string& name, GLint type, GLint location);
         void inspect_uniform_blocks();
-        void add_uniform_block(const std::string& name, GLuint binding, unsigned int size);
+        void inspect_shader_storage_blocks();
         template <typename T>
         bool find_map_entry(const std::string& name,
                             const std::map<std::string, T>& m);
@@ -57,6 +59,7 @@ namespace vup
         void clear_maps();
         GLuint m_program_id;
         std::map<std::string, vup::UBO> m_ubos;
+        std::map<std::string, vup::SSBO> m_ssbos;
         std::map<std::string, Uniform<int>> m_int_uniforms;
         std::map<std::string, Uniform<glm::ivec2>> m_ivec2_uniforms;
         std::map<std::string, Uniform<glm::ivec3>> m_ivec3_uniforms;
@@ -75,6 +78,13 @@ namespace vup
     void vup::Shader_program::update_ubo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ubos)) {
             m_ubos.at(name).update_data(data);
+        }
+    }
+
+    template<typename T>
+    void vup::Shader_program::update_ssbo(const std::string& name, const T& data) {
+        if (find_map_entry(name, m_ssbos)) {
+            m_ssbos.at(name).update_data(data);
         }
     }
 

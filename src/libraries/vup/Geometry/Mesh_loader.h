@@ -12,13 +12,15 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <stdexcept>
-#include <string_view>
+#include <experimental/filesystem>
+
+namespace filesystem = std::experimental::filesystem;
 
 namespace vup
 {
     class Mesh_loader {
     public:
-        explicit Mesh_loader(const std::string& path);
+        explicit Mesh_loader(const filesystem::path& path);
         const std::vector<Mesh>& get_meshes();
         Mesh get_mesh(unsigned long i);
     private:

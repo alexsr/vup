@@ -7,12 +7,18 @@
 
 #include "Mesh_loader.h"
 
-vup::Mesh_loader::Mesh_loader(const std::string& path) {
-    std::cout << "Loading mesh from file: " << path.data() << "\n";
+vup::Mesh_loader::Mesh_loader(const filesystem::path& path) {
+    if (!filesystem::exists(path)) {
+        throw std::runtime_error{"File at " + path.string() + " not found."};
+    }
+    if (filesystem::is_empty(path)) {
+        throw std::runtime_error{"File at " + path.string() + " is empty."};
+    }
+    std::cout << "Loading mesh from file: " << path.string() << "\n";
     Assimp::Importer imp;
     auto scene = imp.ReadFile(path, 0);
 	if ((scene == nullptr) || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mNumMeshes <= 0) {
-		throw std::runtime_error{"Mesh file not found. Path: " + path + "\n" + imp.GetErrorString()};
+		throw std::runtime_error{"Mesh file not working. Path: " + path.string() + "\n" + imp.GetErrorString()};
     }
     for (int i = 0; i < scene->mNumMeshes; i++) {
         m_meshes.emplace_back(scene->mMeshes[i]);

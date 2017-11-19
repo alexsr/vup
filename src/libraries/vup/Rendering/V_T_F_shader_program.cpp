@@ -16,11 +16,7 @@ vup::V_T_F_shader_program::V_T_F_shader_program(
     m_control = control;
     m_evaluation = evaluation;
     m_fragment = fragment;
-    attach_shaders();
-    link_program();
-    detach_shaders();
-    analyze_uniforms();
-    analyze_uniform_blocks();
+    init_shader_program();
 }
 
 void vup::V_T_F_shader_program::reload() {
@@ -28,11 +24,8 @@ void vup::V_T_F_shader_program::reload() {
     m_control->reload();
     m_evaluation->reload();
     m_fragment->reload();
-    attach_shaders();
-    link_program();
-    detach_shaders();
-    analyze_uniforms();
-    analyze_uniform_blocks();
+    clear_maps();
+    init_shader_program();
 }
 
 void vup::V_T_F_shader_program::attach_shaders() const {

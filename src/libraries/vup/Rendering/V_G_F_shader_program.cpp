@@ -14,22 +14,15 @@ vup::V_G_F_shader_program::V_G_F_shader_program(
     m_vertex = vertex;
     m_geometry = geometry;
     m_fragment = fragment;
-    attach_shaders();
-    link_program();
-    detach_shaders();
-    analyze_uniforms();
-    analyze_uniform_blocks();
+    init_shader_program();
 }
 
 void vup::V_G_F_shader_program::reload() {
     m_vertex->reload();
     m_fragment->reload();
     m_geometry->reload();
-    attach_shaders();
-    link_program();
-    detach_shaders();
-    analyze_uniforms();
-    analyze_uniform_blocks();
+    clear_maps();
+    init_shader_program();
 }
 
 void vup::V_G_F_shader_program::attach_shaders() const {

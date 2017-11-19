@@ -26,8 +26,10 @@ struct MVP {
 
 int main() {
     vup::init_GLFW();
-    vup::Window window(800, 600, "Initial instanced rendering demo", true);
-    vup::Trackball_camera cam(800, 600);
+    int width = 800;
+    int height = 600;
+    vup::Window window(width, height, "Initial instanced rendering demo", true);
+    vup::Trackball_camera cam(width, height);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_ubo.vert"));

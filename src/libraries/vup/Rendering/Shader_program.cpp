@@ -38,7 +38,15 @@ void vup::Shader_program::link_program() const {
     }
 }
 
-void vup::Shader_program::analyze_uniforms() {
+void vup::Shader_program::init_shader_program() {
+    attach_shaders();
+    link_program();
+    detach_shaders();
+    inspect_uniforms();
+    inspect_uniform_blocks();
+}
+
+void vup::Shader_program::inspect_uniforms() {
     GLint uniform_count = 0;
     glGetProgramInterfaceiv(m_program_id, GL_UNIFORM, GL_ACTIVE_RESOURCES, &uniform_count);
     std::array<GLenum, 4> properties{GL_BLOCK_INDEX, GL_TYPE, GL_NAME_LENGTH, GL_LOCATION};
@@ -103,7 +111,7 @@ void vup::Shader_program::add_uniform(const std::string& name, GLint type,
     }
 }
 
-void vup::Shader_program::analyze_uniform_blocks() {
+void vup::Shader_program::inspect_uniform_blocks() {
     GLint uniform_block_count = 0;
     glGetProgramInterfaceiv(m_program_id, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &uniform_block_count);
     std::array<GLenum, 3> properties{GL_BUFFER_BINDING, GL_NAME_LENGTH, GL_BUFFER_DATA_SIZE};
@@ -120,6 +128,21 @@ void vup::Shader_program::analyze_uniform_blocks() {
 
 void vup::Shader_program::add_uniform_block(const std::string& name, GLuint binding, unsigned int size) {
     m_ubos.emplace(std::piecewise_construct, std::make_tuple(name), std::make_tuple(binding, size));
+}
+
+void vup::Shader_program::clear_maps() {
+    m_ubos.clear();
+    m_int_uniforms.clear();
+    m_float_uniforms.clear();
+    m_ivec2_uniforms.clear();
+    m_ivec3_uniforms.clear();
+    m_ivec4_uniforms.clear();
+    m_vec2_uniforms.clear();
+    m_vec3_uniforms.clear();
+    m_vec4_uniforms.clear();
+    m_mat2_uniforms.clear();
+    m_mat3_uniforms.clear();
+    m_mat4_uniforms.clear();
 }
 
 void vup::Shader_program::update_uniform(const std::string& name, bool v) {

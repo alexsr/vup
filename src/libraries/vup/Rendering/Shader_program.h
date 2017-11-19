@@ -44,15 +44,17 @@ namespace vup
         Shader_program();
         ~Shader_program();
         void link_program() const;
-        void analyze_uniforms();
+        void init_shader_program();
+        void inspect_uniforms();
         void add_uniform(const std::string& name, GLint type, GLint location);
-        void analyze_uniform_blocks();
+        void inspect_uniform_blocks();
         void add_uniform_block(const std::string& name, GLuint binding, unsigned int size);
         template <typename T>
         bool find_map_entry(const std::string& name,
                             const std::map<std::string, T>& m);
         virtual void attach_shaders() const = 0;
         virtual void detach_shaders() const = 0;
+        void clear_maps();
         GLuint m_program_id;
         std::map<std::string, vup::UBO> m_ubos;
         std::map<std::string, Uniform<int>> m_int_uniforms;
@@ -81,7 +83,6 @@ namespace vup
                                              const std::map<std::string, T>& m) {
         return m.end() != m.find(name);
     }
-
 }
 
 

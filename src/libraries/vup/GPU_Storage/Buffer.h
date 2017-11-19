@@ -12,6 +12,7 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <string>
 
 namespace vup
 {

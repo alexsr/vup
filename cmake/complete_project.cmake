@@ -1,0 +1,25 @@
+get_filename_component(project_name "${CMAKE_SOURCE_DIR}" NAME)
+project(${project_name})
+
+include(${CMAKE_MODULE_PATH}/macros.cmake)
+
+set(CMAKE_CXX_STANDARD 17)
+if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    add_compile_options("/std:c++latest")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    add_compile_options("-std=c++17")
+endif(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(GLFW3 REQUIRED)
+find_package(GLM REQUIRED)
+find_package(ASSIMP REQUIRED)
+#find_package(RapidJSON REQUIRED)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+ADD_PROJECTS(ALL_LIBRARIES ${LIBRARIES_PATH} ${PROJECT_BINARY_DIR}/libraries)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+ADD_PROJECTS(ALL_EXECUTABLES ${EXECUTABLES_PATH} ${PROJECT_BINARY_DIR}/demos)
+
+COPY_ASSIMP_DLL(${DEPENDENCIES_PATH}/lib ${PROJECT_BINARY_DIR}/bin)

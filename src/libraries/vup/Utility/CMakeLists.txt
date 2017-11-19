@@ -1,1 +1,1 @@
-include(${CMAKE_MODULE_PATH}/DefaultLibrary.cmake)
+include(${CMAKE_MODULE_PATH}/library.cmake)

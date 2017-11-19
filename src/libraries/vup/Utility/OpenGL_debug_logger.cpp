@@ -47,7 +47,8 @@ void vup::OpenGL_debug_logger::retrieve_log(std::ostream& out) {
 
 void vup::OpenGL_debug_logger::print_msg(std::ostream& out, GLenum source, GLenum type, GLuint id,
                                          GLenum severity, const std::string& message) {
-    out << "Debug message (" << id << "): " << message << "\n";
+    out << "Debug message (" << id << "): ";
+    out << message << "\n";
     out << "Source: ";
     switch (source) {
         case GL_DEBUG_SOURCE_API:

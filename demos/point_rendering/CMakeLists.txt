@@ -1,1 +1,1 @@
-include(${CMAKE_MODULE_PATH}/DefaultExecutable.cmake)
+include(${CMAKE_MODULE_PATH}/executable.cmake)

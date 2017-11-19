@@ -29,6 +29,7 @@
 
 dependencies/include/*
 dependencies/lib/*
-build/
+build*
 cmake-build*
 .idea/
+.vs/

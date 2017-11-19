@@ -30,10 +30,10 @@ int main() {
     vup::Trackball_camera cam(800, 600);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_ubo.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
+    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../shader/mvp_ubo.vert"));
+    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../shader/normal_rendering.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
-    vup::Mesh_loader bunny(RESOURCES_PATH "/meshes/bunny.obj");
+    vup::Mesh_loader bunny("../resources/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));
     vup::OpenGL_debug_logger gl_debug_logger;
     glm::mat4 model(1.0f);

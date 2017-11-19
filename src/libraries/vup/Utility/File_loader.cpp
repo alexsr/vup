@@ -20,7 +20,7 @@ void vup::File_loader::load(const filesystem::path& path, std::ios_base::openmod
     }
     auto size = filesystem::file_size(path);
     std::ifstream in;
-    in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    in.exceptions(std::ifstream::badbit);
     in.open(path, mode);
     if (!in.is_open()) {
         throw std::runtime_error{"Error loading file from " + path.string()};

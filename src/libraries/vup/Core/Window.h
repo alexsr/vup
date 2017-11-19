@@ -12,6 +12,7 @@
 #include "gl_utils.h"
 #include <stdexcept>
 #include <functional>
+#include <string>
 
 namespace vup
 {

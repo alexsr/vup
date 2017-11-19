@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <iostream>
+#include <array>
 
 namespace vup
 {

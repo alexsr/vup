@@ -19,7 +19,7 @@ const GLuint vup::Shader::get_id() const {
 }
 
 const std::string vup::Shader::get_path() const {
-    return m_path;
+    return m_path.string();
 }
 
 void vup::Shader::reload() const {

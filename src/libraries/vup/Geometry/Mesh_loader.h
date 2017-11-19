@@ -18,7 +18,7 @@ namespace vup
 {
     class Mesh_loader {
     public:
-        explicit Mesh_loader(std::string_view path);
+        explicit Mesh_loader(const std::string& path);
         const std::vector<Mesh>& get_meshes();
         Mesh get_mesh(unsigned long i);
     private:

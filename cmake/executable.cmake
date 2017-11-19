@@ -1,6 +1,6 @@
-get_filename_component(ProjectId ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-string(REPLACE " " "_" ProjectId ${ProjectId})
-project(${ProjectId})
+get_filename_component(project_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+string(REPLACE " " "_" project_name ${project_name})
+project(${project_name})
 
 include_directories(
         ${OPENGL_INCLUDE_PATH}
@@ -15,19 +15,15 @@ include_directories(
 file(GLOB_RECURSE SOURCES *.cpp)
 file(GLOB_RECURSE HEADER *.h)
 
-add_definitions(-DSHADER_PATH="${SHADER_PATH}")
-add_definitions(-DCOMPUTE_SHADER_PATH="${COMPUTE_SHADER_PATH}")
-add_definitions(-DRESOURCES_PATH="${RESOURCES_PATH}")
 add_definitions(-DGLEW_STATIC)
-add_definitions(-DGLFW_INCLUDE_GLCOREARB)
 add_definitions(-DGLEW_NO_GLU)
 
-add_executable(${ProjectId} ${SOURCES} ${HEADER})
+add_executable(${project_name} ${SOURCES} ${HEADER})
 
 target_link_libraries(
-        ${ProjectId}
+        ${project_name}
         PRIVATE ${ALL_LIBRARIES}
-		PUBLIC ${GLFW_STATIC_LIBRARIES}
+	PUBLIC ${GLFW_STATIC_LIBRARIES}
         PUBLIC ${GLFW3_LIBRARIES}
         PUBLIC ${GLEW_LIBRARIES}
         PUBLIC ${OPENGL_LIBRARIES}

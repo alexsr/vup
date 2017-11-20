@@ -18,6 +18,9 @@
 
 namespace vup
 {
+    enum class introspection {
+        none, basic, ubos, ssbos, ubos_and_ssbos
+    };
     class Shader_program {
     public:
         void use() const;
@@ -43,7 +46,7 @@ namespace vup
         void update_uniform(const std::string& name, glm::mat3 v);
         void update_uniform(const std::string& name, glm::mat4 v);
     protected:
-        Shader_program();
+        explicit Shader_program(vup::introspection introspection_flag = vup::introspection::basic);
         ~Shader_program();
         void link_program() const;
         void init_shader_program();
@@ -58,6 +61,7 @@ namespace vup
         virtual void detach_shaders() const = 0;
         void clear_maps();
         GLuint m_program_id;
+        vup::introspection m_introspection_flag;
         std::map<std::string, vup::UBO> m_ubos;
         std::map<std::string, vup::SSBO> m_ssbos;
         std::map<std::string, Uniform<int>> m_int_uniforms;

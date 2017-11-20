@@ -17,7 +17,8 @@ namespace vup
         V_T_F_shader_program(const std::shared_ptr<vup::Vertex_shader>& vertex,
                              const std::shared_ptr<vup::Control_shader>& control,
                              const std::shared_ptr<vup::Evaluation_shader>& evaluation,
-                             const std::shared_ptr<vup::Fragment_shader>& fragment);
+                             const std::shared_ptr<vup::Fragment_shader>& fragment,
+                             vup::introspection introspection_flag = vup::introspection::basic);
         void reload() override;
     protected:
         void attach_shaders() const override;

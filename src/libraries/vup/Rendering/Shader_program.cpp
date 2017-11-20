@@ -7,7 +7,8 @@
 
 #include "Shader_program.h"
 
-vup::Shader_program::Shader_program() {
+vup::Shader_program::Shader_program(vup::introspection introspection_flag)
+        : m_introspection_flag(introspection_flag) {
     m_program_id = glCreateProgram();
 }
 
@@ -42,9 +43,17 @@ void vup::Shader_program::init_shader_program() {
     attach_shaders();
     link_program();
     detach_shaders();
-    inspect_uniforms();
-    inspect_uniform_blocks();
-    inspect_shader_storage_blocks();
+    if (m_introspection_flag != vup::introspection::none) {
+        inspect_uniforms();
+        if (m_introspection_flag == vup::introspection::ubos
+            || m_introspection_flag == vup::introspection::ubos_and_ssbos) {
+            inspect_uniform_blocks();
+        }
+        if (m_introspection_flag == vup::introspection::ssbos
+            || m_introspection_flag == vup::introspection::ubos_and_ssbos) {
+            inspect_shader_storage_blocks();
+        }
+    }
 }
 
 void vup::Shader_program::inspect_uniforms() {
@@ -140,7 +149,7 @@ void vup::Shader_program::inspect_shader_storage_blocks() {
                                  nullptr, name_data.data());
         std::string name(name_data.begin(), name_data.end()-1);
         m_ssbos.emplace(std::piecewise_construct, std::make_tuple(name),
-                       std::make_tuple(static_cast<GLuint>(info.at(0)), static_cast<unsigned int>(info.at(2))));
+                       std::make_tuple(static_cast<GLuint>(info.at(0))));
     }
 }
 

@@ -24,8 +24,6 @@ namespace vup
         void update_data(const std::vector<T>& data);
         template <typename T>
         void set_data(const T& data);
-        template <typename T>
-        void set_data(const std::vector<T>& data);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
         void bind();
@@ -68,6 +66,9 @@ vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, GLbitfield flags)
 
 template<typename T>
 void vup::Buffer::update_data(const T& data) {
+    if (!m_dynamically_updatable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
+    }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
                                                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     std::memcpy(buffer_ptr, &data, static_cast<size_t>(m_buffer_size));
@@ -76,6 +77,9 @@ void vup::Buffer::update_data(const T& data) {
 
 template<typename T>
 void vup::Buffer::update_data(const std::vector<T>& data) {
+    if (!m_dynamically_updatable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
+    }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
                                                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
@@ -87,21 +91,7 @@ void vup::Buffer::set_data(const T& data) {
     if (!m_storage_initialized) {
         initialize_storage(data, m_storage_flags);
     }
-    if (!m_dynamically_updatable) {
-        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
-    }
-    glNamedBufferSubData(m_name, 0, m_buffer_size, &data);
-}
-
-template<typename T>
-void vup::Buffer::set_data(const std::vector<T>& data) {
-    if (!m_storage_initialized) {
-        initialize_storage(data, m_storage_flags);
-    }
-    if (!m_dynamically_updatable) {
-        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
-    }
-    glNamedBufferSubData(m_name, 0, m_buffer_size, data.data());
+    update_data(data);
 }
 
 template <typename T>

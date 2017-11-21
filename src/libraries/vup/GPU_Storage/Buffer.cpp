@@ -5,11 +5,12 @@
 // https://github.com/alexsr
 //
 
+#include <vup/Core/gl_utils.h>
 #include "Buffer.h"
 
-vup::Buffer::Buffer(GLenum target, GLbitfield flags) : m_target(target), m_storage_flags(flags) {
+vup::Buffer::Buffer(GLenum target, vup::gl::storage flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    m_dynamically_updatable = static_cast<bool>(m_storage_flags & GL_DYNAMIC_STORAGE_BIT);
+    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
 }
 
 GLuint vup::Buffer::get_name() const {
@@ -28,10 +29,8 @@ void vup::Buffer::unbind() {
     glBindBuffer(m_target, 0);
 }
 
-void vup::Buffer::initialize_storage(unsigned int size, GLbitfield flags) {
-    if (size != 0) {
-        m_buffer_size = size;
-        glNamedBufferStorage(m_name, m_buffer_size, nullptr, m_storage_flags);
-        m_storage_initialized = true;
-    }
+void vup::Buffer::initialize_empty_storage(unsigned int size) {
+    m_buffer_size = size;
+    glNamedBufferStorage(m_name, m_buffer_size, nullptr, gl::cast_to_bit(m_storage_flags));
+    m_storage_initialized = true;
 }

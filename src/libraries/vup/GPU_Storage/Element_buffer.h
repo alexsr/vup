@@ -16,13 +16,13 @@ namespace vup
 {
     class Element_buffer : public vup::Buffer {
     public:
-        explicit Element_buffer(GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+        explicit Element_buffer(gl::storage flags = gl::storage::dynamic | gl::storage::write);
         explicit Element_buffer(const std::vector<unsigned int>& indices,
-                                GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+                                gl::storage flags = gl::storage::dynamic | gl::storage::write);
         void set_data(const std::vector<unsigned int>& data);
-        unsigned int get_count() const;
+        unsigned long get_count() const;
     private:
-        unsigned int m_count;
+        unsigned long m_count;
     };
 }
 

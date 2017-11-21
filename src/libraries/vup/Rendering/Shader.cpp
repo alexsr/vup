@@ -46,7 +46,7 @@ void vup::Shader::load_shader(const filesystem::path& path) const {
         glGetShaderInfoLog(m_shader_id, log_size, &log_size, error_log.data());
         glDeleteShader(m_shader_id);
         throw std::runtime_error{"Error while compiling "
-                                 + vup::shader_type_to_string(m_type) + ".\n"
+                                 + vup::gl::shader_type_to_string(m_type) + ".\n"
                                  + "Path: " + m_path.string() + "\n"
                                  + "Error log: \n"
                                  + error_log};

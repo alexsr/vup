@@ -29,7 +29,7 @@ vup::Window::Window(int width, int height, const std::string& title, bool debug,
     });
     make_current();
     glfwSwapInterval(swap_interval);
-    vup::init_GLEW();
+    vup::gl::init_GLEW();
 }
 
 void vup::Window::make_current() {
@@ -51,7 +51,7 @@ void vup::Window::run_loop_fixed(float dt, std::function<void(float)> loop) {
 }
 
 void vup::Window::step_loop_fixed(float dt, std::function<void(float)> loop) {
-    vup::clear_buffers();
+    vup::gl::clear_buffers();
     loop(dt);
     swap_buffer();
     glfwPollEvents();

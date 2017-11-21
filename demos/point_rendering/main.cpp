@@ -26,7 +26,7 @@ int main() {
     vup::VAO vao(positions, {color});
     bool allow_reset = true;
     while (!window.should_close()) {
-        vup::clear_buffers();
+        vup::gl::clear_buffers();
         minimal.use();
         cam.update(window, 0.01f);
         minimal.update_uniform("view", cam.get_view());

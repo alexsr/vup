@@ -7,7 +7,7 @@
 
 #include "Shader_program.h"
 
-vup::Shader_program::Shader_program(vup::introspection introspection_flag)
+vup::Shader_program::Shader_program(vup::gl::introspection introspection_flag)
         : m_introspection_flag(introspection_flag) {
     m_program_id = glCreateProgram();
 }
@@ -32,7 +32,7 @@ void vup::Shader_program::link_program() const {
         glGetProgramInfoLog(m_program_id, length, &length, &error_log[0]);
         glDeleteProgram(m_program_id);
         throw std::runtime_error{"Error while linking shader program "
-                                 + vup::shader_type_to_string(m_program_id) +
+                                 + vup::gl::shader_type_to_string(m_program_id) +
                                  ".\n"
                                  + "Error log: \n"
                                  + error_log};
@@ -43,14 +43,12 @@ void vup::Shader_program::init_shader_program() {
     attach_shaders();
     link_program();
     detach_shaders();
-    if (m_introspection_flag != vup::introspection::none) {
+    if (m_introspection_flag != vup::gl::introspection::none) {
         inspect_uniforms();
-        if (m_introspection_flag == vup::introspection::ubos
-            || m_introspection_flag == vup::introspection::ubos_and_ssbos) {
+        if (m_introspection_flag & vup::gl::introspection::ubos) {
             inspect_uniform_blocks();
         }
-        if (m_introspection_flag == vup::introspection::ssbos
-            || m_introspection_flag == vup::introspection::ubos_and_ssbos) {
+        if (m_introspection_flag & vup::gl::introspection::ssbos) {
             inspect_shader_storage_blocks();
         }
     }

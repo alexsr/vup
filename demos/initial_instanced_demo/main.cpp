@@ -26,7 +26,7 @@ int main() {
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
     while (!window.should_close()) {
-        vup::clear_buffers();
+        vup::gl::clear_buffers();
         minimal.use();
         cam.update(window, 0.01f);
         minimal.update_uniform("view", cam.get_view());

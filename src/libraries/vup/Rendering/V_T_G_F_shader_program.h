@@ -19,7 +19,7 @@ namespace vup
                                const std::shared_ptr<vup::Evaluation_shader>& evaluation,
                                const std::shared_ptr<vup::Geometry_shader>& geometry,
                                const std::shared_ptr<vup::Fragment_shader>& fragment,
-                               vup::introspection introspection_flag = vup::introspection::basic);
+                               vup::gl::introspection introspection_flag = vup::gl::introspection::basic);
         void reload() override;
     protected:
         void attach_shaders() const override;

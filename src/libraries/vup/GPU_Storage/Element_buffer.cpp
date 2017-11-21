@@ -7,14 +7,14 @@
 
 #include "Element_buffer.h"
 
-vup::Element_buffer::Element_buffer(GLbitfield flags)
+vup::Element_buffer::Element_buffer(gl::storage flags)
         : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, flags), m_count(0) {
 }
 
 vup::Element_buffer::Element_buffer(const std::vector<unsigned int>& indices,
-                                    GLbitfield flags)
-        : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, indices, flags),
-          m_count(static_cast<int>(indices.size())) {
+                                    gl::storage flags)
+        : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, indices, flags) {
+    m_count = indices.size();
 }
 
 void vup::Element_buffer::set_data(const std::vector<unsigned int>& data) {
@@ -22,6 +22,6 @@ void vup::Element_buffer::set_data(const std::vector<unsigned int>& data) {
     m_count = static_cast<int>(data.size());
 }
 
-unsigned int vup::Element_buffer::get_count() const {
+unsigned long vup::Element_buffer::get_count() const {
     return m_count;
 }

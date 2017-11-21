@@ -9,6 +9,7 @@
 #define VUP_BUFFER_H
 
 #include <vup/Core/vup.h>
+#include <vup/Core/gl_utils.h>
 #include <vector>
 #include <cstring>
 #include <iostream>
@@ -29,18 +30,18 @@ namespace vup
         void bind();
         void unbind();
     protected:
-        explicit Buffer(GLenum target, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+        explicit Buffer(GLenum target, gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
-        explicit Buffer(GLenum target, const T& data, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+        explicit Buffer(GLenum target, const T& data, gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
-        explicit Buffer(GLenum target, const std::vector<T>& data, GLbitfield flags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
-        void initialize_storage(unsigned int size, GLbitfield flags);
+        explicit Buffer(GLenum target, const std::vector<T>& data, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        void initialize_empty_storage(unsigned int size);
         template <typename T>
-        void initialize_storage(const T& data, GLbitfield flags);
+        void initialize_storage(const T& data);
         template <typename T>
-        void initialize_storage(const std::vector<T>& data, GLbitfield flags);
+        void initialize_storage(const std::vector<T>& data);
         GLuint m_name = 0;
-        GLenum m_storage_flags;
+        gl::storage m_storage_flags;
         GLenum m_target = 0;
         bool m_dynamically_updatable = false;
         bool m_storage_initialized = false;
@@ -49,19 +50,19 @@ namespace vup
 }
 
 template<typename T>
-vup::Buffer::Buffer(GLenum target, const T& data, GLbitfield flags)
+vup::Buffer::Buffer(GLenum target, const T& data, gl::storage flags)
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
-    initialize_storage(data, flags);
-    m_dynamically_updatable = static_cast<bool>(m_storage_flags & GL_DYNAMIC_STORAGE_BIT);
+    initialize_storage(data);
+    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
 }
 
 template<typename T>
-vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, GLbitfield flags)
+vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::storage flags)
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
-    initialize_storage(data, flags);
-    m_dynamically_updatable = static_cast<bool>(m_storage_flags & GL_DYNAMIC_STORAGE_BIT);
+    initialize_storage(data);
+    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
 }
 
 template<typename T>
@@ -89,22 +90,22 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
 template<typename T>
 void vup::Buffer::set_data(const T& data) {
     if (!m_storage_initialized) {
-        initialize_storage(data, m_storage_flags);
+        initialize_storage(data);
     }
     update_data(data);
 }
 
 template <typename T>
-void vup::Buffer::initialize_storage(const T& data, GLbitfield flags) {
+void vup::Buffer::initialize_storage(const T& data) {
     m_buffer_size = sizeof(T);
-    glNamedBufferStorage(m_name, m_buffer_size, &data, m_storage_flags);
+    glNamedBufferStorage(m_name, m_buffer_size, &data, gl::cast_to_bit(m_storage_flags));
     m_storage_initialized = true;
 }
 
 template <typename T>
-void vup::Buffer::initialize_storage(const std::vector<T>& data, GLbitfield flags) {
+void vup::Buffer::initialize_storage(const std::vector<T>& data) {
     m_buffer_size = sizeof(T) * data.size();
-    glNamedBufferStorage(m_name, m_buffer_size, data.data(), m_storage_flags);
+    glNamedBufferStorage(m_name, m_buffer_size, data.data(), gl::cast_to_bit(m_storage_flags));
     m_storage_initialized = true;
 }
 

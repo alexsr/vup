@@ -71,7 +71,7 @@ void vup::Buffer::update_data(const T& data) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
-                                               GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+                                               gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
     std::memcpy(buffer_ptr, &data, static_cast<size_t>(m_buffer_size));
     glUnmapNamedBuffer(m_name);
 }
@@ -82,7 +82,7 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
-                                               GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+                                               gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
     std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
     glUnmapNamedBuffer(m_name);
 }

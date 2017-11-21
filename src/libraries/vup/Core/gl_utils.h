@@ -60,6 +60,26 @@ namespace vup
         constexpr bool operator&(Storage s1, Storage s2) {
             return (cast_to_bit(s1) & cast_to_bit(s2)) != 0;
         }
+        enum class Access : GLbitfield {
+            read = GL_MAP_READ_BIT, write = GL_MAP_WRITE_BIT,
+            persistent_read = GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT,
+            persistent_write = GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT,
+            coherent_read = GL_MAP_COHERENT_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT,
+            coherent_write = GL_MAP_COHERENT_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT,
+            invalidate_buffer = GL_MAP_INVALIDATE_BUFFER_BIT,
+            invalidate_range = GL_MAP_INVALIDATE_RANGE_BIT, flush = GL_MAP_FLUSH_EXPLICIT_BIT,
+            unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
+
+        };
+        constexpr std::underlying_type_t<Access> cast_to_bit(Access s) {
+            return static_cast<std::underlying_type_t<Access>>(s);
+        }
+        constexpr Access operator|(Access s1, Access s2) {
+            return static_cast<Access>(cast_to_bit(s1) | cast_to_bit(s2));
+        }
+        constexpr bool operator&(Access s1, Access s2) {
+            return (cast_to_bit(s1) & cast_to_bit(s2)) != 0;
+        }
         enum class Introspection : GLbitfield {
             none = 0, basic = 2, ubos = 4, ssbos = 8
         };

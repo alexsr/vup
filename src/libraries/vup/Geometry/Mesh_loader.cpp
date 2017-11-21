@@ -16,7 +16,7 @@ vup::Mesh_loader::Mesh_loader(const filesystem::path& path) {
     }
     std::cout << "Loading mesh from file: " << path.string() << "\n";
     Assimp::Importer imp;
-    auto scene = imp.ReadFile(path, 0);
+    auto scene = imp.ReadFile(path.string(), 0);
 	if ((scene == nullptr) || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mNumMeshes <= 0) {
 		throw std::runtime_error{"Mesh file not working. Path: " + path.string() + "\n" + imp.GetErrorString()};
     }

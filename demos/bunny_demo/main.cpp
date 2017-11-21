@@ -11,7 +11,6 @@
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include <vup/GPU_Storage/Storage_buffer.h>
 
 struct MVP {
     glm::mat4 model;
@@ -35,7 +34,7 @@ int main() {
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_ubo.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
-                                    vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
+                                    vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny("../../resources/meshes/bunny.obj");
     vup::VAO vao(bunny.get_mesh(0));
     vup::OpenGL_debug_logger gl_debug_logger;

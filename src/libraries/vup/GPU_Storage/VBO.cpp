@@ -7,7 +7,7 @@
 
 #include "VBO.h"
 
-vup::VBO::VBO(GLint vertex_size, GLenum format, vup::gl::storage flags)
+vup::VBO::VBO(GLint vertex_size, GLenum format, vup::gl::Storage flags)
         : Buffer(GL_ARRAY_BUFFER, flags), m_vertex_size(vertex_size),
           m_format(format) {
     m_format_size = determine_format_size();

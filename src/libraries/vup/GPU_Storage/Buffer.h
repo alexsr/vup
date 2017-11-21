@@ -30,18 +30,18 @@ namespace vup
         void bind();
         void unbind();
     protected:
-        explicit Buffer(GLenum target, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        explicit Buffer(GLenum target, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
-        explicit Buffer(GLenum target, const T& data, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        explicit Buffer(GLenum target, const T& data, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
-        explicit Buffer(GLenum target, const std::vector<T>& data, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        explicit Buffer(GLenum target, const std::vector<T>& data, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         void initialize_empty_storage(unsigned int size);
         template <typename T>
         void initialize_storage(const T& data);
         template <typename T>
         void initialize_storage(const std::vector<T>& data);
         GLuint m_name = 0;
-        gl::storage m_storage_flags;
+        gl::Storage m_storage_flags;
         GLenum m_target = 0;
         bool m_dynamically_updatable = false;
         bool m_storage_initialized = false;
@@ -50,19 +50,19 @@ namespace vup
 }
 
 template<typename T>
-vup::Buffer::Buffer(GLenum target, const T& data, gl::storage flags)
+vup::Buffer::Buffer(GLenum target, const T& data, gl::Storage flags)
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
-    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
 }
 
 template<typename T>
-vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::storage flags)
+vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::Storage flags)
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
-    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
 }
 
 template<typename T>

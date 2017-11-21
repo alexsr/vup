@@ -8,7 +8,7 @@
 
 vup::V_F_shader_program::V_F_shader_program(const std::shared_ptr<vup::Vertex_shader>& vertex,
                                             const std::shared_ptr<vup::Fragment_shader>& fragment,
-                                            vup::gl::introspection introspection_flag)
+                                            vup::gl::Introspection introspection_flag)
         : Shader_program(introspection_flag) {
     m_vertex = vertex;
     m_fragment = fragment;

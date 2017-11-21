@@ -8,9 +8,9 @@
 #include <vup/Core/gl_utils.h>
 #include "Buffer.h"
 
-vup::Buffer::Buffer(GLenum target, vup::gl::storage flags) : m_target(target), m_storage_flags(flags) {
+vup::Buffer::Buffer(GLenum target, vup::gl::Storage flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
 }
 
 GLuint vup::Buffer::get_name() const {

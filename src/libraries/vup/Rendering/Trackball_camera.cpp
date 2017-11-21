@@ -33,11 +33,11 @@ void vup::Trackball_camera::update(vup::Window window, float dt) {
     double x, y;
     glfwGetCursorPos(window.get(), &x, &y);
     if (glfwGetMouseButton(window.get(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        double changeX = (x - m_x) * m_sens * dt;
-        double changeY = (y - m_y) * m_sens * dt;
+        float changeX = static_cast<float>(x - m_x) * m_sens * dt;
+        float changeY = static_cast<float>(y - m_y) * m_sens * dt;
         m_theta -= changeY;
-        if (m_theta < 0.01) {
-            m_theta = 0.01;
+        if (m_theta < 0.01f) {
+            m_theta = 0.01f;
         }
         else if (m_theta > glm::pi<float>() - 0.01f) {
             m_theta = glm::pi<float>() - 0.01f;

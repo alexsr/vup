@@ -23,6 +23,7 @@ find_package(GLEW REQUIRED)
 find_package(GLFW3 REQUIRED)
 find_package(GLM REQUIRED)
 find_package(ASSIMP REQUIRED)
+find_package(OpenMP REQUIRED)
 #find_package(RapidJSON REQUIRED)
 
 ADD_PROJECTS(ALL_LIBRARIES ${LIBRARIES_PATH} ${PROJECT_BINARY_DIR}/libraries)

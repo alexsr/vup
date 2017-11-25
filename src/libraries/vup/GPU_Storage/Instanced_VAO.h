@@ -25,6 +25,8 @@ namespace vup
         explicit Instanced_VAO(const vup::Geometric_primitive& primitive,
                                const std::initializer_list<vup::VBO>& vbos,
                                const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
+        explicit Instanced_VAO(const vup::Mesh& mesh,
+            const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
         virtual void render(GLenum render_mode, unsigned int instances);
         virtual void render(GLenum render_mode, int offset, unsigned int count,
                             unsigned int instances);

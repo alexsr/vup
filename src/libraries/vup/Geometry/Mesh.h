@@ -20,14 +20,15 @@ namespace vup
     class Mesh {
     public:
         explicit Mesh(const aiMesh* m);
-        std::vector<vup::VBO> get_VBOs();
+        const std::vector<vup::VBO>& get_VBOs() const;
         vup::VBO get_VBO(unsigned int i);
         vup::Element_buffer get_indices();
-        unsigned int get_count();
+        unsigned int get_count() const;
     private:
         std::vector<vup::VBO> m_vbos;
         vup::Element_buffer m_index_buffer;
         unsigned int m_count;
+        unsigned int m_faces_count;
         void copy_3D_data(const aiVector3D* data,
                                   unsigned int size);
         void copy_2D_data(const aiVector3D* data, unsigned int size);

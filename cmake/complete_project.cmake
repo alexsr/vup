@@ -8,7 +8,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options("/std:c++latest")
-	add_definitions(-DNODEFAULTLIB:library)
     COPY_ASSIMP_DLL(${DEPENDENCIES_PATH}/lib ${PROJECT_BINARY_DIR}/bin)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
     add_compile_options("-std=c++17")

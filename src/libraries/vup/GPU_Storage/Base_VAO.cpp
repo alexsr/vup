@@ -34,7 +34,7 @@ vup::Base_VAO::Base_VAO(const vup::Geometric_primitive& primitive,
 }
 
 
-vup::Base_VAO::Base_VAO(vup::Mesh mesh) {
+vup::Base_VAO::Base_VAO(const vup::Mesh& mesh) {
     auto vbos = mesh.get_VBOs();
     glCreateVertexArrays(1, &m_name);
     m_count = mesh.get_count();

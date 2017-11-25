@@ -9,6 +9,7 @@
 
 vup::Mesh::Mesh(const aiMesh* m) {
     m_count = m->mNumVertices;
+    m_faces_count = m->mNumFaces;
     copy_3D_data(m->mVertices, m_count);
     if (m->HasNormals()) {
         copy_3D_data(m->mNormals, m_count);
@@ -34,7 +35,7 @@ vup::Mesh::Mesh(const aiMesh* m) {
     m_index_buffer.set_data(indices);
 }
 
-std::vector<vup::VBO> vup::Mesh::get_VBOs() {
+const std::vector<vup::VBO>& vup::Mesh::get_VBOs() const {
     return m_vbos;
 }
 
@@ -46,7 +47,7 @@ vup::Element_buffer vup::Mesh::get_indices() {
     return m_index_buffer;
 }
 
-unsigned int vup::Mesh::get_count() {
+unsigned int vup::Mesh::get_count() const {
     return m_count;
 }
 

@@ -35,8 +35,9 @@ int main() {
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
                                     vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
-    vup::Mesh_loader bunny("../../resources/meshes/bunny.obj");
-    vup::VAO vao(bunny.get_mesh(0));
+    vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
+    vup::Mesh bunny(bunny_loader.get_mesh(0));
+    vup::VAO vao(bunny);
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     glm::mat4 model(1.0f);

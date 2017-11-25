@@ -20,15 +20,16 @@ vup::Mesh_loader::Mesh_loader(const filesystem::path& path) {
 	if ((scene == nullptr) || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mNumMeshes <= 0) {
 		throw std::runtime_error{"Mesh file not working. Path: " + path.string() + "\n" + imp.GetErrorString()};
     }
+#pragma omp parallel for
     for (int i = 0; i < scene->mNumMeshes; i++) {
-        m_meshes.emplace_back(scene->mMeshes[i]);
+        m_meshes.at(i) = scene->mMeshes[i];
     }
 }
 
-const std::vector<vup::Mesh>& vup::Mesh_loader::get_meshes() {
+const std::vector<aiMesh*>& vup::Mesh_loader::get_meshes() {
     return m_meshes;
 }
 
-vup::Mesh vup::Mesh_loader::get_mesh(unsigned long i) {
+aiMesh* vup::Mesh_loader::get_mesh(unsigned long i) {
     return m_meshes.at(i);
 }

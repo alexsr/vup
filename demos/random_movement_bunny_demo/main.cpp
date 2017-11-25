@@ -40,16 +40,17 @@ int main() {
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
                                     vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
-    vup::Mesh_loader bunny("../../resources/meshes/bunny.obj");
-    bunny.get_mesh(0).get_VBO(0).bind_base(0);
-    vup::SSBO random_pos(vup::generate_random_data(bunny.get_mesh(0).get_count() * 4, 0, 1.0f), 4);
-    vup::VAO vao(bunny.get_mesh(0));
+    vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
+    vup::Mesh bunny(bunny_loader.get_mesh(0));
+    vup::VAO vao(bunny);
+    bunny.get_VBO(0).bind_base(0);
+    vup::SSBO random_pos(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};
     bool allow_reset;
     move_verts.update_uniform("dt", 0.0001f);
     auto loop = [&](float dt) {
-        move_verts.run(bunny.get_mesh(0).get_count());
+        move_verts.run(bunny.get_count());
         minimal.use();
         cam.update(window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
@@ -59,7 +60,7 @@ int main() {
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
             move_verts.reload();
             move_verts.update_uniform("dt", 0.0001f);
-            random_pos.update_data(vup::generate_random_data(bunny.get_mesh(0).get_count() * 4, 0, 1.0f));
+            random_pos.update_data(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f));
             allow_reset = false;
         }
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {

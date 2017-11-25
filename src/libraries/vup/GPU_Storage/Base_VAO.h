@@ -24,7 +24,7 @@ namespace vup
                           const std::initializer_list<vup::VBO>& vbos = {});
         explicit Base_VAO(const vup::Geometric_primitive& primitive,
                           const std::initializer_list<vup::VBO>& vbos = {});
-        explicit Base_VAO(vup::Mesh mesh);
+        explicit Base_VAO(const vup::Mesh& mesh);
         void set_attrib_buffer(const vup::VBO& v, unsigned int i);
         void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);
         GLuint m_name = 0;

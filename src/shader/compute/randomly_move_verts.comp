@@ -1,0 +1,16 @@
+#version 450
+
+uniform float dt;
+
+layout (local_size_x = 64) in;
+layout (std430, binding = 0) buffer mesh {
+    vec4 pos[];
+};
+layout (std430, binding = 4) buffer random_data {
+    vec4 random_vec[];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    pos[id].xyz -= random_vec[id].xyz * dt;
+}

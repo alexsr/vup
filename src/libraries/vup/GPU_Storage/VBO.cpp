@@ -30,6 +30,11 @@ int vup::VBO::get_stride() const {
     return m_stride;
 }
 
+void vup::VBO::bind_base(GLuint binding) {
+    m_binding = binding;
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_binding, m_name);
+}
+
 int vup::VBO::determine_format_size() {
     switch (m_format) {
         case GL_DOUBLE:

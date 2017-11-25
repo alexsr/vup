@@ -23,6 +23,9 @@ namespace vup
         GLenum get_format() const;
         int get_format_size() const;
         int get_stride() const;
+        void bind_base(GLuint binding);
+    protected:
+        GLuint m_binding;
     private:
         int determine_format_size();
         GLint m_vertex_size;

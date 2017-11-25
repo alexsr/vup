@@ -28,7 +28,7 @@ int main() {
     vup::init_GLFW();
     int width = 800;
     int height = 600;
-    vup::Window window(width, height, "Initial instanced rendering demo", true);
+    vup::Window window(width, height, "Randomly move bunny vertices", true);
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);

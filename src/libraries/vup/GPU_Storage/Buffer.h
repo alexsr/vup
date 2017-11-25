@@ -24,6 +24,10 @@ namespace vup
         template <typename T>
         void update_data(const std::vector<T>& data);
         template <typename T>
+        void update_data(const T& data, int offset, int size);
+        template <typename T>
+        void update_data(const std::vector<T>& data, int offset);
+        template <typename T>
         void set_data(const T& data);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
@@ -84,6 +88,34 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
                                                gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
     std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
+    glUnmapNamedBuffer(m_name);
+}
+
+template<typename T>
+void vup::Buffer::update_data(const T& data, int offset, int size) {
+    if (!m_dynamically_updatable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
+    }
+    if (offset < 0 || size < 0 || offset + size > m_buffer_size) {
+        throw std::runtime_error{"Offset or size are impractical to update buffer" + std::to_string(m_name) + "."};
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, size,
+        gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
+    std::memcpy(buffer_ptr, &data, static_cast<size_t>(size));
+    glUnmapNamedBuffer(m_name);
+}
+
+template<typename T>
+void vup::Buffer::update_data(const std::vector<T>& data, int offset) {
+    if (!m_dynamically_updatable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
+    }
+    if (offset < 0 || offset + data.size() > m_buffer_size) {
+        throw std::runtime_error{"Offset or size are impractical to update buffer" + std::to_string(m_name) + "."};
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, data.size(),
+        gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
+    std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(data.size()));
     glUnmapNamedBuffer(m_name);
 }
 

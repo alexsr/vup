@@ -18,7 +18,7 @@ int main() {
     auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert"));
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
-    vup::Quad q;
+    vup::Rectangle q;
     vup::VBO vertices(q.vertices);
     vup::VBO normals(q.normals, 3);
     vup::VBO uv_coords(q.uv_coords, 2);

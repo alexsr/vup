@@ -22,7 +22,7 @@ int main() {
     std::vector<float> x = vup::generate_random_data(instances * 2, -1.0f, 1.0f);
     vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
-    vup::Instanced_VAO vao(vup::Quad(1.0f), {offset, color});
+    vup::Instanced_VAO vao(vup::Rectangle(1.0f), {offset, color});
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
     while (!window.should_close()) {
@@ -31,7 +31,7 @@ int main() {
         cam.update(window, 0.01f);
         minimal.update_uniform("view", cam.get_view());
         minimal.update_uniform("proj", cam.get_projection());
-        vao.render(GL_TRIANGLE_STRIP, instances);
+        vao.render(GL_TRIANGLES, instances);
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
             offset.update_data(vup::generate_random_data(instances * 2, -1.0f, 1.0f));
             color.update_data(vup::generate_random_data(instances * 3, 0.0f, 1.0f));

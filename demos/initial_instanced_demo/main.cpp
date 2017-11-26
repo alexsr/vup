@@ -19,10 +19,9 @@ int main() {
     auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal_instanced.frag"));
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
     unsigned int instances = 10;
-    std::vector<float> x = vup::generate_random_data(instances * 2, -1.0f, 1.0f);
     vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
-    vup::Instanced_VAO vao(vup::Rectangle(1.0f), {offset, color});
+    vup::Instanced_VAO vao(vup::Cube(1.0f), {offset, color});
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
     while (!window.should_close()) {

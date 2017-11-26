@@ -26,7 +26,7 @@ vup::Mesh::Mesh(const aiMesh* m) {
     }
 
     std::vector<unsigned int> indices;
-    for(unsigned int i = 0; i < m->mNumFaces; i++) {
+    for(unsigned int i = 0; i < m_faces_count; i++) {
         aiFace face = m->mFaces[i];
         for(unsigned int j = 0; j < face.mNumIndices; j++) {
             indices.push_back(face.mIndices[j]);

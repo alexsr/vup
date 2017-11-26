@@ -10,6 +10,7 @@
 
 #include <vup/GPU_Storage/VBO.h>
 #include <vup/GPU_Storage/Element_buffer.h>
+#include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include <iostream>
 #include <map>

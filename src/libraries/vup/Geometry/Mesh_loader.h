@@ -21,10 +21,10 @@ namespace vup
     class Mesh_loader {
     public:
         explicit Mesh_loader(const filesystem::path& path);
-        const std::vector<aiMesh*>& get_meshes();
-        aiMesh* get_mesh(unsigned long i);
+        const std::vector<vup::Mesh>& get_meshes();
+        vup::Mesh get_mesh(unsigned long i);
     private:
-        std::vector<aiMesh*> m_meshes;
+        std::vector<vup::Mesh> m_meshes;
     };
 }
 

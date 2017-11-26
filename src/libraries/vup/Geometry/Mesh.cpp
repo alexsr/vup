@@ -55,8 +55,8 @@ void vup::Mesh::copy_3D_data(const aiVector3D* data,
                              unsigned int size) {
     std::vector<glm::vec4> v(size);
     #pragma omp parallel for
-    for(int i = 0; i < size; i++) {
-        v.at(static_cast<unsigned long>(i)) = glm::vec4(data[i].x, data[i].y, data[i].z, 0);
+    for(unsigned long i = 0; i < size; i++) {
+        v.at(i) = glm::vec4(data[i].x, data[i].y, data[i].z, 0);
     }
     m_vbos.emplace_back(v, 4);
 }

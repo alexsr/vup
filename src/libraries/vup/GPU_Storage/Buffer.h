@@ -29,6 +29,10 @@ namespace vup
         void update_data(const std::vector<T>& data, int offset);
         template <typename T>
         void set_data(const T& data);
+        template <typename T>
+        void get_data(T& data);
+        template <typename T>
+        void get_data(std::vector<T>& data);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
         void bind();
@@ -49,6 +53,7 @@ namespace vup
         gl::Storage m_storage_flags;
         GLenum m_target = 0;
         bool m_dynamically_updatable = false;
+        bool m_readable = false;
         bool m_storage_initialized = false;
         unsigned int m_buffer_size = 0;
     };
@@ -59,7 +64,8 @@ vup::Buffer::Buffer(GLenum target, const T& data, gl::Storage flags)
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
-    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
+    m_readable = m_storage_flags & gl::Storage::read;
 }
 
 template<typename T>
@@ -67,7 +73,8 @@ vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::Storage flags
         : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
-    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
+    m_readable = m_storage_flags & gl::Storage::read;
 }
 
 template<typename T>
@@ -126,6 +133,28 @@ void vup::Buffer::set_data(const T& data) {
         initialize_storage(data);
     }
     update_data(data);
+}
+
+template<typename T>
+void vup::Buffer::get_data(T& data) {
+    if (!m_readable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
+                                               gl::cast_to_bit(gl::Access::read));
+    std::memcpy(data, buffer_ptr, static_cast<size_t>(m_buffer_size));
+    glUnmapNamedBuffer(m_name);
+}
+
+template<typename T>
+void vup::Buffer::get_data(std::vector<T>& data) {
+    if (!m_readable) {
+        throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
+                                               gl::cast_to_bit(gl::Access::read));
+    std::memcpy(data.data(), buffer_ptr, static_cast<size_t>(m_buffer_size));
+    glUnmapNamedBuffer(m_name);
 }
 
 template <typename T>

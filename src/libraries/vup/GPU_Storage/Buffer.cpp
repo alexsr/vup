@@ -10,7 +10,8 @@
 
 vup::Buffer::Buffer(GLenum target, vup::gl::Storage flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic;
+    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
+    m_readable = m_storage_flags & gl::Storage::read;
 }
 
 GLuint vup::Buffer::get_name() const {

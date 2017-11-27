@@ -174,6 +174,13 @@ void vup::Shader_program::update_uniform(const std::string& name, bool v) {
     }
 }
 
+void vup::Shader_program::update_uniform(const std::string& name, unsigned int v) {
+    glUseProgram(m_program_id);
+    if (find_map_entry(name, m_int_uniforms)) {
+        m_int_uniforms.at(name).update({static_cast<int>(v)});
+    }
+}
+
 void vup::Shader_program::update_uniform(const std::string& name, int v) {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_int_uniforms)) {

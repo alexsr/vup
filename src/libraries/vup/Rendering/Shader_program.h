@@ -27,6 +27,7 @@ namespace vup
         template <typename T>
         void update_ssbo(const std::string& name, const T& data);
         void update_uniform(const std::string& name, bool v);
+        void update_uniform(const std::string& name, unsigned int v);
         void update_uniform(const std::string& name, int v);
         void update_uniform(const std::string& name, float v);
         void update_uniform(const std::string& name, double v);

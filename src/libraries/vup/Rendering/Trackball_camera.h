@@ -33,7 +33,7 @@ namespace vup
         // * float fov - field of view in degree
         // * float near - near value for projection
         // * float far - far value for projection
-        Trackball_camera(int width, int height, float sens = 0.1f, float r = 2.0,
+        Trackball_camera(int width, int height, float sens = 1.0f, float r = 2.0,
                          float zoom_sens = 1.0f, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
                          float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
 

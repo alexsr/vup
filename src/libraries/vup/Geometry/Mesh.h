@@ -38,9 +38,6 @@ namespace vup
         vup::Element_buffer m_index_buffer;
         unsigned int m_count;
         unsigned int m_faces_count;
-        void copy_3D_data(const aiVector3D* data,
-                                  unsigned int size);
-        void copy_2D_data(const aiVector3D* data, unsigned int size);
     };
 }
 

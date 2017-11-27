@@ -10,26 +10,39 @@ struct Bounds {
 };
 
 uniform float dt;
+uniform int max_index;
+uniform int max_blocks;
 
-shared Bounds shared_bounds[32];
+shared Bounds shared_bounds[512];
 
-layout (local_size_x = 32) in;
+layout (local_size_x = 512) in;
 layout (std430, binding = 0) buffer mesh {
     vec4 pos[];
 };
-//layout (std430, binding = 4) buffer bounds_buffer {
-//    Bounds bounds;
-//};
+layout (std430, binding = 4) buffer bounds_buffer {
+    Bounds bounds[];
+};
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
 	uint tid = gl_LocalInvocationIndex;
-	shared_bounds[tid].min_x = pos[id].x;
-	shared_bounds[tid].min_y = pos[id].y;
-	shared_bounds[tid].min_z = pos[id].z;
-	shared_bounds[tid].max_x = pos[id].x;
-	shared_bounds[tid].max_y = pos[id].y;
-	shared_bounds[tid].max_z = pos[id].z;
+	uint bid = gl_WorkGroupID.x;
+    if (id < max_index) {
+        shared_bounds[tid].min_x = pos[id].x;
+        shared_bounds[tid].min_y = pos[id].y;
+        shared_bounds[tid].min_z = pos[id].z;
+        shared_bounds[tid].max_x = pos[id].x;
+        shared_bounds[tid].max_y = pos[id].y;
+        shared_bounds[tid].max_z = pos[id].z;
+    }
+    else {
+        shared_bounds[tid].max_x = -1.0f/0.0f;
+        shared_bounds[tid].max_y = -1.0f/0.0f;
+        shared_bounds[tid].max_z = -1.0f/0.0f;
+        shared_bounds[tid].min_x = 1.0f/0.0f;
+        shared_bounds[tid].min_y = 1.0f/0.0f;
+        shared_bounds[tid].min_z = 1.0f/0.0f;
+    }
 	memoryBarrierShared();
 	groupMemoryBarrier();
 	for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
@@ -56,7 +69,12 @@ void main() {
 	}
 	memoryBarrierShared();
 	groupMemoryBarrier();
-	pos[id].x = shared_bounds[tid].min_x;
-	pos[id].y = shared_bounds[tid].min_y;
-	pos[id].z = shared_bounds[tid].min_z;
+	if (tid == 0 && max_blocks > bid) {
+    	bounds[bid].min_x = shared_bounds[0].min_x;
+    	bounds[bid].min_y = shared_bounds[0].min_y;
+    	bounds[bid].min_z = shared_bounds[0].min_z;
+    	bounds[bid].max_x = shared_bounds[0].max_x;
+        bounds[bid].max_y = shared_bounds[0].max_y;
+        bounds[bid].max_z = shared_bounds[0].max_z;
+	}
 }

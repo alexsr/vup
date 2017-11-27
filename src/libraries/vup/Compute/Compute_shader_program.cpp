@@ -49,3 +49,19 @@ void vup::Compute_shader_program::run_workgroups(GLuint x, GLuint y, GLuint z) {
     use();
     glDispatchCompute(x, y, z);
 }
+
+std::array<GLint, 3> vup::Compute_shader_program::get_workgroup_size() {
+    return m_workgroup_size;
+}
+
+GLint vup::Compute_shader_program::get_workgroup_size_x() {
+    return m_workgroup_size.at(0);
+}
+
+GLint vup::Compute_shader_program::get_workgroup_size_y() {
+    return m_workgroup_size.at(1);
+}
+
+GLint vup::Compute_shader_program::get_workgroup_size_z() {
+    return m_workgroup_size.at(2);
+}

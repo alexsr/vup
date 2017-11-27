@@ -20,6 +20,10 @@ namespace vup
         void reload() override;
         void run(float x = 1, float y = 1, float z = 1);
         void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1);
+        std::array<GLint, 3> get_workgroup_size();
+        GLint get_workgroup_size_x();
+        GLint get_workgroup_size_y();
+        GLint get_workgroup_size_z();
     protected:
         void attach_shaders() const override;
         void detach_shaders() const override;

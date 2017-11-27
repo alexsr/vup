@@ -1,0 +1,62 @@
+#version 450
+
+struct Bounds {
+	float min_x;
+	float max_x;
+	float min_y;
+	float max_y;
+	float min_z;
+	float max_z;
+};
+
+uniform float dt;
+
+shared Bounds shared_bounds[32];
+
+layout (local_size_x = 32) in;
+layout (std430, binding = 0) buffer mesh {
+    vec4 pos[];
+};
+//layout (std430, binding = 4) buffer bounds_buffer {
+//    Bounds bounds;
+//};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+	uint tid = gl_LocalInvocationIndex;
+	shared_bounds[tid].min_x = pos[id].x;
+	shared_bounds[tid].min_y = pos[id].y;
+	shared_bounds[tid].min_z = pos[id].z;
+	shared_bounds[tid].max_x = pos[id].x;
+	shared_bounds[tid].max_y = pos[id].y;
+	shared_bounds[tid].max_z = pos[id].z;
+	memoryBarrierShared();
+	groupMemoryBarrier();
+	for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
+		if (tid < s) {
+			if (shared_bounds[tid].min_x > shared_bounds[tid+s].min_x) {
+				shared_bounds[tid].min_x = shared_bounds[tid+s].min_x;
+			}
+			if (shared_bounds[tid].min_y > shared_bounds[tid+s].min_y) {
+				shared_bounds[tid].min_y = shared_bounds[tid+s].min_y;
+			}
+			if (shared_bounds[tid].min_z > shared_bounds[tid+s].min_z) {
+				shared_bounds[tid].min_z = shared_bounds[tid+s].min_z;
+			}
+			if (shared_bounds[tid].max_x < shared_bounds[tid+s].max_x) {
+				shared_bounds[tid].max_x = shared_bounds[tid+s].max_x;
+			}
+			if (shared_bounds[tid].max_y < shared_bounds[tid+s].max_y) {
+				shared_bounds[tid].max_y = shared_bounds[tid+s].max_y;
+			}
+			if (shared_bounds[tid].max_z < shared_bounds[tid+s].max_z) {
+				shared_bounds[tid].max_z = shared_bounds[tid+s].max_z;
+			}
+		}
+	}
+	memoryBarrierShared();
+	groupMemoryBarrier();
+	pos[id].x = shared_bounds[tid].min_x;
+	pos[id].y = shared_bounds[tid].min_y;
+	pos[id].z = shared_bounds[tid].min_z;
+}

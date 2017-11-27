@@ -51,6 +51,11 @@ void vup::Base_VAO::unbind() {
     glBindVertexArray(0);
 }
 
+void vup::Base_VAO::delete_vao() {
+    unbind();
+    glDeleteVertexArrays(1, &m_name);
+}
+
 void vup::Base_VAO::set_attrib_buffer(const vup::VBO& v, unsigned int i) {
     glEnableVertexArrayAttrib(m_name, i);
     glVertexArrayVertexBuffer(m_name, i, v.get_name(), 0, v.get_stride());

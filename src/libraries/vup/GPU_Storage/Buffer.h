@@ -33,6 +33,7 @@ namespace vup
         unsigned int get_buffer_size() const;
         void bind();
         void unbind();
+        void delete_buffer();
     protected:
         explicit Buffer(GLenum target, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>

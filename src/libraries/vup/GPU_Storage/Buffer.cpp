@@ -29,6 +29,11 @@ void vup::Buffer::unbind() {
     glBindBuffer(m_target, 0);
 }
 
+void vup::Buffer::delete_buffer() {
+    unbind();
+    glDeleteBuffers(1, &m_name);
+}
+
 void vup::Buffer::initialize_empty_storage(unsigned int size) {
     m_buffer_size = size;
     glNamedBufferStorage(m_name, m_buffer_size, nullptr, gl::cast_to_bit(m_storage_flags));

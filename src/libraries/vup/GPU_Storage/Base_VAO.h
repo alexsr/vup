@@ -19,6 +19,7 @@ namespace vup
     public:
         void bind();
         void unbind();
+        void delete_vao();
     protected:
         explicit Base_VAO(const vup::VBO& main_vbo,
                           const std::initializer_list<vup::VBO>& vbos = {});

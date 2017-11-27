@@ -18,9 +18,17 @@
 
 namespace vup
 {
+    struct Mesh_data {
+        std::vector<glm::vec4> vertices;
+        std::vector<glm::vec4> normals;
+        std::vector<glm::vec2> uv_coords;
+        std::vector<unsigned int> indices;
+        unsigned int count;
+        unsigned int faces_count;
+    };
     class Mesh {
     public:
-        explicit Mesh(const aiMesh* m);
+        explicit Mesh(const Mesh_data& m);
         const std::vector<vup::VBO>& get_VBOs() const;
         vup::VBO get_VBO(unsigned int i);
         vup::Element_buffer get_indices();

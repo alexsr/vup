@@ -41,7 +41,7 @@ int main() {
     vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
                                     vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
-    vup::Mesh bunny(bunny_loader.get_mesh(0));
+    vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
     bunny.get_VBO(0).bind_base(0);
     vup::SSBO random_pos(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f), 4);

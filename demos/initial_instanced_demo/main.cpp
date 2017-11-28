@@ -7,7 +7,7 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader.h>
+#include <vup/Shader/V_F_shader.h>
 #include <vup/GPU_Storage/Instanced_VAO.h>
 
 int main() {

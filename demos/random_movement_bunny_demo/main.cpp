@@ -7,11 +7,11 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader.h>
+#include <vup/Shader/V_F_shader.h>
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include <vup/Compute/Compute_shader.h>
+#include <vup/Shader/Compute_shader.h>
 
 struct MVP {
     glm::mat4 model;

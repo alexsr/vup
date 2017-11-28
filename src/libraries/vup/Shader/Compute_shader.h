@@ -8,7 +8,7 @@
 #ifndef VUP_COMPUTE_SHADER_PROGRAM_H
 #define VUP_COMPUTE_SHADER_PROGRAM_H
 
-#include <vup/Rendering/Shader.h>
+#include "Shader.h"
 
 namespace vup
 {

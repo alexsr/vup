@@ -7,7 +7,7 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader_program.h>
+#include <vup/Rendering/V_F_shader.h>
 #include <vup/GPU_Storage/Instanced_VAO.h>
 
 int main() {
@@ -15,9 +15,7 @@ int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_instanced.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal_instanced.frag"));
-    vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
+    vup::V_F_shader minimal("../../src/shader/mvp_instanced.vert", "../../src/shader/minimal_instanced.frag");
     unsigned int instances = 10;
     vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);

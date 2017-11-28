@@ -7,7 +7,7 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader_program.h>
+#include <vup/Rendering/V_F_shader.h>
 #include <vup/GPU_Storage/VAO.h>
 
 int main() {
@@ -15,9 +15,7 @@ int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/minimal.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag"));
-    vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
+    vup::V_F_shader minimal("../../src/shader/minimal.vert", "../../src/shader/minimal.frag");
     vup::Cube q;
     vup::VBO vertices(q.vertices);
     vup::VBO normals(q.normals, 3);

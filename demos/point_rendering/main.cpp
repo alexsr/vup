@@ -7,7 +7,7 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader_program.h>
+#include <vup/Rendering/V_F_shader.h>
 #include <vup/GPU_Storage/VAO.h>
 
 int main() {
@@ -16,9 +16,7 @@ int main() {
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
     glEnable(GL_POINT_SPRITE);
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/point.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/point.frag"));
-    vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment);
+    vup::V_F_shader minimal("../../src/shader/point.vert", "../../src/shader/point.frag");
     unsigned int instances = 100;
     glPointSize(105.0f);
     vup::VBO positions(vup::generate_random_data(instances * 3, -1, 1), 3);

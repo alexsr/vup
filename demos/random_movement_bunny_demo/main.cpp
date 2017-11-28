@@ -7,11 +7,11 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader_program.h>
+#include <vup/Rendering/V_F_shader.h>
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include <vup/Compute/Compute_shader_program.h>
+#include <vup/Compute/Compute_shader.h>
 
 struct MVP {
     glm::mat4 model;
@@ -34,12 +34,9 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
-    auto mesh_random_movement(std::make_shared<vup::Compute_shader>("../../src/shader/compute/randomly_move_verts.comp"));
-    vup::Compute_shader_program move_verts(mesh_random_movement);
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_ubo.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
-    vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
-                                    vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
+    vup::Compute_shader move_verts("../../src/shader/compute/randomly_move_verts.comp");
+    vup::V_F_shader minimal("../../src/shader/mvp_ubo.vert", "../../src/shader/normal_rendering.frag",
+                            vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);

@@ -7,12 +7,12 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Rendering/V_F_shader_program.h>
-#include <vup/Rendering/V_G_F_shader_program.h>
+#include <vup/Rendering/V_F_shader.h>
+#include <vup/Rendering/V_G_F_shader.h>
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include <vup/Compute/Compute_shader_program.h>
+#include <vup/Compute/Compute_shader.h>
 
 struct MVP {
     glm::mat4 model;
@@ -35,12 +35,9 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
-    auto calc_box_shader1024(std::make_shared<vup::Compute_shader>("../../src/shader/compute/calc_bounding_box.comp"));
-    vup::Compute_shader_program calc_box1024(calc_box_shader1024);
-    auto minimal_vertex(std::make_shared<vup::Vertex_shader>("../../src/shader/aabb_move_bunny.vert"));
-    auto minimal_fragment(std::make_shared<vup::Fragment_shader>("../../src/shader/normal_rendering.frag"));
-    vup::V_F_shader_program minimal(minimal_vertex, minimal_fragment,
-                                    vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
+    vup::Compute_shader calc_box1024("../../src/shader/compute/calc_bounding_box.comp");
+    vup::V_F_shader minimal("../../src/shader/aabb_move_bunny.vert", "../../src/shader/normal_rendering.frag",
+                            vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     std::vector<glm::vec4> bunny_verts = bunny_loader.get_mesh_data(0).vertices;
@@ -79,7 +76,6 @@ int main() {
     bool allow_reset;
     float delta = 0.001f;
     int max_blocks = static_cast<int>(glm::ceil(bunny.get_count() / calc_box1024.get_workgroup_size_x()));
-    calc_box1024.update_uniform("dt", 0.00001f);
     calc_box1024.update_uniform("max_index", bunny.get_count());
     calc_box1024.update_uniform("max_blocks", max_blocks);
     std::cout << "Max blocks " << max_blocks << "\n";
@@ -132,17 +128,18 @@ int main() {
     model = glm::translate(glm::mat4(1.0f), -center);
     vup::VBO bounds_vbo(bounds_points, 4);
     vup::VAO bounds_vao(bounds_vbo);
-    auto bounds_vert = std::make_shared<vup::Vertex_shader>("../../src/shader/mvp_ubo_aabb.vert");
-    auto bounds_geom = std::make_shared<vup::Geometry_shader>("../../src/shader/geometry/aabb.geom");
-    auto bounds_frag = std::make_shared<vup::Fragment_shader>("../../src/shader/minimal.frag");
-    vup::V_G_F_shader_program bounds_renderer(bounds_vert, bounds_geom, bounds_frag, vup::gl::Introspection::ubos);
+    vup::V_G_F_shader bounds_renderer("../../src/shader/mvp_ubo_aabb.vert", "../../src/shader/geometry/aabb.geom",
+                                      "../../src/shader/minimal.frag", vup::gl::Introspection::ubos);
     elapsed = std::chrono::microseconds(0);
+    glm::mat4 rotation(1.0f);
     float accum = 0;
     auto loop = [&](float dt) {
         accum += 1;
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         minimal.use();
         cam.update(window, dt);
+        rotation = glm::rotate(rotation, dt, glm::vec3(0,1,0));
+        model = glm::translate(rotation, -center);
         mats.update(model, cam.get_view(), cam.get_projection());
         bounds_renderer.update_ubo("mvp", mats);
         minimal.update_ubo("mvp", mats);
@@ -186,7 +183,7 @@ int main() {
         bounds_vao.render(GL_LINES);
         gl_debug_logger.retrieve_log(std::cout);
         if (accum > 1000) {
-            std::cout << "Elapsed time for AABB calculation per frame: " << elapsed.count() / accum << "\xE6s\n";
+            std::cout << "Elapsed time for AABB calculation per frame: " << elapsed.count() / accum << "us\n";
             elapsed = std::chrono::microseconds(0);
             accum = 0;
         }

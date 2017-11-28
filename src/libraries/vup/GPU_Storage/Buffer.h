@@ -33,6 +33,10 @@ namespace vup
         void get_data(T& data);
         template <typename T>
         void get_data(std::vector<T>& data);
+        template <typename T>
+        void get_data(T& data, int offset);
+        template <typename T>
+        void get_data(std::vector<T>& data, int offset);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
         void bind();
@@ -93,9 +97,13 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }
-    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
+    size_t size = data.size() * sizeof(T);
+    if (size > m_buffer_size) {
+        size = m_buffer_size;
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
                                                gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
-    std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(m_buffer_size));
+    std::memcpy(buffer_ptr, data.data(), size);
     glUnmapNamedBuffer(m_name);
 }
 
@@ -118,12 +126,16 @@ void vup::Buffer::update_data(const std::vector<T>& data, int offset) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }
-    if (offset < 0 || offset + data.size() > m_buffer_size) {
-        throw std::runtime_error{"Offset or size are impractical to update buffer" + std::to_string(m_name) + "."};
+    size_t size = data.size() * sizeof(T);
+    if (offset < 0) {
+        throw std::runtime_error{"Offset is impractical to update buffer" + std::to_string(m_name) + "."};
     }
-    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, data.size(),
+    if (offset + size > m_buffer_size) {
+        size = m_buffer_size - offset;
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, size,
         gl::cast_to_bit(gl::Access::write | gl::Access::invalidate_buffer));
-    std::memcpy(buffer_ptr, data.data(), static_cast<size_t>(data.size()));
+    std::memcpy(buffer_ptr, data.data(), size);
     glUnmapNamedBuffer(m_name);
 }
 
@@ -140,9 +152,13 @@ void vup::Buffer::get_data(T& data) {
     if (!m_readable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
     }
-    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
+    size_t size = sizeof(data);
+    if (size > m_buffer_size) {
+        size = m_buffer_size;
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
                                                gl::cast_to_bit(gl::Access::read));
-    std::memcpy(data, buffer_ptr, static_cast<size_t>(m_buffer_size));
+    std::memcpy(data, buffer_ptr, size);
     glUnmapNamedBuffer(m_name);
 }
 
@@ -151,10 +167,24 @@ void vup::Buffer::get_data(std::vector<T>& data) {
     if (!m_readable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
     }
-    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
+    size_t size = data.size() * sizeof(T);
+    if (size > m_buffer_size) {
+        size = m_buffer_size;
+    }
+    GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
                                                gl::cast_to_bit(gl::Access::read));
-    std::memcpy(data.data(), buffer_ptr, static_cast<size_t>(m_buffer_size));
+    std::memcpy(data.data(), buffer_ptr, size);
     glUnmapNamedBuffer(m_name);
+}
+
+template<typename T>
+void vup::Buffer::get_data(T& data, int offset) {
+
+}
+
+template<typename T>
+void vup::Buffer::get_data(std::vector<T>& data, int offset) {
+
 }
 
 template <typename T>

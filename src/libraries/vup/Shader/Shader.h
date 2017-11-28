@@ -46,7 +46,8 @@ namespace vup
     protected:
         explicit Shader(vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic);
         ~Shader();
-        GLuint load_shader(const filesystem::path& path, GLenum type) const;
+        GLuint load_shader(const filesystem::path& path, GLenum type);
+        std::vector<filesystem::path> find_includes(const std::string& source);
         void link_program() const;
         void init_shader_program(const std::vector<GLuint>& shader_ids);
         void attach_shaders(const std::vector<GLuint>& shader_ids) const;

@@ -16,10 +16,23 @@ vup::Shader::~Shader() {
     glDeleteProgram(m_program_id);
 }
 
-GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) const {
+GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
     std::cout << "Loading shader from file: " << path.string() << "\n";
     vup::File_loader f(path);
-    const GLchar* source = f.get_source_view().data();
+    size_t start = 0;
+    std::string f_source = f.get_source();
+    while ((start = f_source.find("#include", start)) != std::string::npos) {
+        size_t path_start = f_source.find("\"", start);
+        size_t path_end = f_source.find("\"", path_start+1);
+        filesystem::path path_inc(path.parent_path() / f_source.substr(path_start+1, path_end - path_start-1));
+        std::cout << "Including " << path_inc.string() << "\n";
+        size_t eol = f_source.find("\n", start);
+        f_source.erase(start, eol-start);
+        vup::File_loader f_inc(path_inc);
+        f_source.insert(start, f_inc.get_source());
+        start += f_inc.get_size()-1;
+    }
+    const GLchar* source = f_source.data();
     auto size = static_cast<GLint>(f.get_size());
     GLuint shader_id = glCreateShader(type);
     glShaderSource(shader_id, 1, &source, &size);
@@ -40,6 +53,10 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) const
                                  + error_log};
     }
     return shader_id;
+}
+
+std::vector<filesystem::path> vup::Shader::find_includes(const std::string& source) {
+    return std::vector<filesystem::path>();
 }
 
 void vup::Shader::use() const {

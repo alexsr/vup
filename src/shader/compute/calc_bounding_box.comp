@@ -9,7 +9,6 @@ struct Bounds {
     float max_z;
 };
 
-uniform float dt;
 uniform int max_index;
 uniform int max_blocks;
 layout (local_size_x = 1024) in;
@@ -21,9 +20,9 @@ layout (std430, binding = 4) buffer bounds_buffer {
     Bounds bounds[];
 };
 void main() {
-    uint id = gl_GlobalInvocationID.x;
-    uint tid = gl_LocalInvocationIndex;
     uint bid = gl_WorkGroupID.x;
+    uint tid = gl_LocalInvocationIndex;
+    uint id = gl_GlobalInvocationID.x;
     if (id < max_index) {
         shared_bounds[tid].min_x = pos[id].x;
         shared_bounds[tid].min_y = pos[id].y;
@@ -63,7 +62,6 @@ void main() {
             }
 	    }
     }
-    barrier();
     if (tid == 0 && max_blocks > bid) {
         bounds[bid].min_x = shared_bounds[0].min_x;
         bounds[bid].min_y = shared_bounds[0].min_y;

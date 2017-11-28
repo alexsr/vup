@@ -17,7 +17,7 @@ out vec3 pass_normal;
 
 void main() {
     pass_normal = vec3(transpose(inverse(view * model)) * normal);
-    vec4 new_pos = view * model * position;
+    vec4 new_pos = model * position;
     mesh_verts[gl_VertexID] = new_pos;
 	gl_Position = projection * view * model * position;
 }

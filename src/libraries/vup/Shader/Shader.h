@@ -84,12 +84,18 @@ namespace vup
         if (find_map_entry(name, m_ubos)) {
             m_ubos.at(name).update_data(data);
         }
+        else {
+            std::cout << "UBO " << name << " not found.";
+        }
     }
 
     template<typename T>
     void vup::Shader::update_ssbo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {
             m_ssbos.at(name).update_data(data);
+        }
+        else {
+            std::cout << "SSBO " << name << " not found.";
         }
     }
 

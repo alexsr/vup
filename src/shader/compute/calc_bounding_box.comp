@@ -9,6 +9,12 @@ struct Bounds {
     float max_z;
 };
 
+layout (std140, binding = 9) uniform mvp {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+};
+
 uniform int max_index;
 uniform int max_blocks;
 layout (local_size_x = 1024) in;
@@ -24,12 +30,13 @@ void main() {
     uint tid = gl_LocalInvocationIndex;
     uint id = gl_GlobalInvocationID.x;
     if (id < max_index) {
-        shared_bounds[tid].min_x = pos[id].x;
-        shared_bounds[tid].min_y = pos[id].y;
-        shared_bounds[tid].min_z = pos[id].z;
-        shared_bounds[tid].max_x = pos[id].x;
-        shared_bounds[tid].max_y = pos[id].y;
-        shared_bounds[tid].max_z = pos[id].z;
+        vec4 p = model * pos[id];
+        shared_bounds[tid].min_x = p.x;
+        shared_bounds[tid].min_y = p.y;
+        shared_bounds[tid].min_z = p.z;
+        shared_bounds[tid].max_x = p.x;
+        shared_bounds[tid].max_y = p.y;
+        shared_bounds[tid].max_z = p.z;
     }
     else {
         shared_bounds[tid].max_x = -1.0f/0.0f;

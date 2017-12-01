@@ -64,10 +64,12 @@ void vup::Trackball_camera::update(vup::Window window, float dt) {
 void vup::Trackball_camera::resize() {
     std::array<int, 4> viewport{};
     glGetIntegerv(GL_VIEWPORT, viewport.data());
-    m_width = viewport.at(2);
-    m_height = viewport.at(3);
-    m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height),
-                                    m_near, m_far);
+    if (m_width != viewport.at(2) || m_height != viewport.at(3)) {
+        m_width = viewport.at(2);
+        m_height = viewport.at(3);
+        m_projection = glm::perspective(m_fov, m_width / static_cast<float>(m_height),
+                                        m_near, m_far);
+    }
 }
 
 void vup::Trackball_camera::update_view() {

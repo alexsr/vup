@@ -37,6 +37,6 @@ void vup::Buffer::delete_buffer() {
 
 void vup::Buffer::initialize_empty_storage(unsigned int size) {
     m_buffer_size = size;
-    glNamedBufferStorage(m_name, m_buffer_size, nullptr, gl::cast_to_bit(m_storage_flags));
+    glNamedBufferStorage(m_name, m_buffer_size, nullptr, gl::to_gl(m_storage_flags));
     m_storage_initialized = true;
 }

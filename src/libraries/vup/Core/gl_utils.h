@@ -51,14 +51,14 @@ namespace vup
             client = GL_CLIENT_STORAGE_BIT
 
         };
-        constexpr std::underlying_type_t<Storage> cast_to_bit(Storage s) {
+        constexpr std::underlying_type_t<Storage> to_gl(Storage s) {
             return static_cast<std::underlying_type_t<Storage>>(s);
         }
         constexpr Storage operator|(Storage s1, Storage s2) {
-            return static_cast<Storage>(cast_to_bit(s1) | cast_to_bit(s2));
+            return static_cast<Storage>(to_gl(s1) | to_gl(s2));
         }
         constexpr bool operator&(Storage s1, Storage s2) {
-            return (cast_to_bit(s1) & cast_to_bit(s2)) != 0;
+            return (to_gl(s1) & to_gl(s2)) != 0;
         }
         enum class Access : GLbitfield {
             read = GL_MAP_READ_BIT, write = GL_MAP_WRITE_BIT,
@@ -71,26 +71,26 @@ namespace vup
             unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
 
         };
-        constexpr std::underlying_type_t<Access> cast_to_bit(Access s) {
+        constexpr std::underlying_type_t<Access> to_gl(Access s) {
             return static_cast<std::underlying_type_t<Access>>(s);
         }
         constexpr Access operator|(Access s1, Access s2) {
-            return static_cast<Access>(cast_to_bit(s1) | cast_to_bit(s2));
+            return static_cast<Access>(to_gl(s1) | to_gl(s2));
         }
         constexpr bool operator&(Access s1, Access s2) {
-            return (cast_to_bit(s1) & cast_to_bit(s2)) != 0;
+            return (to_gl(s1) & to_gl(s2)) != 0;
         }
         enum class Introspection : GLbitfield {
             none = 0, basic = 2, ubos = 4, ssbos = 8
         };
-        constexpr std::underlying_type_t<Introspection> cast_to_bit(Introspection i) {
+        constexpr std::underlying_type_t<Introspection> to_gl(Introspection i) {
             return static_cast<std::underlying_type_t<Introspection>>(i);
         }
         constexpr Introspection operator|(Introspection i1, Introspection i2) {
-            return static_cast<Introspection>(cast_to_bit(i1) | cast_to_bit(i2));
+            return static_cast<Introspection>(to_gl(i1) | to_gl(i2));
         }
         constexpr bool operator&(Introspection i1, Introspection i2) {
-            return (cast_to_bit(i1) & cast_to_bit(i2)) != 0;
+            return (to_gl(i1) & to_gl(i2)) != 0;
         }
     }
 }

@@ -7,7 +7,8 @@ include_directories(
     ${GLEW_INCLUDE_PATH}
     ${GLFW3_INCLUDE_PATH}
     ${GLM_INCLUDE_PATH}
-    ${RAPIDJSON_INCLUDE_PATH}
+    ${STB_INCLUDE_PATH}
+    ${ASSIMP_INCLUDE_PATH}
     ${EXTERNAL_LIBRARY_PATHS}
     ${LIBRARIES_PATH}
 )
@@ -20,6 +21,10 @@ add_definitions(-DGLEW_NO_GLU)
 
 add_executable(${project_name} ${SOURCES} ${HEADER})
 
+if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    set(experimental_filesys_library stdc++fs)
+endif()
+
 target_link_libraries(
     ${project_name}
     PRIVATE ${ALL_LIBRARIES}
@@ -27,4 +32,6 @@ target_link_libraries(
     PUBLIC ${GLFW_STATIC_LIBRARIES}
     PUBLIC ${GLEW_LIBRARIES}
     PUBLIC ${OPENGL_LIBRARIES}
+    PUBLIC ${ASSIMP_LIBRARIES}
+    ${experimental_filesys_library}
 )

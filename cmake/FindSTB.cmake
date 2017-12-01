@@ -1,0 +1,14 @@
+set(STB_SEARCH_PATH ${DEPENDENCIES_PATH})
+
+find_path(STB_INCLUDE_PATH
+    NAMES stb/stb_image.h
+    PATHS ${STB_SEARCH_PATH}
+    PATH_SUFFIXES include)
+
+set(STB_FOUND "NO")
+if (STB_INCLUDE_PATH)
+    set(STB_FOUND "YES")
+    message("EXTERNAL LIBRARY 'STB' FOUND")
+else ()
+    message("ERROR: EXTERNAL LIBRARY 'STB' NOT FOUND")
+endif (STB_INCLUDE_PATH)

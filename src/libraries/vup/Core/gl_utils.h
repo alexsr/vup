@@ -24,6 +24,9 @@ namespace vup
         inline void clear_buffers() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
+        inline void set_clear_color(float r, float g, float b, float a) {
+            glClearColor(r, g, b, a);
+        }
         inline std::string shader_type_to_string(GLenum type) {
             switch (type) {
                 case GL_VERTEX_SHADER:
@@ -93,6 +96,35 @@ namespace vup
             return (to_gl(i1) & to_gl(i2)) != 0;
         }
     }
+    namespace tex {
+        enum class Format : GLenum {
+            r = GL_RED, b = GL_BLUE, g = GL_GREEN, rg = GL_RG,
+            rbg = GL_RGB, bgr = GL_BGR, rgba = GL_RGBA, bgra = GL_BGRA,
+            r_int = GL_RED_INTEGER, g_int = GL_GREEN_INTEGER,
+            b_int = GL_BLUE_INTEGER, rg_int = GL_RG_INTEGER,
+            rgb_int = GL_RGB_INTEGER, bgr_int = GL_BGR_INTEGER,
+            rgba_int = GL_RGBA_INTEGER, bgra_int = GL_BGRA_INTEGER,
+            depth = GL_DEPTH_COMPONENT, stencil = GL_STENCIL_INDEX,
+            depth_stencil = GL_DEPTH_STENCIL
+        };
+        constexpr std::underlying_type_t<Format> to_gl(Format i) {
+            return static_cast<std::underlying_type_t<Format>>(i);
+        }
+        enum class Type : GLenum {
+            ubyte = GL_UNSIGNED_BYTE, byte = GL_BYTE, ushort = GL_UNSIGNED_SHORT,
+            s = GL_UNSIGNED_SHORT, uint = GL_UNSIGNED_INT, i = GL_INT, f = GL_FLOAT
+        };
+        constexpr std::underlying_type_t<Type> to_gl(Type i) {
+            return static_cast<std::underlying_type_t<Type>>(i);
+        }
+    }
+    struct FBO_tex_desc {
+        GLenum target = GL_TEXTURE_2D;
+        tex::Format format = tex::Format::rgba;
+        GLint sized_format = GL_RGBA;
+        tex::Type type = tex::Type::ubyte;
+        bool as_rbo = false;
+    };
 }
 
 #endif //VUP_GL_UTILS_H

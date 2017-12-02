@@ -85,7 +85,7 @@ namespace vup
             m_ubos.at(name).update_data(data);
         }
         else {
-            std::cout << "UBO " << name << " not found.";
+            std::cout << "UBO " << name << " not found.\n";
         }
     }
 
@@ -95,7 +95,7 @@ namespace vup
             m_ssbos.at(name).update_data(data);
         }
         else {
-            std::cout << "SSBO " << name << " not found.";
+            std::cout << "SSBO " << name << " not found.\n";
         }
     }
 

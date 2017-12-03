@@ -44,7 +44,7 @@ vup::Texture vup::FBO::get_texture(unsigned long i) {
     return m_textures.at(i);
 }
 
-GLuint vup::FBO::attach_color_component(vup::FBO_tex_desc t, unsigned int i) {
+void vup::FBO::attach_color_component(vup::FBO_tex_desc t, unsigned int i) {
     if (t.as_rbo) {
         auto rb = m_renderbuffers.emplace_back(t, m_width, m_height);
         glNamedFramebufferRenderbuffer(m_id, GL_COLOR_ATTACHMENT0 + i, GL_RENDERBUFFER, rb.get_id());
@@ -56,7 +56,7 @@ GLuint vup::FBO::attach_color_component(vup::FBO_tex_desc t, unsigned int i) {
     }
 }
 
-GLuint vup::FBO::attach_depth_component(vup::FBO_tex_desc t) {
+void vup::FBO::attach_depth_component(vup::FBO_tex_desc t) {
     if (t.as_rbo) {
         auto rb = m_renderbuffers.emplace_back(t, m_width, m_height);
         glNamedFramebufferRenderbuffer(m_id, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb.get_id());

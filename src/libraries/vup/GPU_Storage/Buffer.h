@@ -9,11 +9,11 @@
 #define VUP_BUFFER_H
 
 #include <vup/Core/vup.h>
-#include <vup/Core/gl_utils.h>
 #include <vector>
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "storage_utils.h"
 
 namespace vup
 {
@@ -87,7 +87,7 @@ void vup::Buffer::update_data(const T& data) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, m_buffer_size,
-                                               gl::to_gl(gl::Access::write | gl::Access::invalidate_buffer));
+                                               gl::to_gl(gl::Map_access::write | gl::Map_access::invalidate_buffer));
     std::memcpy(buffer_ptr, &data, static_cast<size_t>(m_buffer_size));
     glUnmapNamedBuffer(m_name);
 }
@@ -102,7 +102,7 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
         size = m_buffer_size;
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
-                                               gl::to_gl(gl::Access::write | gl::Access::invalidate_buffer));
+                                               gl::to_gl(gl::Map_access::write | gl::Map_access::invalidate_buffer));
     std::memcpy(buffer_ptr, data.data(), size);
     glUnmapNamedBuffer(m_name);
 }
@@ -116,7 +116,7 @@ void vup::Buffer::update_data(const T& data, int offset, int size) {
         throw std::runtime_error{"Offset or size are impractical to update buffer" + std::to_string(m_name) + "."};
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, size,
-                                               gl::to_gl(gl::Access::write | gl::Access::invalidate_buffer));
+                                               gl::to_gl(gl::Map_access::write | gl::Map_access::invalidate_buffer));
     std::memcpy(buffer_ptr, &data, static_cast<size_t>(size));
     glUnmapNamedBuffer(m_name);
 }
@@ -134,7 +134,7 @@ void vup::Buffer::update_data(const std::vector<T>& data, int offset) {
         size = m_buffer_size - offset;
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, offset, size,
-                                               gl::to_gl(gl::Access::write | gl::Access::invalidate_buffer));
+                                               gl::to_gl(gl::Map_access::write | gl::Map_access::invalidate_buffer));
     std::memcpy(buffer_ptr, data.data(), size);
     glUnmapNamedBuffer(m_name);
 }
@@ -157,7 +157,7 @@ void vup::Buffer::get_data(T& data) {
         size = m_buffer_size;
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
-                                               gl::to_gl(gl::Access::read));
+                                               gl::to_gl(gl::Map_access::read));
     std::memcpy(data, buffer_ptr, size);
     glUnmapNamedBuffer(m_name);
 }
@@ -172,7 +172,7 @@ void vup::Buffer::get_data(std::vector<T>& data) {
         size = m_buffer_size;
     }
     GLvoid* buffer_ptr = glMapNamedBufferRange(m_name, 0, size,
-                                               gl::to_gl(gl::Access::read));
+                                               gl::to_gl(gl::Map_access::read));
     std::memcpy(data.data(), buffer_ptr, size);
     glUnmapNamedBuffer(m_name);
 }

@@ -12,20 +12,19 @@
 #include "Renderbuffer.h"
 #include <vector>
 #include <stdexcept>
-#include <string>
 #include <map>
 
 namespace vup
 {
     class FBO {
     public:
-        FBO(int width, int height, std::vector<vup::FBO_tex_desc> textures);
+        FBO(int width, int height, std::vector<vup::FBO_attachment> textures);
         void bind();
         void unbind();
         vup::Texture get_texture(unsigned long i);
     private:
-        void attach_color_component(FBO_tex_desc t, unsigned int i);
-        void attach_depth_component(FBO_tex_desc t);
+        GLuint attach_color_component(FBO_attachment t, unsigned int i);
+        GLuint attach_depth_component(FBO_attachment t);
         void check_fbo_status();
         GLuint m_id = 0;
         int m_width;

@@ -38,12 +38,13 @@ int main() {
     vup::Cube q;
     vup::VAO vao(q);
     vup::VAO r_vao(r);
-    vup::FBO_tex_desc t;
-    vup::FBO_tex_desc d{GL_TEXTURE_2D, vup::tex::Format::depth, GL_R32F, vup::tex::Type::f, true};
+    vup::FBO_attachment t;
+    vup::FBO_attachment d{GL_TEXTURE_2D, vup::gl::Tex_format::depth, GL_R32F, vup::gl::Tex_type::f, true};
     vup::FBO fbo(width, height, {t, t, t, d});
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};
-    screenfilling_quad.update_uniform("image", fbo.get_texture(0).activate(0));
+    fbo.get_texture(0).activate(0);
+    screenfilling_quad.update_uniform("image", 0);
     auto loop = [&](float dt) {
         fbo.bind();
         vup::gl::clear_buffers();

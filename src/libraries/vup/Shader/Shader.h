@@ -15,6 +15,7 @@
 #include <memory>
 #include <iostream>
 #include <array>
+#include "shader_utils.h"
 
 namespace vup
 {

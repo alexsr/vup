@@ -8,14 +8,14 @@
 #include "FBO.h"
 
 vup::FBO::FBO(int width, int height,
-              std::vector<vup::FBO_tex_desc> textures)
+              std::vector<vup::FBO_attachment> textures)
         : m_width(width), m_height(height) {
     glCreateFramebuffers(1, &m_id);
     std::vector<GLenum> attachments;
     bool has_depth_attachment = false;
     GLuint i = 0;
     for (auto t : textures) {
-        if (t.format == tex::Format::depth) {
+        if (t.format == gl::Tex_format::depth) {
             if (has_depth_attachment) {
                 throw std::runtime_error{"FBO " + std::to_string(m_id) + " already has a depth attachment."};
             }
@@ -44,7 +44,7 @@ vup::Texture vup::FBO::get_texture(unsigned long i) {
     return m_textures.at(i);
 }
 
-void vup::FBO::attach_color_component(vup::FBO_tex_desc t, unsigned int i) {
+GLuint vup::FBO::attach_color_component(vup::FBO_attachment t, unsigned int i) {
     if (t.as_rbo) {
         auto rb = m_renderbuffers.emplace_back(t, m_width, m_height);
         glNamedFramebufferRenderbuffer(m_id, GL_COLOR_ATTACHMENT0 + i, GL_RENDERBUFFER, rb.get_id());
@@ -56,7 +56,7 @@ void vup::FBO::attach_color_component(vup::FBO_tex_desc t, unsigned int i) {
     }
 }
 
-void vup::FBO::attach_depth_component(vup::FBO_tex_desc t) {
+GLuint vup::FBO::attach_depth_component(vup::FBO_attachment t) {
     if (t.as_rbo) {
         auto rb = m_renderbuffers.emplace_back(t, m_width, m_height);
         glNamedFramebufferRenderbuffer(m_id, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb.get_id());

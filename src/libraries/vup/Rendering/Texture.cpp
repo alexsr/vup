@@ -7,7 +7,7 @@
 
 #include "Texture.h"
 
-vup::Texture::Texture(vup::FBO_tex_desc t, int width, int height) {
+vup::Texture::Texture(vup::FBO_attachment t, int width, int height) {
     glGenTextures(1, &m_id);
     m_target = t.target;
     m_format = t.format;
@@ -21,7 +21,7 @@ void vup::Texture::resize(int width, int height) {
     m_height = height;
     glBindTexture(m_target, m_id);
     glTexImage2D(m_target, 0, m_sized_format, width, height, 0,
-                 tex::to_gl(m_format), tex::to_gl(m_type), nullptr);
+                 gl::to_gl(m_format), gl::to_gl(m_type), nullptr);
     glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -36,8 +36,11 @@ GLenum vup::Texture::get_target() {
     return m_target;
 }
 
-GLuint vup::Texture::activate(GLuint unit) {
+void vup::Texture::activate(GLuint unit) {
     glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(m_target, m_id);
-    return unit;
+}
+
+void vup::Texture::bind_to_image(GLuint unit, gl::Img_access access, GLenum format) {
+    glBindImageTexture(unit, m_id, 0, GL_FALSE, 0, gl::to_gl(access), format);
 }

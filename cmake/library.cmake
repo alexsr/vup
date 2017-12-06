@@ -22,12 +22,15 @@ add_definitions(-DGLEW_NO_GLU)
 add_library(${project_name} ${SOURCES} ${HEADER})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    find_package(X11)
+    set(X11_LIBRARIES ${X11_LIBRARIES} Xrandr Xxf86vm Xi pthread dl Xinerama Xcursor)
     set(experimental_filesys_library stdc++fs)
 endif()
 
 target_link_libraries(
     ${project_name}
     INTERFACE ${ALL_LIBRARIES}
+    PUBLIC ${X11_LIBRARIES}
     PUBLIC ${GLFW3_LIBRARIES}
     PUBLIC ${GLFW_STATIC_LIBRARIES}
     PUBLIC ${GLEW_LIBRARIES}

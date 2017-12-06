@@ -22,6 +22,8 @@ add_definitions(-DGLEW_NO_GLU)
 add_executable(${project_name} ${SOURCES} ${HEADER})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    find_package(X11)
+    set(X11_LIBRARIES ${X11_LIBRARIES} Xrandr Xxf86vm Xi pthread dl Xinerama Xcursor)
     set(experimental_filesys_library stdc++fs)
 endif()
 

@@ -34,12 +34,18 @@ vup::Base_VAO::Base_VAO(const vup::Geometric_primitive& primitive,
 }
 
 
-vup::Base_VAO::Base_VAO(const vup::Mesh& mesh) {
-    auto vbos = mesh.get_VBOs();
+vup::Base_VAO::Base_VAO(const vup::Mesh& mesh,
+                        const std::initializer_list<vup::VBO>& vbos) {
+    auto mesh_vbos = mesh.get_VBOs();
     glCreateVertexArrays(1, &m_name);
     m_count = mesh.get_count();
-    for (unsigned int i = 0; i < vbos.size(); i++) {
-        set_attrib_buffer(vbos.at(i), i);
+    for (unsigned int i = 0; i < mesh_vbos.size(); i++) {
+        set_attrib_buffer(mesh_vbos.at(i), i);
+    }
+    unsigned int i = m_count;
+    for (auto&& v : vbos) {
+        set_attrib_buffer(v, i);
+        i++;
     }
 }
 

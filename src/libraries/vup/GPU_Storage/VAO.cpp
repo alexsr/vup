@@ -17,7 +17,7 @@ vup::VAO::VAO(const vup::Geometric_primitive& primitive,
         : Base_VAO(primitive, vbos) {
 }
 
-vup::VAO::VAO(vup::Mesh mesh) : Base_VAO(mesh) {
+vup::VAO::VAO(vup::Mesh mesh, const std::initializer_list<vup::VBO>& vbos) : Base_VAO(mesh) {
 }
 
 void vup::VAO::render(GLenum render_mode) {

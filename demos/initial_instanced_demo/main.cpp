@@ -20,6 +20,9 @@ int main() {
     vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
     vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
     vup::Instanced_VAO vao(vup::Cube(1.0f), {offset, color});
+    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    resize_callback(nullptr, 800, 600);
+    window.set_resize(resize_callback);
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
     while (!window.should_close()) {

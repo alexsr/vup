@@ -10,8 +10,8 @@
 int vup::Window::next_id = 0;
 
 vup::Window::Window(int width, int height, const std::string& title, bool debug,
-                    int gl_major, int gl_minor, GLFWmonitor* monitor, GLFWwindow* share,
-                    int swap_interval)
+                    int gl_major, int gl_minor, GLFWmonitor* monitor,
+                    GLFWwindow* share, int swap_interval)
         : m_id(next_id++), m_width(width), m_height(height) {
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
@@ -24,9 +24,6 @@ vup::Window::Window(int width, int height, const std::string& title, bool debug,
         glfwTerminate();
         throw std::runtime_error{"Failed to create window " + std::to_string(m_id) + "."};
     }
-    glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int w, int h) {
-        glViewport(0, 0, w, h);
-    });
     make_current();
     glfwSwapInterval(swap_interval);
     vup::gl::init_GLEW();
@@ -59,6 +56,10 @@ void vup::Window::step_loop_fixed(float dt, std::function<void(float)> loop) {
 
 int vup::Window::get_id() {
     return m_id;
+}
+
+void vup::Window::set_resize(GLFWwindowsizefun resize) {
+    glfwSetWindowSizeCallback(m_window, resize);
 }
 
 GLFWwindow* vup::Window::get() {

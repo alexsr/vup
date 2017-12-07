@@ -41,6 +41,9 @@ int main() {
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
     bunny.get_VBO(0).bind_base(0);
+    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    resize_callback(nullptr, width, height);
+    window.set_resize(resize_callback);
     vup::SSBO random_pos(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};

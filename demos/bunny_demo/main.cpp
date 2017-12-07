@@ -36,6 +36,9 @@ int main() {
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
+    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    resize_callback(nullptr, width, height);
+    window.set_resize(resize_callback);
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     glm::mat4 model(1.0f);

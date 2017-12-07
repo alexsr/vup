@@ -17,6 +17,9 @@ int main() {
     vup::init_demo_OpenGL_params();
     glEnable(GL_POINT_SPRITE);
     vup::V_F_shader minimal("../../src/shader/point.vert", "../../src/shader/point.frag");
+    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    resize_callback(nullptr, 800, 600);
+    window.set_resize(resize_callback);
     unsigned int instances = 100;
     glPointSize(105.0f);
     vup::VBO positions(vup::generate_random_data(instances * 3, -1, 1), 3);

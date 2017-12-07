@@ -41,6 +41,9 @@ int main() {
                             vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
+    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    resize_callback(nullptr, width, height);
+    window.set_resize(resize_callback);
     glm::mat4 model(1.0f);
     MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
     bool allow_reset;

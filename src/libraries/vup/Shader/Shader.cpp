@@ -7,8 +7,9 @@
 
 #include "Shader.h"
 
-vup::Shader::Shader(vup::gl::Introspection introspection_flag)
-        : m_introspection_flag(introspection_flag) {
+vup::Shader::Shader(vup::gl::Introspection introspection_flag,
+                    const std::vector<Shader_define>& defines)
+        : m_introspection_flag(introspection_flag), m_defines(defines) {
     m_program_id = glCreateProgram();
 }
 
@@ -19,8 +20,12 @@ vup::Shader::~Shader() {
 GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
     std::cout << "Loading shader from file: " << path.string() << "\n";
     vup::File_loader f(path);
-    size_t start = 0;
     std::string f_source = f.get_source();
+    size_t version_start = f_source.find("#version", 0);
+    size_t start = f_source.find("\n", version_start) + 1;
+    for (auto& d : m_defines) {
+        f_source.insert(start, "#define " + d.name + " " + std::to_string(d.value) + "\n");
+    }
     while ((start = f_source.find("#include", start)) != std::string::npos) {
         size_t path_start = f_source.find("\"", start);
         size_t path_end = f_source.find("\"", path_start+1);
@@ -33,7 +38,7 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
         start += f_inc.get_size()-1;
     }
     const GLchar* source = f_source.data();
-    auto size = static_cast<GLint>(f.get_size());
+    GLint size = static_cast<GLint>(f_source.size());
     GLuint shader_id = glCreateShader(type);
     glShaderSource(shader_id, 1, &source, &size);
     glCompileShader(shader_id);

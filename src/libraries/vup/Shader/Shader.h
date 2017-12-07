@@ -19,6 +19,10 @@
 
 namespace vup
 {
+    struct Shader_define {
+        std::string name;
+        int value;
+    };
     class Shader {
     public:
         void use() const;
@@ -45,7 +49,8 @@ namespace vup
         void update_uniform(const std::string& name, glm::mat3 v);
         void update_uniform(const std::string& name, glm::mat4 v);
     protected:
-        explicit Shader(vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic);
+        explicit Shader(vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic,
+                        const std::vector<Shader_define>& defines = {});
         ~Shader();
         GLuint load_shader(const filesystem::path& path, GLenum type);
         std::vector<filesystem::path> find_includes(const std::string& source);
@@ -64,6 +69,7 @@ namespace vup
         void clear_maps();
         GLuint m_program_id;
         vup::gl::Introspection m_introspection_flag;
+        std::vector<Shader_define> m_defines;
         std::map<std::string, vup::UBO> m_ubos;
         std::map<std::string, vup::SSBO> m_ssbos;
         std::map<std::string, Uniform<int>> m_int_uniforms;

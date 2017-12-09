@@ -15,7 +15,6 @@
 
 namespace vup
 {
-
 // Provides the functionality of a trackball camera.
 // The view matrix for the current camera view is calculated and
 // is accessable as well as the projection.
@@ -68,8 +67,6 @@ namespace vup
         void update_view();
         void move_camera(Window window, float dt);
     };
-
-
 }
 
 #endif //VUP_TRACKBALL_CAMERA_H

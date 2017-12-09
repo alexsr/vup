@@ -29,6 +29,8 @@ namespace vup
         GLint m_sized_format = GL_RGBA;
         gl::Tex_type m_type = gl::Tex_type::ubyte;
         GLuint m_id = 0;
+        GLenum m_min_filter;
+        GLenum m_mag_filter;
     };
 }
 

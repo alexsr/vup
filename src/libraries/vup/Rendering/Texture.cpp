@@ -13,6 +13,8 @@ vup::Texture::Texture(vup::FBO_attachment t, int width, int height) {
     m_format = t.format;
     m_sized_format = t.sized_format;
     m_type = t.type;
+    m_min_filter = GL_LINEAR;
+    m_mag_filter = GL_LINEAR;
     resize(width, height);
 }
 
@@ -24,8 +26,8 @@ void vup::Texture::resize(int width, int height) {
                  gl::to_gl(m_format), gl::to_gl(m_type), nullptr);
     glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, m_min_filter);
+    glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, m_mag_filter);
 }
 
 GLuint vup::Texture::get_id() {

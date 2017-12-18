@@ -26,6 +26,7 @@ namespace vup
         void swap_buffer();
         void run_loop_fixed(float dt, std::function<void(float)> loop);
         void step_loop_fixed(float dt, std::function<void(float)> loop);
+        void resize(int w, int h);
         void set_resize(GLFWwindowsizefun resize);
         int get_id();
         GLFWwindow* get();

@@ -58,6 +58,12 @@ int vup::Window::get_id() {
     return m_id;
 }
 
+void vup::Window::resize(int w, int h) {
+    glfwSetWindowSize(m_window, w, h);
+    m_width = w;
+    m_height = h;
+}
+
 void vup::Window::set_resize(GLFWwindowsizefun resize) {
     glfwSetWindowSizeCallback(m_window, resize);
 }

@@ -12,6 +12,7 @@ vup::Buffer::Buffer(GLenum target, vup::gl::Storage flags) : m_target(target), m
     glCreateBuffers(1, &m_name);
     m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
     m_readable = m_storage_flags & gl::Storage::read;
+    m_storage_initialized = false;
 }
 
 GLuint vup::Buffer::get_name() const {
@@ -33,6 +34,10 @@ void vup::Buffer::unbind() {
 void vup::Buffer::delete_buffer() {
     unbind();
     glDeleteBuffers(1, &m_name);
+}
+
+bool vup::Buffer::is_initialized() {
+    return m_storage_initialized;
 }
 
 void vup::Buffer::initialize_empty_storage(unsigned int size) {

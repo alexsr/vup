@@ -42,6 +42,7 @@ namespace vup
         void bind();
         void unbind();
         void delete_buffer();
+        bool is_initialized();
     protected:
         explicit Buffer(GLenum target, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
@@ -144,7 +145,9 @@ void vup::Buffer::set_data(const T& data) {
     if (!m_storage_initialized) {
         initialize_storage(data);
     }
-    update_data(data);
+    else {
+        update_data(data);
+    }
 }
 
 template<typename T>

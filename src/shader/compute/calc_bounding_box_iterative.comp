@@ -17,8 +17,11 @@ layout (std140, binding = 9) uniform mvp {
 
 uniform int max_index;
 uniform int max_blocks;
-layout (local_size_x = 64) in;
+layout (local_size_x = 1024) in;
 shared Bounds shared_bounds[gl_WorkGroupSize.x];
+layout (std430, binding = 5) buffer mesh {
+    vec4 pos[];
+};
 layout (std430, binding = 4) buffer bounds_buffer {
     Bounds bounds[];
 };
@@ -27,12 +30,13 @@ void main() {
     uint tid = gl_LocalInvocationIndex;
     uint id = gl_GlobalInvocationID.x;
     if (id < max_index) {
-        shared_bounds[tid].min_x = bounds[id].min_x;
-        shared_bounds[tid].min_y = bounds[id].min_y;
-        shared_bounds[tid].min_z = bounds[id].min_z;
-        shared_bounds[tid].max_x = bounds[id].max_x;
-        shared_bounds[tid].max_y = bounds[id].max_y;
-        shared_bounds[tid].max_z = bounds[id].max_z;
+        vec4 p = model * pos[id];
+        shared_bounds[tid].min_x = p.x;
+        shared_bounds[tid].min_y = p.y;
+        shared_bounds[tid].min_z = p.z;
+        shared_bounds[tid].max_x = p.x;
+        shared_bounds[tid].max_y = p.y;
+        shared_bounds[tid].max_z = p.z;
     }
     else {
         shared_bounds[tid].max_x = -1.0f/0.0f;

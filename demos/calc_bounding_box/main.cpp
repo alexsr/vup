@@ -35,8 +35,10 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
-    vup::Compute_shader calc_box1024("../../src/shader/compute/calc_bounding_box.comp");
-    vup::Compute_shader calc_box128("../../src/shader/compute/calc_bounding_box128.comp");
+    vup::Compute_shader calc_box1024("../../src/shader/compute/calc_bounding_box_iterative.comp",
+                                     vup::gl::Introspection::basic, {{"N", 1024}});
+    vup::Compute_shader calc_box64("../../src/shader/compute/reduce_aabb.comp",
+                                    vup::gl::Introspection::basic, {{"N", 64}});
     vup::V_F_shader minimal("../../src/shader/mvp_ubo.vert", "../../src/shader/normal_rendering.frag",
                             vup::gl::Introspection::ubos | vup::gl::Introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
@@ -53,9 +55,9 @@ int main() {
     calc_box1024.update_uniform("max_index", bunny.get_count());
     calc_box1024.update_uniform("max_blocks", max_blocks);
     std::cout << "Max blocks " << max_blocks << "\n";
-    calc_box128.update_uniform("max_index", max_blocks);
-    int max_last_blocks = static_cast<int>(glm::ceil(max_blocks / calc_box128.get_workgroup_size_x()));
-    calc_box128.update_uniform("max_blocks", max_last_blocks);
+    calc_box64.update_uniform("max_index", max_blocks);
+    int max_last_blocks = static_cast<int>(glm::ceil(max_blocks / calc_box64.get_workgroup_size_x()));
+    calc_box64.update_uniform("max_blocks", max_last_blocks);
     struct Bounds {
         float min_x;
         float max_x;
@@ -69,9 +71,9 @@ int main() {
     bunny.get_VBO(0).bind_base(5);
     auto start = std::chrono::system_clock::now();
     calc_box1024.run(bunny.get_count());
-    calc_box128.run(max_blocks);
+    calc_box64.run(max_blocks);
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start);
-    bounds.resize(max_last_blocks);
+    bounds.resize(static_cast<unsigned long>(max_last_blocks));
     bounds_ssbo.get_data(bounds);
     float min_x = FLT_MAX;
     float min_y = FLT_MAX;
@@ -120,7 +122,7 @@ int main() {
         minimal.update_ubo("mvp", mats);
         start = std::chrono::system_clock::now();
         calc_box1024.run(bunny.get_count());
-        calc_box128.run(max_blocks);
+        calc_box64.run(max_blocks);
         bounds_ssbo.get_data(bounds);
         min_x = FLT_MAX;
         min_y = FLT_MAX;

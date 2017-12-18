@@ -15,7 +15,8 @@ namespace vup
     class Compute_shader : public vup::Shader {
     public:
         explicit Compute_shader(const filesystem::path& compute_path,
-                                vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic);
+                                vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic,
+                                const std::vector<Shader_define>& defines = {});
         void reload() override;
         void run(float x = 1, float y = 1, float z = 1);
         void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1);

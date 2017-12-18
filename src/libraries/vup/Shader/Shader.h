@@ -30,6 +30,8 @@ namespace vup
         template <typename T>
         void update_ubo(const std::string& name, const T& data);
         template <typename T>
+        void set_ssbo_data(const std::string& name, const T& data);
+        template <typename T>
         void update_ssbo(const std::string& name, const T& data);
         void update_uniform(const std::string& name, bool v);
         void update_uniform(const std::string& name, unsigned int v);
@@ -96,6 +98,15 @@ namespace vup
         }
     }
 
+    template<typename T>
+    void vup::Shader::set_ssbo_data(const std::string& name, const T& data) {
+        if (find_map_entry(name, m_ssbos)) {
+            m_ssbos.at(name).set_data(data);
+        }
+        else {
+            std::cout << "SSBO " << name << " not found.\n";
+        }
+    }
     template<typename T>
     void vup::Shader::update_ssbo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {

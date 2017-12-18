@@ -16,8 +16,10 @@ layout (std140, binding = 9) uniform mats {
 };
 
 out vec4 pass_color;
+flat out int id;
 
 void main() {
+    id = gl_InstanceID;
     pass_color = color;
-	gl_Position = mvp[gl_InstanceID].projection * mvp[gl_InstanceID].view * mvp[gl_InstanceID].model * position;
+	gl_Position = mvp[id].projection * mvp[id].view * mvp[id].model * position;
 }

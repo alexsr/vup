@@ -1,0 +1,181 @@
+#version 450
+
+layout (local_size_x = 64) in;
+
+#include "sph_particle.inc.comp"
+
+uniform float dt;
+
+layout (std430, binding = 4) buffer bound_buffer {
+    vec4 bounds[36];
+};
+
+layout (std430, binding = 8) buffer particles {
+    SPH_particle p[N];
+};
+
+vec3 calc_normal(vec4 o, vec4 a, vec4 b) {
+    vec3 v1 = vec3(a - o);
+    vec3 v2 = vec3(b - o);
+    vec3 n = cross(v1, v2);
+    return n/length(n);
+}
+
+float calc_wall_intersection(vec4 o, vec4 a, vec4 b, vec4 pos, float r) {
+    vec3 v1 = vec3(a - o);
+    vec3 v2 = vec3(b - o);
+    vec3 n = cross(v1, v2);
+    float d = dot(vec3(pos - o), n) / length(n);
+    float inside_a = dot(v1, vec3(pos-o)) / length(v1);
+    float inside_b = dot(v2, vec3(pos-o)) / length(v2);
+    if (inside_a < length(v1) && inside_b < length(v2)) {
+        return d-r;
+    }
+    return r;
+}
+
+vec3 reflect(vec3 d, vec3 n) {
+    if (dot(d, n) < 0) {
+        return d - 2.0f*dot(n, d)*n;
+    }
+    return d;
+}
+
+float poly_six(float h, float r) {
+    r = abs(r);
+    if (0 <= r && r < h) {
+        return pow(h * h - r * r, 3);
+    }
+    return 0.0f;
+}
+
+vec4 spiky_gradient(float h, vec4 v) {
+    float r = abs(length(v));
+    if (0 <= r && r < h) {
+        return v * (h - r) * (h - r) * (h - r) / r;
+    }
+    return vec4(0.0f);
+}
+
+float visc(float h, float r) {
+    r = abs(r);
+    if (0 <= r && r < h) {
+        return h - r;
+    }
+    return 0.0f;
+}
+
+void collide_with_wall(float radius) {
+    bool collision = false;
+    uint id = gl_GlobalInvocationID.x;
+    float d = calc_wall_intersection(bounds[1], bounds[0], bounds[2], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[1], bounds[0], bounds[2]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[7], bounds[6], bounds[8], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[7], bounds[6], bounds[8]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[13], bounds[12], bounds[14], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[13], bounds[12], bounds[14]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[19], bounds[18], bounds[20], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[19], bounds[18], bounds[20]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[25], bounds[24], bounds[26], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[25], bounds[24], bounds[26]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[31], bounds[30], bounds[32], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[31], bounds[30], bounds[32]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    if (collision) {
+        p[id].vel *= 0.9f;
+    }
+}
+
+void main() {
+    float radius = 0.05f;
+    float smoothing_length = 4.0f * radius;
+    float pi = 3.14159;
+    float poly_six_const = 315.0f/(64.0f*pi*pow(smoothing_length, 9));
+    float spiky_const = 45.0f/(pi*pow(smoothing_length, 6));
+    uint id = gl_GlobalInvocationID.x;
+    float mass = smoothing_length * smoothing_length * smoothing_length * p[id].rest_density;
+    int neighbor_amount = 50;
+    int neighbors[50];
+    int neighbor_counter = 0;
+    for (int index = 0; index < N; index++) {
+        if (index == id) {
+            continue;
+        }
+        if (distance(p[id].pos.xyz, p[index].pos.xyz) <= smoothing_length) {
+                neighbors[neighbor_counter] = index;
+                neighbor_counter++;
+        }
+        if (neighbor_counter >= neighbor_amount - 1) {
+            break;
+        }
+    }
+
+    barrier();
+
+    float density_id = poly_six(smoothing_length, 0.0);
+    float pressure_id = 0;
+    float k = 5.0f;
+    for (int i = 0; i < neighbor_counter; i++) {
+        int j = neighbors[i];
+        density_id += poly_six(smoothing_length, distance(p[id].pos.xyz, p[j].pos.xyz));
+    }
+
+    p[id].density = mass * poly_six_const * density_id;
+//    p[id].pressure = k * (density_id - p[id].rest_density);
+    p[id].pressure = k * (pow(p[id].density / p[id].rest_density, 7.0f) - 1.0f);
+    barrier();
+
+    float visc_const = 0.02f;
+    vec4 pressure_force = vec4(0.0f);
+    vec4 visc_force = vec4(0.0f);
+    for (int i = 0; i < neighbor_counter; i++) {
+        int j = neighbors[i];
+        vec4 pij = p[id].pos - p[j].pos;
+        pressure_force += 0.5 * (p[id].pressure + p[j].pressure)/p[j].density
+                          * spiky_gradient(smoothing_length, pij);
+        visc_force += (p[j].vel - p[id].vel) / p[j].density * visc(smoothing_length, distance(p[id].pos.xyz, p[j].pos.xyz));
+    }
+    p[id].force = vec4(0.0f);
+    p[id].force.xyz = (mass * spiky_const * pressure_force / p[id].density + mass * spiky_const * visc_const * visc_force).xyz;
+
+    barrier();
+
+
+    vec4 acc_extern = vec4(0.0f);
+    acc_extern.y = -9.81f;
+    vec4 a = vec4((p[id].force.xyz) / mass + acc_extern.xyz, 0.0f);
+    p[id].vel += a * dt;
+    vec4 new_pos = p[id].pos + p[id].vel * dt;
+    p[id].old_pos = p[id].pos;
+    p[id].pos = new_pos;
+    collide_with_wall(radius);
+}

@@ -1,0 +1,10 @@
+struct SPH_particle {
+    vec4 pos;
+    vec4 old_pos;
+    vec4 vel;
+    vec4 force;
+    float mass;
+    float rest_density;
+    float pressure;
+    float density;
+};

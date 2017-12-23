@@ -1,0 +1,14 @@
+#version 450
+
+layout (local_size_x = 32) in;
+
+uniform mat4 model;
+
+layout (std430, binding = 4) buffer bound_buffer {
+    vec4 bounds[36];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    bounds[id] = model * bounds[id];
+}

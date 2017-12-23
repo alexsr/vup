@@ -1,0 +1,1 @@
+include(${CMAKE_MODULE_PATH}/library.cmake)

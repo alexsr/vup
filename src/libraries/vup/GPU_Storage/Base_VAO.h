@@ -20,6 +20,7 @@ namespace vup
         void bind();
         void unbind();
         void delete_vao();
+        vup::VBO get_vbo(unsigned long i);
     protected:
         explicit Base_VAO(const vup::VBO& main_vbo,
                           const std::initializer_list<vup::VBO>& vbos = {});
@@ -31,6 +32,7 @@ namespace vup
         void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);
         GLuint m_name = 0;
         unsigned int m_count = 0;
+        std::vector<vup::VBO> m_vbos;
     };
 }
 

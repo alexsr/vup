@@ -67,6 +67,8 @@ void vup::Base_VAO::set_attrib_buffer(const vup::VBO& v, unsigned int i) {
     glVertexArrayVertexBuffer(m_name, i, v.get_name(), 0, v.get_stride());
     set_attrib_format(i, v.get_vertex_size(), v.get_format());
     glVertexArrayAttribBinding(m_name, i, i);
+    m_vbos.push_back(v);
+
 }
 
 void vup::Base_VAO::set_attrib_format(unsigned int index, GLint vertex_size, GLenum format) {
@@ -81,4 +83,8 @@ void vup::Base_VAO::set_attrib_format(unsigned int index, GLint vertex_size, GLe
     else {
         glVertexArrayAttribFormat(m_name, index, vertex_size, format, GL_FALSE, 0);
     }
+}
+
+vup::VBO vup::Base_VAO::get_vbo(unsigned long i) {
+    return m_vbos.at(i);
 }

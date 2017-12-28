@@ -19,9 +19,6 @@ out vec3 pass_normal;
 
 void main() {
     pass_normal = vec3(transpose(inverse(view * model)) * normal);
-    pass_normal.r = 0;
-    if (p[gl_InstanceID].rest_density < 1200) {
-        pass_normal.r = 1;
-    }
+//    pass_normal = vec3(0, p[gl_InstanceID].density / 1000.0f, 0);
 	gl_Position = projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0);
 }

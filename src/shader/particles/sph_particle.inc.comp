@@ -1,10 +1,41 @@
 struct SPH_particle {
     vec4 pos;
-    vec4 old_pos;
     vec4 vel;
+    vec4 acc;
     vec4 force;
     float mass;
     float rest_density;
     float pressure;
     float density;
 };
+
+struct SPH_demo_constants {
+    float r;
+    float h;
+    float poly6;
+    float spiky;
+};
+
+float poly_six(float h, float r) {
+    r = abs(r);
+    if (0 <= r && r < h) {
+        return pow(h * h - r * r, 3);
+    }
+    return 0.0f;
+}
+
+vec4 spiky_gradient(float h, vec4 v) {
+    float r = abs(length(v));
+    if (0 <= r && r < h) {
+        return v * (h - r) * (h - r) * (h - r) / r;
+    }
+    return vec4(0.0f);
+}
+
+float visc(float h, float r) {
+    r = abs(r);
+    if (0 <= r && r < h) {
+        return h - r;
+    }
+    return 0.0f;
+}

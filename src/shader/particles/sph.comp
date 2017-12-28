@@ -1,10 +1,13 @@
 #version 450
 
-layout (local_size_x = 64) in;
+layout (local_size_x = 128) in;
 
 #include "sph_particle.inc.comp"
 
 uniform float dt;
+layout (std140, binding = 3) uniform demo_constants{
+    SPH_demo_constants demo_consts;
+};
 
 layout (std430, binding = 4) buffer bound_buffer {
     vec4 bounds[36];
@@ -39,30 +42,6 @@ vec3 reflect(vec3 d, vec3 n) {
         return d - 2.0f*dot(n, d)*n;
     }
     return d;
-}
-
-float poly_six(float h, float r) {
-    r = abs(r);
-    if (0 <= r && r < h) {
-        return pow(h * h - r * r, 3);
-    }
-    return 0.0f;
-}
-
-vec4 spiky_gradient(float h, vec4 v) {
-    float r = abs(length(v));
-    if (0 <= r && r < h) {
-        return v * (h - r) * (h - r) * (h - r) / r;
-    }
-    return vec4(0.0f);
-}
-
-float visc(float h, float r) {
-    r = abs(r);
-    if (0 <= r && r < h) {
-        return h - r;
-    }
-    return 0.0f;
 }
 
 void collide_with_wall(float radius) {
@@ -115,14 +94,30 @@ void collide_with_wall(float radius) {
     }
 }
 
-void main() {
-    float radius = 0.05f;
-    float smoothing_length = 4.0f * radius;
-    float pi = 3.14159;
-    float poly_six_const = 315.0f/(64.0f*pi*pow(smoothing_length, 9));
-    float spiky_const = 45.0f/(pi*pow(smoothing_length, 6));
+void integrate_verlet(float dt) {
     uint id = gl_GlobalInvocationID.x;
-    float mass = smoothing_length * smoothing_length * smoothing_length * p[id].rest_density;
+    vec4 acc_extern = vec4(0.0f);
+    acc_extern.y = -9.81f;
+    vec4 a = vec4((p[id].force.xyz) / p[id].mass + acc_extern.xyz, 0.0f);
+    p[id].pos += p[id].vel * dt + 0.5 * p[id].acc * dt * dt;
+    p[id].vel += (p[id].acc + a) * 0.5 * dt;
+    p[id].acc = a;
+}
+
+void integrate_euler(float dt) {
+    uint id = gl_GlobalInvocationID.x;
+    vec4 acc_extern = vec4(0.0f);
+    acc_extern.y = -9.81f;
+    vec4 a = vec4((p[id].force.xyz) / p[id].mass + acc_extern.xyz, 0.0f);
+    p[id].vel += a * dt;
+    p[id].pos += p[id].vel * dt;
+}
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
     int neighbor_amount = 50;
     int neighbors[50];
     int neighbor_counter = 0;
@@ -130,7 +125,7 @@ void main() {
         if (index == id) {
             continue;
         }
-        if (distance(p[id].pos.xyz, p[index].pos.xyz) <= smoothing_length) {
+        if (distance(p[id].pos.xyz, p[index].pos.xyz) <= demo_consts.h) {
                 neighbors[neighbor_counter] = index;
                 neighbor_counter++;
         }
@@ -141,15 +136,15 @@ void main() {
 
     barrier();
 
-    float density_id = poly_six(smoothing_length, 0.0);
+    float density_id = poly_six(demo_consts.h, 0.0);
     float pressure_id = 0;
-    float k = 5.0f;
+    float k = 2000.0f;
     for (int i = 0; i < neighbor_counter; i++) {
         int j = neighbors[i];
-        density_id += poly_six(smoothing_length, distance(p[id].pos.xyz, p[j].pos.xyz));
+        density_id += poly_six(demo_consts.h, distance(p[id].pos.xyz, p[j].pos.xyz));
     }
 
-    p[id].density = mass * poly_six_const * density_id;
+    p[id].density = p[id].mass * demo_consts.poly6 * density_id;
 //    p[id].pressure = k * (density_id - p[id].rest_density);
     p[id].pressure = k * (pow(p[id].density / p[id].rest_density, 7.0f) - 1.0f);
     barrier();
@@ -160,22 +155,16 @@ void main() {
     for (int i = 0; i < neighbor_counter; i++) {
         int j = neighbors[i];
         vec4 pij = p[id].pos - p[j].pos;
-        pressure_force += 0.5 * (p[id].pressure + p[j].pressure)/p[j].density
-                          * spiky_gradient(smoothing_length, pij);
-        visc_force += (p[j].vel - p[id].vel) / p[j].density * visc(smoothing_length, distance(p[id].pos.xyz, p[j].pos.xyz));
+        pressure_force += (p[id].pressure / (p[id].density * p[id].density)
+                          + p[j].pressure / (p[j].density * p[j].density))
+                          * spiky_gradient(demo_consts.h, pij);
+        visc_force += (p[j].vel - p[id].vel) / p[j].density * visc(demo_consts.h, distance(p[id].pos.xyz, p[j].pos.xyz));
     }
     p[id].force = vec4(0.0f);
-    p[id].force.xyz = (mass * spiky_const * pressure_force / p[id].density + mass * spiky_const * visc_const * visc_force).xyz;
+    p[id].force.xyz = (p[id].mass * demo_consts.spiky * (p[id].mass * pressure_force / p[id].density + visc_const * visc_force)).xyz;
 
     barrier();
 
-
-    vec4 acc_extern = vec4(0.0f);
-    acc_extern.y = -9.81f;
-    vec4 a = vec4((p[id].force.xyz) / mass + acc_extern.xyz, 0.0f);
-    p[id].vel += a * dt;
-    vec4 new_pos = p[id].pos + p[id].vel * dt;
-    p[id].old_pos = p[id].pos;
-    p[id].pos = new_pos;
-    collide_with_wall(radius);
+    integrate_euler(dt);
+    collide_with_wall(demo_consts.r);
 }

@@ -49,14 +49,20 @@ int main() {
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    vup::Instanced_VAO particle_spheres(vup::Sphere(0.05f));
-    auto particle_data = vup::fill_uniformly(0.05f, -0.6f, 0.6f, 1000.0f);
+    float radius = 0.05;
+    vup::Sphere sphere(radius);
+    vup::Instanced_VAO particle_spheres(sphere);
+    auto particle_data = vup::create_uniform_SPH_particles(radius, -0.6f, 0.6f,
+                                                           1000.0f,
+                                                           radius * 4.0f);
+    vup::SPH_demo_constants demo_consts(radius);
     vup::SSBO particles(particle_data, 8);
     auto instances = static_cast<int>(particle_data.size());
     vup::V_F_shader particle_shader("../../src/shader/particles/instanced_sph.vert", "../../src/shader/particles/particles.frag",
                                     vup::gl::Introspection::ubos, {{"N", instances}});
     particle_shader.update_ubo("mvp", mats);
     vup::Compute_shader sph("../../src/shader/particles/sph.comp", vup::gl::Introspection::ubos, {{"N", instances}});
+    sph.update_ubo("demo_constants", demo_consts);
     vup::Compute_shader rotate_box("../../src/shader/compute/rotate_box.comp");
     bounds_vao.get_vbo(0).bind_base(4);
     sph.update_uniform("dt", delta);

@@ -14,8 +14,8 @@ namespace vup
 {
     struct SPH_particle {
         glm::vec4 pos;
-        glm::vec4 old_pos;
         glm::vec4 vel;
+        glm::vec4 acc;
         glm::vec4 force;
         float mass;
         float rest_density;

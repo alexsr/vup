@@ -13,10 +13,30 @@
 
 namespace vup
 {
-    std::vector<SPH_particle> fill_uniformly(float radius, float lower, float upper,
-                                             float rest_density) {
-        float step = radius * 2.0f + 0.0001f;
-        float mass = 4.0f/3.0f * glm::pi<float>() * rest_density * radius * radius * radius;
+    struct SPH_demo_constants {
+        explicit SPH_demo_constants(float r = 0.1f)
+                : SPH_demo_constants(r, 4*r) {}
+        explicit SPH_demo_constants(float r, float h) {
+            radius = r;
+            smoothing_length = h;
+            float h3 = h * h * h;
+            float h6 = h3 * h3;
+            poly_six_const = 315.0f/(64.0f * glm::pi<float>() * h3 * h6);
+            spiky_const = 45.0f/(glm::pi<float>() * h6);
+        }
+        float radius;
+        float smoothing_length;
+        float poly_six_const;
+        float spiky_const;
+    };
+
+    std::vector<SPH_particle> create_uniform_SPH_particles(float radius,
+                                                           float lower,
+                                                           float upper,
+                                                           float rest_density,
+                                                           float h) {
+        float step = radius * 2.0f;
+        float mass = rest_density * h * h * h;
         auto n = static_cast<int>((upper - lower) / step) - 1;
         std::vector<SPH_particle> result(static_cast<unsigned long>(n * n * n));
         for (unsigned long i = 0; i < n; i++) {
@@ -25,18 +45,12 @@ namespace vup
                     result.at(i*n*n + j*n + k).pos = glm::vec4(i * step + lower + radius,
                                                                j * step + lower + radius,
                                                                k * step + lower + radius, 1.0f);
-                    result.at(i*n*n + j*n + k).old_pos = glm::vec4(i * step + lower + radius,
-                                                                   j * step + lower + radius,
-                                                                   k * step + lower + radius, 1.0f);
+                    result.at(i*n*n + j*n + k).acc = glm::vec4(0.0f);
                     result.at(i*n*n + j*n + k).vel = glm::vec4(0.0f);
                     result.at(i*n*n + j*n + k).force = glm::vec4(0.0f);
                     result.at(i*n*n + j*n + k).mass = mass;
                     result.at(i*n*n + j*n + k).rest_density = rest_density;
                     result.at(i*n*n + j*n + k).density = rest_density;
-                    if (i * n * n + j * n + k < n * n * n / 2) {
-                        result.at(i*n*n + j*n + k).rest_density *= 2;
-                        result.at(i*n*n + j*n + k).density *= 2;
-                    }
                 }
             }
         }

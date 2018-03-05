@@ -1,0 +1,131 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particles.inc.comp"
+
+uniform float dt;
+
+layout (std430, binding = 3) buffer particles {
+    Fluid_particle p[N];
+};
+
+layout (std430, binding = 4) buffer demo_constants{
+    SPH_demo_constants demo_consts;
+};
+
+layout (std430, binding = 5) buffer neighborhood_data {
+    int neighbor[NEIGHBOR_ARRAY_SIZE];
+};
+
+layout (std430, binding = 6) buffer neighborhood_count {
+    int neighbor_counter[N];
+};
+
+layout (std430, binding = 12) buffer bound_buffer {
+    vec4 bounds[36];
+};
+
+vec3 calc_normal(vec4 o, vec4 a, vec4 b) {
+    vec3 v1 = vec3(a - o);
+    vec3 v2 = vec3(b - o);
+    vec3 n = cross(v1, v2);
+    return n/length(n);
+}
+
+float calc_wall_intersection(vec4 o, vec4 a, vec4 b, vec4 pos, float r) {
+    vec3 v1 = vec3(a - o);
+    vec3 v2 = vec3(b - o);
+    vec3 n = cross(v1, v2);
+    float d = dot(vec3(pos - o), n) / length(n);
+    float inside_a = dot(v1, vec3(pos-o)) / length(v1);
+    float inside_b = dot(v2, vec3(pos-o)) / length(v2);
+    if (inside_a < length(v1) && inside_b < length(v2)) {
+        return d-r;
+    }
+    return r;
+}
+
+vec3 reflect(vec3 d, vec3 n) {
+    if (dot(d, n) < 0) {
+        return d - 2.0f*dot(n, d)*n;
+    }
+    return d;
+}
+
+void collide_with_wall(float radius) {
+    bool collision = false;
+    uint id = gl_GlobalInvocationID.x;
+    float d = calc_wall_intersection(bounds[1], bounds[0], bounds[2], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[1], bounds[0], bounds[2]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[7], bounds[6], bounds[8], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[7], bounds[6], bounds[8]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[13], bounds[12], bounds[14], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[13], bounds[12], bounds[14]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[19], bounds[18], bounds[20], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[19], bounds[18], bounds[20]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[25], bounds[24], bounds[26], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[25], bounds[24], bounds[26]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    d = calc_wall_intersection(bounds[31], bounds[30], bounds[32], p[id].pos, radius);
+    if (d < 0.0f) {
+        vec3 n = calc_normal(bounds[31], bounds[30], bounds[32]);
+        p[id].pos.xyz -= n * d;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+        collision = true;
+    }
+    if (collision) {
+        p[id].vel *= 0.9f;
+    }
+}
+
+void integrate_euler(float dt) {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    p[id].pressure_accel = vec4(0.0f);
+    float pressure_per_density2 = p[id].pressure / (p[id].density * p[id].density);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        vec4 pij = p[id].pos - p[j].pos;
+        p[id].pressure_accel -= p[j].mass * (pressure_per_density2 + p[j].pressure / (p[j].density * p[j].density))
+                                * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+    }
+    vec4 a = vec4(p[id].pressure_accel.xyz, 0.0f);
+    p[id].vel = p[id].vel_adv + a * dt;
+    p[id].pos += p[id].vel * dt;
+}
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    integrate_euler(dt);
+    collide_with_wall(demo_consts.r);
+}

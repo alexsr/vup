@@ -1,0 +1,28 @@
+#version 450
+
+uniform int max_index;
+uniform int max_blocks;
+layout (local_size_x = X) in;
+shared float shared_densities[gl_WorkGroupSize.x];
+
+layout (std430, binding = 7) buffer densities {
+    float rho_new[N];
+};
+void main() {
+    uint bid = gl_WorkGroupID.x;
+    uint tid = gl_LocalInvocationIndex;
+    uint id = gl_GlobalInvocationID.x;
+    shared_densities[tid] = 0;
+    if (id < max_index) {
+        shared_densities[tid] = rho_new[id];
+    }
+	barrier();
+    for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
+        if (tid < s) {
+            shared_densities[tid] += shared_densities[tid+s];
+	    }
+    }
+    if (tid == 0 && max_blocks > bid) {
+        rho_new[bid] = shared_densities[0];
+    }
+}

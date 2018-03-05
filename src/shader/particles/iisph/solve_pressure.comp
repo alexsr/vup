@@ -1,0 +1,60 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particles.inc.comp"
+
+uniform float dt;
+
+layout (std430, binding = 3) buffer particles {
+    Fluid_particle p[N];
+};
+
+layout (std430, binding = 4) buffer demo_constants{
+    SPH_demo_constants demo_consts;
+};
+
+layout (std430, binding = 5) buffer neighborhood_data {
+    int neighbor[NEIGHBOR_ARRAY_SIZE];
+};
+
+layout (std430, binding = 6) buffer neighborhood_count {
+    int neighbor_counter[N];
+};
+
+layout (std430, binding = 7) buffer densities {
+    float rho_new[N];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    float mass_per_density2 = p[id].mass / (p[id].density * p[id].density);
+    p[id].aij_pj_sum = 0;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        vec4 pij = p[id].pos - p[j].pos;
+        p[id].aij_pj_sum += p[j].mass * dot(p[id].dij_pj_sum - p[j].dii * p[j].last_pressure - p[j].dij_pj_sum
+                            + mass_per_density2 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij) * p[id].last_pressure,
+                            demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
+    }
+
+    float w = 0.5f;
+    float aii_dt2 = p[id].aii * dt * dt;
+    if (abs(aii_dt2) > 1.0e-9) {
+        p[id].pressure = max((1.0f - w) * p[id].last_pressure + w / aii_dt2
+                         * (p[id].rest_density - p[id].density_adv - dt * dt * p[id].aij_pj_sum), 0);
+     }
+     else {
+         p[id].pressure = 0.0f;
+     }
+     if (p[id].pressure != 0.0f) {
+        rho_new[id] = dt * dt * (p[id].aii * p[id].pressure + p[id].aij_pj_sum) + p[id].density_adv;
+    }
+    else {
+        rho_new[id] = p[id].rest_density;
+     }
+    p[id].last_pressure = p[id].pressure;
+}

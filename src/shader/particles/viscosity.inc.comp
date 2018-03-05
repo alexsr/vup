@@ -1,0 +1,3 @@
+vec4 calc_xsph_visc_force(float mass, vec4 vel_id, vec4 vel_j, float density) {
+    return mass * (vel_id - vel_j) / density;
+}

@@ -95,11 +95,8 @@ namespace vup
         float step = radius * 2.0f;
         auto n = static_cast<unsigned long>((upper - lower) / step) - 1;
         std::vector<IISPH_particle> result(static_cast<unsigned long>(n * n * n));
-#pragma omp parallel for
         for (unsigned long i = 0; i < n; i++) {
-#pragma omp parallel for
             for (unsigned long j = 0; j < n; j++) {
-#pragma omp parallel for
                 for (unsigned long k = 0; k < n; k++) {
                     result.at(i * n * n + j * n + k).pos = glm::vec4(i * step + lower + radius,
                                                                      j * step + lower + radius,

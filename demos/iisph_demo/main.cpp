@@ -48,13 +48,14 @@ int main() {
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float radius = 0.05;
+    float smoothing_length = 0.1;
+    float mass_scaling = 2.0f / 3.0f;
+    float radius = 1.0f / glm::pow(4.0f / 3.0f * glm::pi<float>(), 1.0f / 3.0f) * smoothing_length * mass_scaling;
+    auto particle_data = vup::create_uniform_IISPH_particles(smoothing_length, -0.6f, 1.0f,
+                                                             1000.0f, mass_scaling);
     vup::Sphere sphere(radius);
     vup::Instanced_VAO particle_spheres(sphere);
-    auto particle_data = vup::create_uniform_IISPH_particles(radius, -0.6f, 0.6f,
-                                                             1000.0f,
-                                                             radius * 2.0f);
-    vup::IISPH_demo_constants demo_consts(radius, 4.0f * radius);
+    vup::IISPH_demo_constants demo_consts(radius, smoothing_length);
     vup::SSBO demo_consts_buffer(demo_consts, 4);
     vup::SSBO particles(particle_data, 3);
     auto instances = static_cast<int>(particle_data.size());
@@ -111,7 +112,7 @@ int main() {
 
     vup::Compute_shader reduce_densities("../../src/shader/particles/iisph/reduce_densities.comp",
                                          vup::gl::Introspection::basic,
-                                         {{"X", "128"}, {"N", std::to_string(instances)}});
+                                         {{"X", "1024"}, {"N", std::to_string(instances)}});
     int max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
                                                 / reduce_densities.get_workgroup_size_x()));
     reduce_densities.update_uniform("max_index", instances);
@@ -127,7 +128,7 @@ int main() {
     float density_rest = 1000.0f;
     float eta = 1.0f;
 
-    auto loop = [&](float dt) {
+    const auto loop = [&](float dt) {
         rotate_box.run(bounds_cube.vertices.size());
         cam.update(curr_window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
@@ -148,7 +149,6 @@ int main() {
             }
             density_avg /= instances;
             iteration++;
-            std::cout << "Density average: " << density_avg << "\n";
         }
         integrate.run_with_barrier(instances);
         particle_renderer.update_ubo("mvp", mats);

@@ -98,9 +98,6 @@ void collide_with_wall(float radius) {
         p[id].vel.xyz = reflect(p[id].vel.xyz, n);
         collision = true;
     }
-    if (collision) {
-        p[id].vel *= 0.9f;
-    }
 }
 
 void integrate_euler(float dt) {

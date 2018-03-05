@@ -84,17 +84,22 @@ namespace vup
         return result;
     }
 
-    inline std::vector<IISPH_particle> create_uniform_IISPH_particles(float radius,
+    inline std::vector<IISPH_particle> create_uniform_IISPH_particles(float smoothing_length,
                                                                       float lower,
                                                                       float upper,
                                                                       float rest_density,
-                                                                      float h) {
-        float step = radius * 2.0f;
+                                                                      float mass_scaling) {
+        float h = mass_scaling * smoothing_length;
         float mass = rest_density * h * h * h;
-        auto n = static_cast<int>((upper - lower) / step) - 1;
+        float radius = 1.0f / glm::pow(4.0f/3.0f * glm::pi<float>(), 1.0f/3.0f) * h;
+        float step = radius * 2.0f;
+        auto n = static_cast<unsigned long>((upper - lower) / step) - 1;
         std::vector<IISPH_particle> result(static_cast<unsigned long>(n * n * n));
+#pragma omp parallel for
         for (unsigned long i = 0; i < n; i++) {
+#pragma omp parallel for
             for (unsigned long j = 0; j < n; j++) {
+#pragma omp parallel for
                 for (unsigned long k = 0; k < n; k++) {
                     result.at(i * n * n + j * n + k).pos = glm::vec4(i * step + lower + radius,
                                                                      j * step + lower + radius,

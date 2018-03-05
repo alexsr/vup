@@ -30,7 +30,7 @@ void main() {
         return;
     }
     p[id].dii = vec4(0.0);
-    float visc_const = 0.02f;
+    float visc_const = 0.002f;
     vec4 visc_force = vec4(0.0f);
     float density2 = p[id].density * p[id].density;
     for (int i = 0; i < neighbor_counter[id]; i++) {

@@ -7,14 +7,15 @@
 
 #include "Window.h"
 
+// The static variable next_id has to be initialized.
 int vup::Window::next_id = 0;
 
-vup::Window::Window(int width, int height, const std::string& title, bool debug,
-                    int gl_major, int gl_minor, GLFWmonitor* monitor,
-                    GLFWwindow* share, int swap_interval)
+vup::Window::Window(const int width, const int height, const std::string& title, const bool debug,
+                    const int gl_major, const int gl_minor, GLFWmonitor* monitor,
+                    GLFWwindow* share, const int swap_interval)
     : m_id(next_id++), m_width(width), m_height(height) {
     if (debug) {
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // enable OpenGL debugging
     }
     m_window = glfwCreateWindow(width, height, title.c_str(), monitor, share);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major);
@@ -26,48 +27,49 @@ vup::Window::Window(int width, int height, const std::string& title, bool debug,
     }
     make_current();
     glfwSwapInterval(swap_interval);
-    vup::gl::init_GLEW();
+    // Since GLEW has to be initialized separately for each OpenGL context, the method is called here.
+    gl::init_GLEW();
 }
 
-void vup::Window::make_current() {
+void vup::Window::make_current() const {
     glfwMakeContextCurrent(m_window);
 }
 
-bool vup::Window::should_close() {
+bool vup::Window::should_close() const {
     return glfwWindowShouldClose(m_window) == 1;
 }
 
-void vup::Window::swap_buffer() {
+void vup::Window::swap_buffer() const {
     glfwSwapBuffers(m_window);
 }
 
-void vup::Window::run_loop_fixed(float dt, std::function<void(float)> loop) {
+void vup::Window::run_loop_fixed(const float dt, const std::function<void(float)>& loop) const {
     while (!should_close()) {
         step_loop_fixed(dt, loop);
     }
 }
 
-void vup::Window::step_loop_fixed(float dt, std::function<void(float)> loop) {
-    vup::gl::clear_buffers();
+void vup::Window::step_loop_fixed(const float dt, const std::function<void(float)>& loop) const {
+    gl::clear_buffers();
     loop(dt);
     swap_buffer();
     glfwPollEvents();
 }
 
-int vup::Window::get_id() {
+int vup::Window::get_id() const {
     return m_id;
 }
 
-void vup::Window::resize(int w, int h) {
+void vup::Window::resize(const int w, const int h) {
     glfwSetWindowSize(m_window, w, h);
     m_width = w;
     m_height = h;
 }
 
-void vup::Window::set_resize(GLFWwindowsizefun resize) {
+void vup::Window::set_resize(GLFWwindowsizefun resize) const {
     glfwSetWindowSizeCallback(m_window, resize);
 }
 
-GLFWwindow* vup::Window::get() {
+GLFWwindow* vup::Window::get() const {
     return m_window;
 }

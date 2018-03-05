@@ -40,7 +40,7 @@ int main() {
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::Cube c;
-    auto color_vec = vup::generate_random_data(instances * 4, 0, 1);
+    auto color_vec = vup::generate_random_float_data(instances * 4, 0, 1);
     vup::Instanced_VBO color(color_vec);
     vup::Instanced_VAO vao(bunny, {color});
     vup::OpenGL_debug_logger gl_debug_logger;

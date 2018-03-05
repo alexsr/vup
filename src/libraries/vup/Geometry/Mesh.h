@@ -10,14 +10,10 @@
 
 #include <vup/GPU_Storage/VBO.h>
 #include <vup/GPU_Storage/Element_buffer.h>
-#include <assimp/scene.h>
-#include <assimp/mesh.h>
-#include <iostream>
-#include <map>
-#include <string>
 
 namespace vup
 {
+    // Mesh_data is used to store data which is commonly part of a mesh definition.
     struct Mesh_data {
         std::vector<glm::vec4> vertices;
         std::vector<glm::vec4> normals;
@@ -27,16 +23,17 @@ namespace vup
         unsigned int faces_count;
     };
 
+    // Mesh creates and stores the VBOs and index buffer for given Mesh_data.
     class Mesh {
     public:
         explicit Mesh(const Mesh_data& m);
-        const std::vector<vup::VBO>& get_VBOs() const;
-        vup::VBO get_VBO(unsigned int i);
-        vup::Element_buffer get_indices();
+        const std::vector<VBO>& get_vbos() const;
+        VBO get_vbo(unsigned int i);
+        Element_buffer get_index_buffer();
         unsigned int get_count() const;
     private:
-        std::vector<vup::VBO> m_vbos;
-        vup::Element_buffer m_index_buffer;
+        std::vector<VBO> m_vbos;
+        Element_buffer m_index_buffer;
         unsigned int m_count;
         unsigned int m_faces_count;
     };

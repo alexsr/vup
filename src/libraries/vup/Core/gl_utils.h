@@ -10,7 +10,6 @@
 
 #include "vup.h"
 #include <stdexcept>
-#include <string>
 
 namespace vup
 {

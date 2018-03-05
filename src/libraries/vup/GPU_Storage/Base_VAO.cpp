@@ -7,8 +7,8 @@
 
 #include "Base_VAO.h"
 
-vup::Base_VAO::Base_VAO(const vup::VBO& main_vbo,
-                        const std::initializer_list<vup::VBO>& vbos) {
+vup::Base_VAO::Base_VAO(const VBO& main_vbo,
+                        const std::initializer_list<VBO>& vbos) {
     glCreateVertexArrays(1, &m_name);
     set_attrib_buffer(main_vbo, 0);
     m_count = main_vbo.get_buffer_size() / main_vbo.get_stride();
@@ -19,13 +19,13 @@ vup::Base_VAO::Base_VAO(const vup::VBO& main_vbo,
     }
 }
 
-vup::Base_VAO::Base_VAO(const vup::Geometric_primitive& primitive,
-                        const std::initializer_list<vup::VBO>& vbos) {
+vup::Base_VAO::Base_VAO(const Geometric_primitive& primitive,
+                        const std::initializer_list<VBO>& vbos) {
     glCreateVertexArrays(1, &m_name);
-    set_attrib_buffer(vup::VBO(primitive.vertices), 0);
+    set_attrib_buffer(VBO(primitive.vertices), 0);
     m_count = static_cast<unsigned int>(primitive.vertices.size());
-    set_attrib_buffer(vup::VBO(primitive.normals, 3), 1);
-    set_attrib_buffer(vup::VBO(primitive.uv_coords, 2), 2);
+    set_attrib_buffer(VBO(primitive.normals, 3), 1);
+    set_attrib_buffer(VBO(primitive.uv_coords, 2), 2);
     unsigned int i = 3;
     for (auto&& v : vbos) {
         set_attrib_buffer(v, i);
@@ -34,9 +34,9 @@ vup::Base_VAO::Base_VAO(const vup::Geometric_primitive& primitive,
 }
 
 
-vup::Base_VAO::Base_VAO(const vup::Mesh& mesh,
-                        const std::initializer_list<vup::VBO>& vbos) {
-    auto mesh_vbos = mesh.get_VBOs();
+vup::Base_VAO::Base_VAO(const Mesh& mesh,
+                        const std::initializer_list<VBO>& vbos) {
+    auto mesh_vbos = mesh.get_vbos();
     glCreateVertexArrays(1, &m_name);
     m_count = mesh.get_count();
     for (unsigned int i = 0; i < mesh_vbos.size(); i++) {
@@ -62,7 +62,7 @@ void vup::Base_VAO::delete_vao() {
     glDeleteVertexArrays(1, &m_name);
 }
 
-void vup::Base_VAO::set_attrib_buffer(const vup::VBO& v, unsigned int i) {
+void vup::Base_VAO::set_attrib_buffer(const VBO& v, unsigned int i) {
     glEnableVertexArrayAttrib(m_name, i);
     glVertexArrayVertexBuffer(m_name, i, v.get_name(), 0, v.get_stride());
     set_attrib_format(i, v.get_vertex_size(), v.get_format());

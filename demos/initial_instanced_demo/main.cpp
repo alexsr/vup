@@ -17,8 +17,8 @@ int main() {
     vup::init_demo_OpenGL_params();
     vup::V_F_shader minimal("../../src/shader/mvp_instanced.vert", "../../src/shader/minimal_instanced.frag");
     unsigned int instances = 10;
-    vup::Instanced_VBO offset(vup::generate_random_data(instances * 2, -1.0f, 1.0f), 2);
-    vup::Instanced_VBO color(vup::generate_random_data(instances * 3, 0.0f, 1.0f), 3);
+    vup::Instanced_VBO offset(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f), 2);
+    vup::Instanced_VBO color(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f), 3);
     vup::Instanced_VAO vao(vup::Cube(1.0f), {offset, color});
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, 800, 600);
@@ -33,8 +33,8 @@ int main() {
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLES, instances);
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
-            offset.update_data(vup::generate_random_data(instances * 2, -1.0f, 1.0f));
-            color.update_data(vup::generate_random_data(instances * 3, 0.0f, 1.0f));
+            offset.update_data(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f));
+            color.update_data(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f));
             allow_reset = false;
         }
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {

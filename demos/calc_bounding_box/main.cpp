@@ -68,7 +68,7 @@ int main() {
     };
     std::vector<Bounds> bounds(static_cast<unsigned long>(max_blocks));
     vup::SSBO bounds_ssbo(bounds, 4, vup::gl::Storage::read);
-    bunny.get_VBO(0).bind_base(5);
+    bunny.get_vbo(0).bind_base(5);
     auto start = std::chrono::system_clock::now();
     calc_box1024.run(bunny.get_count());
     calc_box64.run(max_blocks);

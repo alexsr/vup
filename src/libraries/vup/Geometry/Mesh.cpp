@@ -16,15 +16,15 @@ vup::Mesh::Mesh(const Mesh_data& m) {
     m_index_buffer.set_data(m.indices);
 }
 
-const std::vector<vup::VBO>& vup::Mesh::get_VBOs() const {
+const std::vector<vup::VBO>& vup::Mesh::get_vbos() const {
     return m_vbos;
 }
 
-vup::VBO vup::Mesh::get_VBO(unsigned int i) {
+vup::VBO vup::Mesh::get_vbo(unsigned int i) {
     return m_vbos.at(i);
 }
 
-vup::Element_buffer vup::Mesh::get_indices() {
+vup::Element_buffer vup::Mesh::get_index_buffer() {
     return m_index_buffer;
 }
 

@@ -56,7 +56,7 @@ vup::Instanced_VAO::Instanced_VAO(const vup::Geometric_primitive& primitive,
 vup::Instanced_VAO::Instanced_VAO(const vup::Mesh& mesh,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
     : Base_VAO(mesh) {
-    auto i = static_cast<unsigned int>(mesh.get_VBOs().size());
+    auto i = static_cast<unsigned int>(mesh.get_vbos().size());
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
         set_divisor_qualifier(v, i);

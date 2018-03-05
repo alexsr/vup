@@ -12,7 +12,6 @@
 #include "Window.h"
 #include <iostream>
 #include <random>
-#include <functional>
 
 namespace vup
 {
@@ -39,7 +38,7 @@ namespace vup
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    inline std::vector<float> generate_random_data(int n, float lower_boundary,
+    inline std::vector<float> generate_random_float_data(int n, float lower_boundary,
                                                    float upper_boundary) {
         std::random_device rd;
         std::mt19937 gen(rd());

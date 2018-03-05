@@ -22,8 +22,8 @@ int main() {
     window.set_resize(resize_callback);
     unsigned int instances = 100;
     glPointSize(105.0f);
-    vup::VBO positions(vup::generate_random_data(instances * 3, -1, 1), 3);
-    vup::VBO color(vup::generate_random_data(instances * 3, 0, 1), 3);
+    vup::VBO positions(vup::generate_random_float_data(instances * 3, -1, 1), 3);
+    vup::VBO color(vup::generate_random_float_data(instances * 3, 0, 1), 3);
     vup::VAO vao(positions, {color});
     bool allow_reset = true;
     while (!window.should_close()) {
@@ -34,8 +34,8 @@ int main() {
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_POINTS);
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
-            positions.update_data(vup::generate_random_data(instances * 3, -1, 1));
-            color.update_data(vup::generate_random_data(instances * 3, 0, 1));
+            positions.update_data(vup::generate_random_float_data(instances * 3, -1, 1));
+            color.update_data(vup::generate_random_float_data(instances * 3, 0, 1));
             allow_reset = false;
         }
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {

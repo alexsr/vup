@@ -40,11 +40,11 @@ int main() {
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
-    bunny.get_VBO(0).bind_base(0);
+    bunny.get_vbo(0).bind_base(0);
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, width, height);
     window.set_resize(resize_callback);
-    vup::SSBO random_pos(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f), 4);
+    vup::SSBO random_pos(vup::generate_random_float_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};
     bool allow_reset;
@@ -60,7 +60,7 @@ int main() {
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
             move_verts.reload();
             move_verts.update_uniform("dt", 0.0001f);
-            random_pos.update_data(vup::generate_random_data(bunny.get_count() * 4, 0, 1.0f));
+            random_pos.update_data(vup::generate_random_float_data(bunny.get_count() * 4, 0, 1.0f));
             allow_reset = false;
         }
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {

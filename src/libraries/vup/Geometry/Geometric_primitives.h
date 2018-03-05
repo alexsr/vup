@@ -20,19 +20,19 @@ namespace vup
         std::vector<unsigned int> indices;
     };
 
-    struct Rectangle : public Geometric_primitive {
+    struct Rectangle : Geometric_primitive {
         explicit Rectangle(float x = 1.0f, float y = 1.0f);
     };
 
-    struct Rectangle_strip : public Geometric_primitive {
+    struct Rectangle_strip : Geometric_primitive {
         explicit Rectangle_strip(float x = 1.0f, float y = 1.0f);
     };
 
-    struct Cube : public Geometric_primitive {
+    struct Cube : Geometric_primitive {
         explicit Cube(float x = 1.0f, float y = 1.0f, float z = 1.0f);
     };
 
-    struct Sphere : public Geometric_primitive {
+    struct Sphere : Geometric_primitive {
         explicit Sphere(float r = 0.1f, int hres = 10, int vres = 10);
     };
 }

@@ -17,7 +17,7 @@ namespace vup
         explicit Storage_buffer(GLenum target, GLuint binding = 0,
                                 gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         Storage_buffer(GLenum target, GLuint binding, unsigned int size,
-                                gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+                       gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
         explicit Storage_buffer(GLenum target, const T& data, GLuint binding = 0,
                                 gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
@@ -42,20 +42,20 @@ namespace vup
     };
 }
 
-template<typename T>
+template <typename T>
 vup::Storage_buffer::Storage_buffer(GLenum target, const T& data, GLuint binding, gl::Storage flags)
-        : vup::Buffer(target, data, flags), m_binding(binding) {
+    : vup::Buffer(target, data, flags), m_binding(binding) {
     bind_base(binding);
 }
 
-template<typename T>
+template <typename T>
 vup::UBO::UBO(const T& data, GLuint binding, gl::Storage flags)
-        : vup::Storage_buffer(GL_UNIFORM_BUFFER, data, binding, flags) {
+    : vup::Storage_buffer(GL_UNIFORM_BUFFER, data, binding, flags) {
 }
 
-template<typename T>
+template <typename T>
 vup::SSBO::SSBO(const T& data, GLuint binding, gl::Storage flags)
-        : vup::Storage_buffer(GL_SHADER_STORAGE_BUFFER, data, binding, flags) {
+    : vup::Storage_buffer(GL_SHADER_STORAGE_BUFFER, data, binding, flags) {
 }
 
 #endif //VUP_STORAGE_BUFFER_H

@@ -10,8 +10,8 @@
 vup::Trackball_camera::Trackball_camera(int width, int height, float sens, float r,
                                         float zoom_sens, glm::vec3 center,
                                         float fov, float near, float far)
-        : m_width(width), m_height(height), m_sens(sens), m_radius(r), m_zoom_sens(zoom_sens),
-          m_center(center), m_fov(glm::radians(fov)), m_near(near), m_far(far) {
+    : m_width(width), m_height(height), m_sens(sens), m_radius(r), m_zoom_sens(zoom_sens),
+      m_center(center), m_fov(glm::radians(fov)), m_near(near), m_far(far) {
     m_theta = glm::pi<float>() / 2.0f;
     m_phi = 0.0f;
     update_view();
@@ -74,9 +74,9 @@ void vup::Trackball_camera::resize() {
 
 void vup::Trackball_camera::update_view() {
     glm::vec3 eye = m_center +
-               glm::vec3(m_radius * glm::sin(m_theta) * glm::sin(m_phi),
-                         m_radius * glm::cos(m_theta),
-                         m_radius * glm::sin(m_theta) * glm::cos(m_phi));
+                    glm::vec3(m_radius * glm::sin(m_theta) * glm::sin(m_phi),
+                              m_radius * glm::cos(m_theta),
+                              m_radius * glm::sin(m_theta) * glm::cos(m_phi));
     m_view = glm::lookAt(eye, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 

@@ -19,6 +19,8 @@ namespace vup
                                 const std::vector<Shader_define>& defines = {});
         void reload() override;
         void run(float x = 1, float y = 1, float z = 1);
+        void run_with_barrier(float x = 1, float y = 1, float z = 1,
+                              GLbitfield barriers = GL_SHADER_STORAGE_BARRIER_BIT);
         void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1);
         std::array<GLint, 3> get_workgroup_size();
         GLint get_workgroup_size_x();

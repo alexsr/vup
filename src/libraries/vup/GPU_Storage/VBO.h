@@ -35,10 +35,10 @@ namespace vup
     };
 }
 
-template<typename T>
+template <typename T>
 vup::VBO::VBO(const std::vector<T>& data, GLint vertex_size, GLenum format, gl::Storage flags)
-        : vup::Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
-          m_format(format) {
+    : vup::Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
+      m_format(format) {
     m_format_size = determine_format_size();
     m_stride = m_format_size * m_vertex_size;
 }

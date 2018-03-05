@@ -12,7 +12,7 @@ int vup::Window::next_id = 0;
 vup::Window::Window(int width, int height, const std::string& title, bool debug,
                     int gl_major, int gl_minor, GLFWmonitor* monitor,
                     GLFWwindow* share, int swap_interval)
-        : m_id(next_id++), m_width(width), m_height(height) {
+    : m_id(next_id++), m_width(width), m_height(height) {
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     }

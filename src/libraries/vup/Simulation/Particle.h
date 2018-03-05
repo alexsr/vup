@@ -23,6 +23,23 @@ namespace vup
         float density;
     };
 
+    struct IISPH_particle {
+        glm::vec4 pos;
+        glm::vec4 vel;
+        glm::vec4 vel_adv;
+        glm::vec4 pressure_force;
+        glm::vec4 dii;
+        glm::vec4 dij_pj_sum;
+        float mass;
+        float rest_density;
+        float density;
+        float density_adv;
+        float pressure;
+        float last_pressure;
+        float aii;
+        float aij_pj_sum;
+    };
+
     struct Collision_particle {
         glm::vec4 pos;
         glm::vec4 old_pos;

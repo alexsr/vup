@@ -30,7 +30,7 @@ void vup::File_loader::load(const filesystem::path& path, std::ios_base::openmod
     in.close();
 }
 
-const std::string& vup::File_loader::get_source() {
+std::string vup::File_loader::get_source() {
     return m_source;
 }
 

@@ -15,10 +15,10 @@
 
 namespace vup
 {
-// Provides the functionality of a trackball camera.
-// The view matrix for the current camera view is calculated and
-// is accessable as well as the projection.
-// A lot of parameters of this camera can be specified.
+    // Provides the functionality of a trackball camera.
+    // The view matrix for the current camera view is calculated and
+    // is accessable as well as the projection.
+    // A lot of parameters of this camera can be specified.
     class Trackball_camera {
     public:
         // Creates an instance of a trackball camera

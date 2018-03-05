@@ -10,7 +10,7 @@
 vup::Compute_shader::Compute_shader(const filesystem::path& compute_path,
                                     vup::gl::Introspection introspection_flag,
                                     const std::vector<Shader_define>& defines)
-        : Shader(introspection_flag, defines), m_compute_path(compute_path) {
+    : Shader(introspection_flag, defines), m_compute_path(compute_path) {
     std::vector<GLuint> shader_ids;
     shader_ids.push_back(load_shader(m_compute_path, GL_COMPUTE_SHADER));
     init_shader_program(shader_ids);
@@ -38,6 +38,14 @@ void vup::Compute_shader::run(float x, float y, float z) {
     glDispatchCompute(static_cast<GLuint>(glm::ceil(x / m_workgroup_size.at(0))),
                       static_cast<GLuint>(glm::ceil(y / m_workgroup_size.at(1))),
                       static_cast<GLuint>(glm::ceil(z / m_workgroup_size.at(2))));
+}
+
+void vup::Compute_shader::run_with_barrier(float x, float y, float z, GLbitfield barriers) {
+    use();
+    glDispatchCompute(static_cast<GLuint>(glm::ceil(x / m_workgroup_size.at(0))),
+                      static_cast<GLuint>(glm::ceil(y / m_workgroup_size.at(1))),
+                      static_cast<GLuint>(glm::ceil(z / m_workgroup_size.at(2))));
+    glMemoryBarrier(barriers);
 }
 
 void vup::Compute_shader::run_workgroups(GLuint x, GLuint y, GLuint z) {

@@ -9,7 +9,7 @@
 
 vup::OpenGL_debug_logger::OpenGL_debug_logger(GLenum source, GLenum type,
                                               GLenum severity)
-        : m_count(1) {
+    : m_count(1) {
     GLint context_flags;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flags);
     if ((context_flags & GL_CONTEXT_FLAG_DEBUG_BIT) != 0) {
@@ -33,9 +33,10 @@ void vup::OpenGL_debug_logger::retrieve_log(std::ostream& out) {
     std::vector<GLenum> severities(static_cast<unsigned long>(msg_count));
     std::vector<GLuint> ids(static_cast<unsigned long>(msg_count));
     std::vector<GLsizei> lengths(static_cast<unsigned long>(msg_count));
-    GLuint actual_msg_count = glGetDebugMessageLog(static_cast<GLuint>(msg_count), static_cast<GLsizei>(message_data.size()),
-                         sources.data(), types.data(), ids.data(),
-                         severities.data(), lengths.data(), message_data.data());
+    GLuint actual_msg_count = glGetDebugMessageLog(static_cast<GLuint>(msg_count),
+                                                   static_cast<GLsizei>(message_data.size()),
+                                                   sources.data(), types.data(), ids.data(),
+                                                   severities.data(), lengths.data(), message_data.data());
     auto data_it = message_data.begin();
     for (unsigned int i = 0; i < actual_msg_count; i++) {
         print_msg(out, sources.at(i), types.at(i), ids.at(i), severities.at(i),

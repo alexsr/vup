@@ -26,6 +26,7 @@ namespace vup
         unsigned int count;
         unsigned int faces_count;
     };
+
     class Mesh {
     public:
         explicit Mesh(const Mesh_data& m);

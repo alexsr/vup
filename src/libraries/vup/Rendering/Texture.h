@@ -19,7 +19,7 @@ namespace vup
         GLuint get_id();
         GLenum get_target();
         void activate(GLuint unit);
-        void bind_to_image(GLuint unit,gl::Img_access access = gl::Img_access::read_write,
+        void bind_to_image(GLuint unit, gl::Img_access access = gl::Img_access::read_write,
                            GLenum format = GL_RGBA8);
     private:
         int m_width = 0;

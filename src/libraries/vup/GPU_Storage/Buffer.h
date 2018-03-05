@@ -48,7 +48,8 @@ namespace vup
         template <typename T>
         explicit Buffer(GLenum target, const T& data, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
-        explicit Buffer(GLenum target, const std::vector<T>& data, gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+        explicit Buffer(GLenum target, const std::vector<T>& data,
+                        gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         void initialize_empty_storage(unsigned int size);
         template <typename T>
         void initialize_storage(const T& data);
@@ -64,25 +65,25 @@ namespace vup
     };
 }
 
-template<typename T>
+template <typename T>
 vup::Buffer::Buffer(GLenum target, const T& data, gl::Storage flags)
-        : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
+    : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
     m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
     m_readable = m_storage_flags & gl::Storage::read;
 }
 
-template<typename T>
+template <typename T>
 vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::Storage flags)
-        : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
+    : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
     m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
     m_readable = m_storage_flags & gl::Storage::read;
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::update_data(const T& data) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
@@ -93,7 +94,7 @@ void vup::Buffer::update_data(const T& data) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::update_data(const std::vector<T>& data) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
@@ -108,7 +109,7 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::update_data(const T& data, int offset, int size) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
@@ -122,7 +123,7 @@ void vup::Buffer::update_data(const T& data, int offset, int size) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::update_data(const std::vector<T>& data, int offset) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
@@ -140,7 +141,7 @@ void vup::Buffer::update_data(const std::vector<T>& data, int offset) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::set_data(const T& data) {
     if (!m_storage_initialized) {
         initialize_storage(data);
@@ -150,7 +151,7 @@ void vup::Buffer::set_data(const T& data) {
     }
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::get_data(T& data) {
     if (!m_readable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
@@ -165,7 +166,7 @@ void vup::Buffer::get_data(T& data) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::get_data(std::vector<T>& data) {
     if (!m_readable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not readable."};
@@ -180,12 +181,12 @@ void vup::Buffer::get_data(std::vector<T>& data) {
     glUnmapNamedBuffer(m_name);
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::get_data(T& data, int offset) {
 
 }
 
-template<typename T>
+template <typename T>
 void vup::Buffer::get_data(std::vector<T>& data, int offset) {
 
 }

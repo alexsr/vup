@@ -23,9 +23,11 @@ namespace vup
     struct Rectangle : public Geometric_primitive {
         explicit Rectangle(float x = 1.0f, float y = 1.0f);
     };
+
     struct Rectangle_strip : public Geometric_primitive {
         explicit Rectangle_strip(float x = 1.0f, float y = 1.0f);
     };
+
     struct Cube : public Geometric_primitive {
         explicit Cube(float x = 1.0f, float y = 1.0f, float z = 1.0f);
     };

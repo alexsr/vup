@@ -21,7 +21,7 @@ namespace vup
         explicit File_loader(const filesystem::path& path,
                              std::ios_base::openmode mode = std::ios::in);
         void load(const filesystem::path& path, std::ios_base::openmode mode = std::ios::in);
-        const std::string& get_source();
+        std::string get_source();
         std::string_view get_source_view();
         unsigned long get_size();
     private:

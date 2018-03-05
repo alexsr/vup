@@ -9,7 +9,7 @@
 
 vup::FBO::FBO(int width, int height,
               std::vector<vup::FBO_attachment> textures)
-        : m_width(width), m_height(height) {
+    : m_width(width), m_height(height) {
     glCreateFramebuffers(1, &m_id);
     std::vector<GLenum> attachments;
     bool has_depth_attachment = false;

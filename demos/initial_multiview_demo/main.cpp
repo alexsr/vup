@@ -8,7 +8,6 @@
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
 #include <vup/Shader/V_F_shader.h>
-#include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
 #include <vup/GPU_Storage/Instanced_VAO.h>
 #include <vup/Geometry/Mesh_loader.h>
@@ -33,17 +32,17 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::print_context_info();
     vup::init_demo_OpenGL_params();
-    unsigned int instances = 16*16;
+    unsigned int instances = 16 * 16;
     vup::V_F_shader multiviewport("../../src/shader/multiview/multiview.vert",
                                   "../../src/shader/multiview/multiview.frag",
                                   vup::gl::Introspection::basic,
-                                  {{"N", static_cast<int>(instances)}});
+                                  {{"N", std::to_string(instances)}});
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::Cube c;
     auto color_vec = vup::generate_random_data(instances * 4, 0, 1);
     vup::Instanced_VBO color(color_vec);
-    vup::Instanced_VAO vao(c, {color});
+    vup::Instanced_VAO vao(bunny, {color});
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE,
                                      GL_DEBUG_SEVERITY_NOTIFICATION);

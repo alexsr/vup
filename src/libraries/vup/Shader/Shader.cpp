@@ -9,7 +9,7 @@
 
 vup::Shader::Shader(vup::gl::Introspection introspection_flag,
                     const std::vector<Shader_define>& defines)
-        : m_introspection_flag(introspection_flag), m_defines(defines) {
+    : m_introspection_flag(introspection_flag), m_defines(defines) {
     m_program_id = glCreateProgram();
 }
 
@@ -24,18 +24,17 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
     size_t version_start = f_source.find("#version", 0);
     size_t start = f_source.find("\n", version_start) + 1;
     for (auto& d : m_defines) {
-        f_source.insert(start, "#define " + d.name + " " + std::to_string(d.value) + "\n");
+        f_source.insert(start, "#define " + d.name + " " + d.value + "\n");
     }
     while ((start = f_source.find("#include", start)) != std::string::npos) {
         size_t path_start = f_source.find("\"", start);
-        size_t path_end = f_source.find("\"", path_start+1);
-        filesystem::path path_inc(path.parent_path() / f_source.substr(path_start+1, path_end - path_start-1));
+        size_t path_end = f_source.find("\"", path_start + 1);
+        filesystem::path path_inc(path.parent_path() / f_source.substr(path_start + 1, path_end - path_start - 1));
         std::cout << "Including " << path_inc.string() << "\n";
         size_t eol = f_source.find("\n", start);
-        f_source.erase(start, eol-start);
+        f_source.erase(start, eol - start);
         vup::File_loader f_inc(path_inc);
-        f_source.insert(start, f_inc.get_source());
-        start += f_inc.get_size()-1;
+        f_source.insert(start, f_inc.get_source().c_str());
     }
     const GLchar* source = f_source.data();
     GLint size = static_cast<GLint>(f_source.size());
@@ -51,11 +50,13 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
         error_log.resize(static_cast<unsigned long>(log_size));
         glGetShaderInfoLog(shader_id, log_size, &log_size, error_log.data());
         glDeleteShader(shader_id);
-        throw std::runtime_error{"Error while compiling "
-                                 + vup::gl::shader_type_to_string(type) + ".\n"
-                                 + "Path: " + path.string() + "\n"
-                                 + "Error log: \n"
-                                 + error_log};
+        throw std::runtime_error{
+            "Error while compiling "
+            + vup::gl::shader_type_to_string(type) + ".\n"
+            + "Path: " + path.string() + "\n"
+            + "Error log: \n"
+            + error_log
+        };
     }
     return shader_id;
 }
@@ -79,11 +80,13 @@ void vup::Shader::link_program() const {
         error_log.resize(static_cast<unsigned long>(length));
         glGetProgramInfoLog(m_program_id, length, &length, &error_log[0]);
         glDeleteProgram(m_program_id);
-        throw std::runtime_error{"Error while linking shader program "
-                                 + vup::gl::shader_type_to_string(m_program_id) +
-                                 ".\n"
-                                 + "Error log: \n"
-                                 + error_log};
+        throw std::runtime_error{
+            "Error while linking shader program "
+            + vup::gl::shader_type_to_string(m_program_id) +
+            ".\n"
+            + "Error log: \n"
+            + error_log
+        };
     }
 }
 
@@ -134,13 +137,13 @@ void vup::Shader::inspect_uniforms() {
         std::vector<char> name_data(static_cast<unsigned long>(info.at(2)));
         glGetProgramResourceName(m_program_id, GL_UNIFORM, i, static_cast<GLsizei>(name_data.size()),
                                  nullptr, name_data.data());
-        std::string name(name_data.begin(), name_data.end()-1);
+        std::string name(name_data.begin(), name_data.end() - 1);
         add_uniform(name, info.at(1), info.at(3));
     }
 }
 
 void vup::Shader::add_uniform(const std::string& name, GLint type,
-                                      GLint location) {
+                              GLint location) {
     switch (type) {
         case GL_BOOL:
         case GL_INT:
@@ -196,9 +199,9 @@ void vup::Shader::inspect_uniform_blocks() {
         std::vector<char> name_data(static_cast<unsigned long>(info.at(1)));
         glGetProgramResourceName(m_program_id, GL_UNIFORM_BLOCK, i, static_cast<GLsizei>(name_data.size()),
                                  nullptr, name_data.data());
-        std::string name(name_data.begin(), name_data.end()-1);
+        std::string name(name_data.begin(), name_data.end() - 1);
         m_ubos.emplace(std::piecewise_construct, std::make_tuple(name),
-                  std::make_tuple(static_cast<GLuint>(info.at(0)), static_cast<unsigned int>(info.at(2))));
+                       std::make_tuple(static_cast<GLuint>(info.at(0)), static_cast<unsigned int>(info.at(2))));
     }
 }
 
@@ -212,9 +215,9 @@ void vup::Shader::inspect_shader_storage_blocks() {
         std::vector<char> name_data(static_cast<unsigned long>(info.at(1)));
         glGetProgramResourceName(m_program_id, GL_SHADER_STORAGE_BLOCK, i, static_cast<GLsizei>(name_data.size()),
                                  nullptr, name_data.data());
-        std::string name(name_data.begin(), name_data.end()-1);
+        std::string name(name_data.begin(), name_data.end() - 1);
         m_ssbos.emplace(std::piecewise_construct, std::make_tuple(name),
-                       std::make_tuple(static_cast<GLuint>(info.at(0))));
+                        std::make_tuple(static_cast<GLuint>(info.at(0))));
     }
 }
 

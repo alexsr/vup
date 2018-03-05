@@ -10,14 +10,14 @@
 vup::Element_VAO::Element_VAO(const vup::VBO& main_vbo,
                               const vup::Element_buffer& element_vbo,
                               const std::initializer_list<vup::VBO>& vbos)
-        : vup::VAO(main_vbo, vbos) {
+    : vup::VAO(main_vbo, vbos) {
     glVertexArrayElementBuffer(m_name, element_vbo.get_name());
     m_count = element_vbo.get_count();
 }
 
 vup::Element_VAO::Element_VAO(const vup::Geometric_primitive& primitive,
                               const std::initializer_list<vup::VBO>& vbos)
-        : VAO(primitive, vbos) {
+    : VAO(primitive, vbos) {
     vup::Element_buffer element_vbo(primitive.indices);
     glVertexArrayElementBuffer(m_name, element_vbo.get_name());
     m_count = element_vbo.get_count();

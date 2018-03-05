@@ -3,16 +3,16 @@
 layout (location = 0) in vec4 position;
 layout (location = 1) in vec4 normal;
 
-#include "sph_particle.inc.comp"
-
-layout (std430, binding = 8) buffer particles {
-    SPH_particle p[N];
-};
-
-layout (std140, binding = 9) uniform mvp {
+layout (std140, binding = 8) uniform mvp {
     mat4 model;
     mat4 view;
     mat4 projection;
+};
+
+#include "sph_particle.inc.comp"
+
+layout (std430, binding = 3) buffer particles {
+    SPH_particle p[N];
 };
 
 out vec3 pass_normal;

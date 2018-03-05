@@ -9,12 +9,12 @@
 
 vup::VAO::VAO(const vup::VBO& main_vbo,
               const std::initializer_list<vup::VBO>& vbos)
-: Base_VAO(main_vbo, vbos) {
+    : Base_VAO(main_vbo, vbos) {
 }
 
 vup::VAO::VAO(const vup::Geometric_primitive& primitive,
               const std::initializer_list<vup::VBO>& vbos)
-        : Base_VAO(primitive, vbos) {
+    : Base_VAO(primitive, vbos) {
 }
 
 vup::VAO::VAO(vup::Mesh mesh, const std::initializer_list<vup::VBO>& vbos) : Base_VAO(mesh) {

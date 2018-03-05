@@ -9,7 +9,7 @@
 
 vup::Instanced_VAO::Instanced_VAO(const vup::VBO& main_vbo,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
-        : Base_VAO(main_vbo, {}) {
+    : Base_VAO(main_vbo, {}) {
     unsigned int i = 1;
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
@@ -21,7 +21,7 @@ vup::Instanced_VAO::Instanced_VAO(const vup::VBO& main_vbo,
 vup::Instanced_VAO::Instanced_VAO(const vup::VBO& main_vbo,
                                   const std::initializer_list<vup::VBO>& vbos,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
-        : Base_VAO(main_vbo, vbos) {
+    : Base_VAO(main_vbo, vbos) {
     auto i = static_cast<unsigned int>(vbos.size() + 1);
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
@@ -32,7 +32,7 @@ vup::Instanced_VAO::Instanced_VAO(const vup::VBO& main_vbo,
 
 vup::Instanced_VAO::Instanced_VAO(const vup::Geometric_primitive& primitive,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
-        : Base_VAO(primitive) {
+    : Base_VAO(primitive) {
     unsigned int i = 3;
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
@@ -44,7 +44,7 @@ vup::Instanced_VAO::Instanced_VAO(const vup::Geometric_primitive& primitive,
 vup::Instanced_VAO::Instanced_VAO(const vup::Geometric_primitive& primitive,
                                   const std::initializer_list<vup::VBO>& vbos,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
-        : Base_VAO(primitive, vbos) {
+    : Base_VAO(primitive, vbos) {
     auto i = static_cast<unsigned int>(vbos.size() + 3);
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
@@ -55,7 +55,7 @@ vup::Instanced_VAO::Instanced_VAO(const vup::Geometric_primitive& primitive,
 
 vup::Instanced_VAO::Instanced_VAO(const vup::Mesh& mesh,
                                   const std::initializer_list<vup::Instanced_VBO>& instanced_vbos)
-        : Base_VAO(mesh) {
+    : Base_VAO(mesh) {
     auto i = static_cast<unsigned int>(mesh.get_VBOs().size());
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);

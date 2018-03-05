@@ -26,13 +26,13 @@ namespace vup
                                const std::initializer_list<vup::VBO>& vbos,
                                const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
         explicit Instanced_VAO(const vup::Mesh& mesh,
-            const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
+                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
         virtual void render(GLenum render_mode, unsigned int instances);
         virtual void render(GLenum render_mode, int offset, unsigned int count,
                             unsigned int instances);
     private:
         void set_divisor_qualifier(const vup::Instanced_VBO& v,
-                                                  unsigned int index);
+                                   unsigned int index);
     };
 }
 

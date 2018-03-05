@@ -22,9 +22,11 @@ namespace vup
                 throw std::runtime_error{"Failed to initialize GLEW."};
             }
         }
+
         inline void clear_buffers() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
+
         inline void set_clear_color(float r, float g, float b, float a) {
             glClearColor(r, g, b, a);
         }

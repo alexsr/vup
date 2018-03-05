@@ -33,15 +33,22 @@ namespace vup
                     return "unknown type of shader";
             }
         }
+
         enum class Introspection : GLbitfield {
-            none = 0, basic = 2, ubos = 4, ssbos = 8
+            none = 0,
+            basic = 2,
+            ubos = 4,
+            ssbos = 8
         };
+
         constexpr std::underlying_type_t<Introspection> to_gl(Introspection i) {
             return static_cast<std::underlying_type_t<Introspection>>(i);
         }
+
         constexpr Introspection operator|(Introspection i1, Introspection i2) {
             return static_cast<Introspection>(to_gl(i1) | to_gl(i2));
         }
+
         constexpr bool operator&(Introspection i1, Introspection i2) {
             return (to_gl(i1) & to_gl(i2)) != 0;
         }

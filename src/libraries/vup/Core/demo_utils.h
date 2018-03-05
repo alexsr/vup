@@ -22,6 +22,7 @@ namespace vup
             throw std::runtime_error{"Failed to initialize GLFW."};
         }
     }
+
     inline void print_context_info() {
         GLint major;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -32,17 +33,19 @@ namespace vup
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
         std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
     }
+
     inline void init_demo_OpenGL_params() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
+
     inline std::vector<float> generate_random_data(int n, float lower_boundary,
                                                    float upper_boundary) {
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_real_distribution<float> dis(lower_boundary, upper_boundary);
         std::vector<float> result(static_cast<unsigned long>(n));
-        for (auto& r: result) {
+        for (auto& r : result) {
             r = dis(gen);
         }
         return result;

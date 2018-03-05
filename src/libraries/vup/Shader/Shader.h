@@ -21,8 +21,9 @@ namespace vup
 {
     struct Shader_define {
         std::string name;
-        int value;
+        std::string value;
     };
+
     class Shader {
     public:
         void use() const;
@@ -88,7 +89,7 @@ namespace vup
     };
 
 
-    template<typename T>
+    template <typename T>
     void vup::Shader::update_ubo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ubos)) {
             m_ubos.at(name).update_data(data);
@@ -98,7 +99,7 @@ namespace vup
         }
     }
 
-    template<typename T>
+    template <typename T>
     void vup::Shader::set_ssbo_data(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {
             m_ssbos.at(name).set_data(data);
@@ -107,7 +108,8 @@ namespace vup
             std::cout << "SSBO " << name << " not found.\n";
         }
     }
-    template<typename T>
+
+    template <typename T>
     void vup::Shader::update_ssbo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {
             m_ssbos.at(name).update_data(data);
@@ -117,9 +119,9 @@ namespace vup
         }
     }
 
-    template<typename T>
+    template <typename T>
     bool vup::Shader::find_map_entry(const std::string& name,
-                                             const std::map<std::string, T>& m) {
+                                     const std::map<std::string, T>& m) {
         return m.end() != m.find(name);
     }
 }

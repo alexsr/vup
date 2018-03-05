@@ -5,15 +5,15 @@ layout (local_size_x = 128) in;
 #include "sph_particle.inc.comp"
 
 uniform float dt;
-layout (std140, binding = 3) uniform demo_constants{
+layout (std140, binding = 5) uniform demo_constants{
     SPH_demo_constants demo_consts;
 };
 
-layout (std430, binding = 4) buffer bound_buffer {
+layout (std430, binding = 12) buffer bound_buffer {
     vec4 bounds[36];
 };
 
-layout (std430, binding = 8) buffer particles {
+layout (std430, binding = 3) buffer particles {
     SPH_particle p[N];
 };
 
@@ -144,7 +144,7 @@ void main() {
         density_id += poly_six(demo_consts.h, distance(p[id].pos.xyz, p[j].pos.xyz));
     }
 
-    p[id].density = p[id].mass * demo_consts.poly6 * density_id;
+    p[id].density = p[id].mass * demo_consts.kernel * density_id;
 //    p[id].pressure = k * (density_id - p[id].rest_density);
     p[id].pressure = k * (pow(p[id].density / p[id].rest_density, 7.0f) - 1.0f);
     barrier();
@@ -161,7 +161,7 @@ void main() {
         visc_force += (p[j].vel - p[id].vel) / p[j].density * visc(demo_consts.h, distance(p[id].pos.xyz, p[j].pos.xyz));
     }
     p[id].force = vec4(0.0f);
-    p[id].force.xyz = (p[id].mass * demo_consts.spiky * (p[id].mass * pressure_force / p[id].density + visc_const * visc_force)).xyz;
+    p[id].force.xyz = (p[id].mass * demo_consts.kernel_grad * (p[id].mass * pressure_force / p[id].density + visc_const * visc_force)).xyz;
 
     barrier();
 

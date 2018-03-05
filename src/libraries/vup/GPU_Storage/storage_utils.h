@@ -26,8 +26,8 @@ namespace vup
 
         };
 
-        constexpr std::underlying_type_t <Storage> to_gl(Storage s) {
-            return static_cast<std::underlying_type_t <Storage>>(s);
+        constexpr std::underlying_type_t<Storage> to_gl(Storage s) {
+            return static_cast<std::underlying_type_t<Storage>>(s);
         }
 
         constexpr Storage operator|(Storage s1, Storage s2) {
@@ -52,8 +52,8 @@ namespace vup
 
         };
 
-        constexpr std::underlying_type_t <Map_access> to_gl(Map_access s) {
-            return static_cast<std::underlying_type_t <Map_access>>(s);
+        constexpr std::underlying_type_t<Map_access> to_gl(Map_access s) {
+            return static_cast<std::underlying_type_t<Map_access>>(s);
         }
 
         constexpr Map_access operator|(Map_access s1, Map_access s2) {

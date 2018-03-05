@@ -17,7 +17,7 @@ namespace vup
         explicit Instanced_VBO(GLint vertex_size = 4, GLuint divisor = 1, GLenum type = GL_FLOAT,
                                gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         template <typename T>
-        explicit Instanced_VBO(const std::vector<T> &data, GLint vertex_size = 4,
+        explicit Instanced_VBO(const std::vector<T>& data, GLint vertex_size = 4,
                                GLuint divisor = 1, GLenum type = GL_FLOAT,
                                gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
         GLuint get_divisor() const;
@@ -25,10 +25,10 @@ namespace vup
         GLuint m_divisor;
     };
 
-    template<typename T>
+    template <typename T>
     vup::Instanced_VBO::Instanced_VBO(const std::vector<T>& data, GLint vertex_size,
                                       GLuint divisor, GLenum type, gl::Storage flags)
-            : VBO(data, vertex_size, type, flags), m_divisor(divisor) {
+        : VBO(data, vertex_size, type, flags), m_divisor(divisor) {
 
     }
 }

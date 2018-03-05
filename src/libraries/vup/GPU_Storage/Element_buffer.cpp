@@ -8,12 +8,12 @@
 #include "Element_buffer.h"
 
 vup::Element_buffer::Element_buffer(gl::Storage flags)
-        : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, flags), m_count(0) {
+    : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, flags), m_count(0) {
 }
 
 vup::Element_buffer::Element_buffer(const std::vector<unsigned int>& indices,
                                     gl::Storage flags)
-        : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, indices, flags) {
+    : vup::Buffer(GL_ELEMENT_ARRAY_BUFFER, indices, flags) {
     m_count = indices.size();
 }
 

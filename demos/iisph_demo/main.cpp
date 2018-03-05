@@ -50,9 +50,10 @@ int main() {
     MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
     float smoothing_length = 0.1;
     float mass_scaling = 2.0f / 3.0f;
-    float radius = 1.0f / glm::pow(4.0f / 3.0f * glm::pi<float>(), 1.0f / 3.0f) * smoothing_length * mass_scaling;
-    auto particle_data = vup::create_uniform_IISPH_particles(smoothing_length, -0.6f, 1.0f,
-                                                             1000.0f, mass_scaling);
+    float h = smoothing_length * mass_scaling;
+    float radius = 1.0f / glm::pow(4.0f / 3.0f * glm::pi<float>(), 1.0f / 3.0f) * h;
+    auto particle_data = vup::create_uniform_IISPH_particles(radius, -0.6f, 1.0f,
+                                                             1000.0f, h);
     vup::Sphere sphere(radius);
     vup::Instanced_VAO particle_spheres(sphere);
     vup::IISPH_demo_constants demo_consts(radius, smoothing_length);

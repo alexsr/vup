@@ -56,7 +56,7 @@ int main() {
                                      vup::gl::introspection::basic, {{"N", "1024"}});
     vup::Compute_shader calc_box64("../../src/shader/bounding_box/reduce_aabb.comp",
                                    vup::gl::introspection::basic, {{"N", "64"}});
-    vup::V_F_shader minimal("../../src/shader/mvp_ubo.vert", "../../src/shader/normal_rendering.frag",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
                             vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
@@ -80,11 +80,13 @@ int main() {
     intermediate_bounds.resize(static_cast<unsigned long>(max_last_blocks));
     bounds_ssbo.get_data(intermediate_bounds);
     const auto bounds = reduce_bounds(intermediate_bounds);
-    glm::vec3 center((bounds.min.x + bounds.max.x) / 2.0f, (bounds.min.y + bounds.max.y) / 2.0f, (bounds.min.z + bounds.max.z) / 2.0f);
+    glm::vec3 center((bounds.min.x + bounds.max.x) / 2.0f, (bounds.min.y + bounds.max.y) / 2.0f,
+                     (bounds.min.z + bounds.max.z) / 2.0f);
     vup::VBO bounds_vbo(bounds, 4);
     vup::VAO bounds_vao(bounds_vbo);
-    vup::V_G_F_shader bounds_renderer("../../src/shader/bounding_box/mvp_ubo_aabb.vert", "../../src/shader/bounding_box/aabb.geom",
-                                      "../../src/shader/minimal.frag");
+    vup::V_G_F_shader bounds_renderer("../../src/shader/bounding_box/mvp_ubo_aabb.vert",
+                                      "../../src/shader/bounding_box/aabb.geom",
+                                      "../../src/shader/rendering/minimal.frag");
     auto elapsed = std::chrono::microseconds(0);
     glm::mat4 rotation(1.0f);
     vup::VAO vao(bunny);

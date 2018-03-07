@@ -67,7 +67,7 @@ namespace vup
         void inspect_shader_storage_blocks();
         template <typename T>
         static bool find_map_entry(const std::string& name,
-                            const std::map<std::string, T>& m);
+                                   const std::map<std::string, T>& m);
         void clear_maps();
         GLuint m_program_id;
         gl::introspection m_introspection_flag;

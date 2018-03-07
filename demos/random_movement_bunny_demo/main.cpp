@@ -23,7 +23,8 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     vup::Compute_shader move_verts("../../src/shader/compute/randomly_move_verts.comp");
-    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert",
+                            "../../src/shader/rendering/normal_rendering.frag",
                             vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));

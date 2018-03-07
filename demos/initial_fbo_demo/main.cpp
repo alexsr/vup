@@ -16,6 +16,7 @@ struct MVP {
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
+
     void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
         model = m;
         view = v;
@@ -32,8 +33,10 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/rendering/gbuffer.vert", "../../src/shader/rendering/gbuffer.frag", vup::gl::introspection::ubos);
-    vup::V_F_shader screenfilling_quad("../../src/shader/rendering/screenfilling_quad.vert", "../../src/shader/rendering/screenfilling_quad.frag");
+    vup::V_F_shader minimal("../../src/shader/rendering/gbuffer.vert", "../../src/shader/rendering/gbuffer.frag",
+                            vup::gl::introspection::ubos);
+    vup::V_F_shader screenfilling_quad("../../src/shader/rendering/screenfilling_quad.vert",
+                                       "../../src/shader/rendering/screenfilling_quad.frag");
     vup::Rectangle r(2.0f, 2.0f);
     vup::Cube q;
     vup::VAO vao(q);

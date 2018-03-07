@@ -18,7 +18,8 @@ int main() {
     vup::Window window(width, height, "Initial instanced rendering demo", true);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert",
+                            "../../src/shader/rendering/normal_rendering.frag",
                             vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     const vup::Mesh bunny(bunny_loader.get_mesh_data(0));

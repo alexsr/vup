@@ -18,7 +18,7 @@ namespace vup
                      gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit VBO(const T& data, GLint vertex_size = 4, GLenum format = GL_FLOAT,
-            gl::storage flags = gl::storage::dynamic | gl::storage::write);
+                     gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit VBO(const std::vector<T>& data, GLint vertex_size = 4, GLenum format = GL_FLOAT,
                      gl::storage flags = gl::storage::dynamic | gl::storage::write);
@@ -39,7 +39,7 @@ namespace vup
 template <typename T>
 vup::VBO::VBO(const T& data, GLint vertex_size, GLenum format, gl::storage flags)
     : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
-    m_format(format) {
+      m_format(format) {
     m_format_size = determine_format_size(format);
     m_stride = m_format_size * m_vertex_size;
 }

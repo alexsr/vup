@@ -19,7 +19,7 @@ namespace vup
     inline void init_GLFW() {
         int glfw_error = glfwInit();
         if (glfw_error == 0) {
-            throw std::runtime_error{ "Failed to initialize GLFW." };
+            throw std::runtime_error{"Failed to initialize GLFW."};
         }
     }
 

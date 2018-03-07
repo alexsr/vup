@@ -37,3 +37,5 @@ target_link_libraries(
     PUBLIC ${ASSIMP_LIBRARIES}
     ${experimental_filesys_library}
 )
+
+set_target_properties(${project_name} PROPERTIES LINKER_LANGUAGE CXX)

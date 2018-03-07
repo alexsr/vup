@@ -12,12 +12,18 @@ layout (std430, binding = 4) buffer bounds_buffer {
     Bounds bounds[];
 };
 
+layout (std140, binding = 8) uniform mvp {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+};
+
 void main() {
     uint bid = gl_WorkGroupID.x;
     uint tid = gl_LocalInvocationIndex;
     uint id = gl_GlobalInvocationID.x;
     if (id < max_index) {
-        vec4 p = pos[id];
+        vec4 p = model * pos[id];
         shared_bounds[tid].min.x = p.x;
         shared_bounds[tid].min.y = p.y;
         shared_bounds[tid].min.z = p.z;

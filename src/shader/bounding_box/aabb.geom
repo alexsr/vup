@@ -2,7 +2,7 @@
 
 layout (lines) in;
 
-layout (std140, binding = 9) uniform mvp {
+layout (std140, binding = 8) uniform mvp {
     mat4 model;
     mat4 view;
     mat4 projection;

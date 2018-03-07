@@ -1,0 +1,4 @@
+struct Bounds {
+    vec4 min;
+    vec4 max;
+};

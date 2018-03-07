@@ -32,7 +32,7 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/gbuffer.vert", "../../src/shader/gbuffer.frag", vup::gl::Introspection::ubos);
+    vup::V_F_shader minimal("../../src/shader/gbuffer.vert", "../../src/shader/gbuffer.frag", vup::gl::introspection::ubos);
     vup::V_F_shader screenfilling_quad("../../src/shader/screenfilling_quad.vert", "../../src/shader/screenfilling_quad.frag");
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, width, height);

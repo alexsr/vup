@@ -1,0 +1,73 @@
+#version 450
+
+uniform int max_index;
+uniform int max_blocks;
+layout (local_size_x = N) in;
+#include "bounds.inc.comp"
+shared Bounds shared_bounds[gl_WorkGroupSize.x];
+layout (std430, binding = 5) buffer mesh {
+    vec4 pos[];
+};
+layout (std430, binding = 4) buffer bounds_buffer {
+    Bounds bounds[];
+};
+
+layout (std140, binding = 8) uniform mvp {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+};
+
+void main() {
+    uint bid = gl_WorkGroupID.x;
+    uint tid = gl_LocalInvocationIndex;
+    uint id = gl_GlobalInvocationID.x;
+    if (id < max_index) {
+        vec4 p = model * pos[id];
+        shared_bounds[tid].min.x = p.x;
+        shared_bounds[tid].min.y = p.y;
+        shared_bounds[tid].min.z = p.z;
+        shared_bounds[tid].max.x = p.x;
+        shared_bounds[tid].max.y = p.y;
+        shared_bounds[tid].max.z = p.z;
+    }
+    else {
+        shared_bounds[tid].max.x = -1.0f/0.0f;
+        shared_bounds[tid].max.y = -1.0f/0.0f;
+        shared_bounds[tid].max.z = -1.0f/0.0f;
+        shared_bounds[tid].min.x = 1.0f/0.0f;
+        shared_bounds[tid].min.y = 1.0f/0.0f;
+        shared_bounds[tid].min.z = 1.0f/0.0f;
+    }
+	barrier();
+    for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
+        if (tid < s) {
+            if (shared_bounds[tid].min.x > shared_bounds[tid+s].min.x) {
+                shared_bounds[tid].min.x = shared_bounds[tid+s].min.x;
+            }
+            if (shared_bounds[tid].min.y > shared_bounds[tid+s].min.y) {
+                shared_bounds[tid].min.y = shared_bounds[tid+s].min.y;
+            }
+            if (shared_bounds[tid].min.z > shared_bounds[tid+s].min.z) {
+                shared_bounds[tid].min.z = shared_bounds[tid+s].min.z;
+            }
+            if (shared_bounds[tid].max.x < shared_bounds[tid+s].max.x) {
+                shared_bounds[tid].max.x = shared_bounds[tid+s].max.x;
+            }
+            if (shared_bounds[tid].max.y < shared_bounds[tid+s].max.y) {
+                shared_bounds[tid].max.y = shared_bounds[tid+s].max.y;
+            }
+            if (shared_bounds[tid].max.z < shared_bounds[tid+s].max.z) {
+                shared_bounds[tid].max.z = shared_bounds[tid+s].max.z;
+            }
+	    }
+    }
+    if (tid == 0 && max_blocks > bid) {
+        bounds[bid].min.x = shared_bounds[0].min.x;
+        bounds[bid].min.y = shared_bounds[0].min.y;
+        bounds[bid].min.z = shared_bounds[0].min.z;
+        bounds[bid].max.x = shared_bounds[0].max.x;
+        bounds[bid].max.y = shared_bounds[0].max.y;
+        bounds[bid].max.z = shared_bounds[0].max.z;
+    }
+}

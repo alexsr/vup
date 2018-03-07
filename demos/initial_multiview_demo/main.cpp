@@ -35,7 +35,7 @@ int main() {
     unsigned int instances = 16 * 16;
     vup::V_F_shader multiviewport("../../src/shader/multiview/multiview.vert",
                                   "../../src/shader/multiview/multiview.frag",
-                                  vup::gl::Introspection::basic,
+                                  vup::gl::introspection::basic,
                                   {{"N", std::to_string(instances)}});
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));

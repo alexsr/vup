@@ -15,24 +15,6 @@
 
 namespace vup
 {
-    inline void init_GLFW() {
-        int glfw_error = glfwInit();
-        if (glfw_error == 0) {
-            throw std::runtime_error{"Failed to initialize GLFW."};
-        }
-    }
-
-    inline void print_context_info() {
-        GLint major;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        GLint minor;
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
-        std::cout << "OpenGL Version: " << major << "." << minor << "\n";
-        std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
-        std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
-        std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-    }
-
     inline void init_demo_OpenGL_params() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -49,6 +31,17 @@ namespace vup
         }
         return result;
     }
+
+    struct MVP {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 projection;
+        void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
+            model = m;
+            view = v;
+            projection = p;
+        }
+    };
 }
 
 #endif //VUP_DEMO_UTILS_H

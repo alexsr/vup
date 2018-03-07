@@ -35,7 +35,6 @@ int main() {
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
-    vup::print_context_info();
     vup::init_demo_OpenGL_params();
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, width, height);
@@ -43,8 +42,8 @@ int main() {
     float delta = 0.01f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
-    vup::V_F_shader box_renderer("../../src/shader/mvp_ubo.vert",
-                                 "../../src/shader/minimal.frag");
+    vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
+                                 "../../src/shader/rendering/minimal.frag");
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
@@ -70,7 +69,7 @@ int main() {
     neighbor_count_data.clear();
 
     std::vector<float> new_densities(instances);
-    vup::SSBO densities(new_densities, 7, vup::gl::Storage::read);
+    vup::SSBO densities(new_densities, 7, vup::gl::storage::read);
 
     std::vector<vup::Shader_define> sph_defines = {
         {"N", std::to_string(instances)},
@@ -80,39 +79,39 @@ int main() {
 
     vup::V_F_shader particle_renderer("../../src/shader/particles/iisph/instanced_iisph.vert",
                                       "../../src/shader/particles/particles.frag",
-                                      vup::gl::Introspection::ubos, sph_defines);
+                                      vup::gl::introspection::ubos, sph_defines);
     particle_renderer.update_ubo("mvp", mats);
 
     vup::Compute_shader find_neighbors("../../src/shader/particles/iisph/find_neighbors.comp",
-                                       vup::gl::Introspection::basic, sph_defines);
+                                       vup::gl::introspection::basic, sph_defines);
     find_neighbors.update_uniform("dt", delta);
 
     vup::Compute_shader calc_density("../../src/shader/particles/iisph/calc_density.comp",
-                                     vup::gl::Introspection::basic, sph_defines);
+                                     vup::gl::introspection::basic, sph_defines);
     calc_density.update_uniform("dt", delta);
 
     vup::Compute_shader predict_advection("../../src/shader/particles/iisph/predict_advection.comp",
-                                          vup::gl::Introspection::basic, sph_defines);
+                                          vup::gl::introspection::basic, sph_defines);
     predict_advection.update_uniform("dt", delta);
 
     vup::Compute_shader init_pressure_solver("../../src/shader/particles/iisph/init_pressure_solver.comp",
-                                             vup::gl::Introspection::basic, sph_defines);
+                                             vup::gl::introspection::basic, sph_defines);
     init_pressure_solver.update_uniform("dt", delta);
 
     vup::Compute_shader calc_dijpjsum("../../src/shader/particles/iisph/calc_dijpjsum.comp",
-                                      vup::gl::Introspection::basic, sph_defines);
+                                      vup::gl::introspection::basic, sph_defines);
     calc_dijpjsum.update_uniform("dt", delta);
 
     vup::Compute_shader solve_pressure("../../src/shader/particles/iisph/solve_pressure.comp",
-                                       vup::gl::Introspection::basic, sph_defines);
+                                       vup::gl::introspection::basic, sph_defines);
     solve_pressure.update_uniform("dt", delta);
 
     vup::Compute_shader integrate("../../src/shader/particles/iisph/integrate.comp",
-                                  vup::gl::Introspection::basic, sph_defines);
+                                  vup::gl::introspection::basic, sph_defines);
     integrate.update_uniform("dt", delta);
 
     vup::Compute_shader reduce_densities("../../src/shader/particles/iisph/reduce_densities.comp",
-                                         vup::gl::Introspection::basic,
+                                         vup::gl::introspection::basic,
                                          {{"X", "1024"}, {"N", std::to_string(instances)}});
     int max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
                                                 / reduce_densities.get_workgroup_size_x()));

@@ -13,17 +13,6 @@
 #include <vup/Utility/OpenGL_debug_logger.h>
 #include <vup/Shader/Compute_shader.h>
 
-struct MVP {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 projection;
-    void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
-        model = m;
-        view = v;
-        projection = p;
-    }
-};
-
 int main() {
     vup::init_GLFW();
     int width = 800;
@@ -32,21 +21,17 @@ int main() {
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
-    vup::print_context_info();
     vup::init_demo_OpenGL_params();
     vup::Compute_shader move_verts("../../src/shader/compute/randomly_move_verts.comp");
-    vup::V_F_shader minimal("../../src/shader/mvp_ubo.vert", "../../src/shader/normal_rendering.frag",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
                             vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
     bunny.get_vbo(0).bind_base(0);
-    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
-    resize_callback(nullptr, width, height);
-    window.set_resize(resize_callback);
     vup::SSBO random_pos(vup::generate_random_float_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
-    MVP mats{model, cam.get_view(), cam.get_projection()};
+    vup::MVP mats{model, cam.get_view(), cam.get_projection()};
     bool allow_reset;
     move_verts.update_uniform("dt", 0.0001f);
     auto loop = [&](float dt) {

@@ -15,7 +15,7 @@ int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/minimal.vert", "../../src/shader/minimal.frag");
+    vup::V_F_shader minimal("../../src/shader/rendering/minimal.vert", "../../src/shader/rendering/minimal.frag");
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, 800, 600);
     window.set_resize(resize_callback);

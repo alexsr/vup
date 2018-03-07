@@ -36,9 +36,6 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
-    resize_callback(nullptr, width, height);
-    curr_window.set_resize(resize_callback);
     float delta = 0.01f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);

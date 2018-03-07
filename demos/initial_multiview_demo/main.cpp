@@ -12,25 +12,12 @@
 #include <vup/GPU_Storage/Instanced_VAO.h>
 #include <vup/Geometry/Mesh_loader.h>
 
-struct MVP {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 projection;
-
-    void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
-        model = m;
-        view = v;
-        projection = p;
-    }
-};
-
 int main() {
     vup::init_GLFW();
     int width = 800;
     int height = 800;
-    vup::Window window(width, height, "Initial instanced rendering demo", true);
+    vup::Window window(width, height, "Initial multiview rendering demo", true);
     vup::Trackball_camera cam(width, height);
-    vup::print_context_info();
     vup::init_demo_OpenGL_params();
     unsigned int instances = 16 * 16;
     vup::V_F_shader multiviewport("../../src/shader/multiview/multiview.vert",
@@ -46,13 +33,8 @@ int main() {
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE,
                                      GL_DEBUG_SEVERITY_NOTIFICATION);
-    std::vector<MVP> mats(instances);
+    std::vector<vup::MVP> mats(instances);
     vup::UBO mats_ubo(mats, 9);
-    auto resize_callback = [](GLFWwindow* window, int w, int h) {
-        glViewport(0, 0, w, h);
-    };
-    resize_callback(nullptr, width, height);
-    window.set_resize(resize_callback);
     auto loop = [&](float dt) {
         multiviewport.use();
         cam.update(window, dt);

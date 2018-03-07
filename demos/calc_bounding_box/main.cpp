@@ -56,12 +56,12 @@ int main() {
                                      vup::gl::introspection::basic, {{"N", "1024"}});
     vup::Compute_shader calc_box64("../../src/shader/bounding_box/reduce_aabb.comp",
                                    vup::gl::introspection::basic, {{"N", "64"}});
+    vup::Compute_shader transform_vertices("../../src/shader/compute/transform_vertices.comp");
     vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
                             vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
-    glm::mat4 model(1.0f);
-    vup::MVP mats{model, cam.get_view(), cam.get_projection()};
+    vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
     bool allow_reset;
     const float delta = 0.001f;
     auto max_blocks = static_cast<int>(glm::ceil(bunny.get_count() / calc_box1024.get_workgroup_size_x()));
@@ -82,6 +82,8 @@ int main() {
     const auto bounds = reduce_bounds(intermediate_bounds);
     glm::vec3 center((bounds.min.x + bounds.max.x) / 2.0f, (bounds.min.y + bounds.max.y) / 2.0f,
                      (bounds.min.z + bounds.max.z) / 2.0f);
+    transform_vertices.update_uniform("model", glm::translate(glm::mat4(1.0f), -center));
+    transform_vertices.run(bunny.get_count());
     vup::VBO bounds_vbo(bounds, 4);
     vup::VAO bounds_vao(bounds_vbo);
     vup::V_G_F_shader bounds_renderer("../../src/shader/bounding_box/mvp_ubo_aabb.vert",
@@ -95,8 +97,7 @@ int main() {
         accum += 1;
         cam.update(window, dt);
         rotation = glm::rotate(rotation, dt, glm::vec3(0, 1, 0));
-        model = glm::translate(rotation, -center);
-        mats.update(model, cam.get_view(), cam.get_projection());
+        mats.update(rotation, cam.get_view(), cam.get_projection());
         minimal.update_ubo("mvp", mats);
         auto start = std::chrono::system_clock::now();
         calc_box1024.run(bunny.get_count());

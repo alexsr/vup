@@ -1,0 +1,13 @@
+#version 450
+
+uniform mat4 model;
+
+layout (local_size_x = 64) in;
+layout (std430, binding = 5) buffer mesh {
+    vec4 pos[];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    pos[id] = model * pos[id];
+}

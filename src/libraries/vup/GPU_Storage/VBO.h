@@ -12,22 +12,23 @@
 
 namespace vup
 {
-    class VBO : public vup::Buffer {
+    class VBO : public Buffer {
     public:
-        explicit VBO(GLint vertex_size = 4, GLenum type = GL_FLOAT,
-                     gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+        explicit VBO(GLint vertex_size = 4, GLenum format = GL_FLOAT,
+                     gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        template <typename T>
+        explicit VBO(const T& data, GLint vertex_size = 4, GLenum format = GL_FLOAT,
+            gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit VBO(const std::vector<T>& data, GLint vertex_size = 4, GLenum format = GL_FLOAT,
-                     gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+                     gl::storage flags = gl::storage::dynamic | gl::storage::write);
         GLint get_vertex_size() const;
         GLenum get_format() const;
         int get_format_size() const;
         int get_stride() const;
         void bind_base(GLuint binding);
-    protected:
-        GLuint m_binding;
     private:
-        int determine_format_size();
+        static int determine_format_size(GLenum format);
         GLint m_vertex_size;
         GLenum m_format;
         int m_format_size;
@@ -36,10 +37,18 @@ namespace vup
 }
 
 template <typename T>
-vup::VBO::VBO(const std::vector<T>& data, GLint vertex_size, GLenum format, gl::Storage flags)
-    : vup::Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
+vup::VBO::VBO(const T& data, GLint vertex_size, GLenum format, gl::storage flags)
+    : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
+    m_format(format) {
+    m_format_size = determine_format_size(format);
+    m_stride = m_format_size * m_vertex_size;
+}
+
+template <typename T>
+vup::VBO::VBO(const std::vector<T>& data, GLint vertex_size, GLenum format, gl::storage flags)
+    : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
       m_format(format) {
-    m_format_size = determine_format_size();
+    m_format_size = determine_format_size(format);
     m_stride = m_format_size * m_vertex_size;
 }
 

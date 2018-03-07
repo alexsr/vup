@@ -10,7 +10,7 @@
 vup::V_G_F_shader::V_G_F_shader(const filesystem::path& vertex_path,
                                 const filesystem::path& geometry_path,
                                 const filesystem::path& fragment_path,
-                                vup::gl::Introspection introspection_flag,
+                                vup::gl::introspection introspection_flag,
                                 const std::vector<Shader_define>& defines)
     : Shader(introspection_flag, defines), m_vertex_path(vertex_path),
       m_geometry_path(geometry_path), m_fragment_path(fragment_path) {

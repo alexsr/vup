@@ -8,10 +8,10 @@
 #include <vup/Core/gl_utils.h>
 #include "Buffer.h"
 
-vup::Buffer::Buffer(GLenum target, vup::gl::Storage flags) : m_target(target), m_storage_flags(flags) {
+vup::Buffer::Buffer(GLenum target, gl::storage flags) : m_target(target), m_storage_flags(flags) {
     glCreateBuffers(1, &m_name);
-    m_dynamically_updatable = m_storage_flags & gl::Storage::dynamic && m_storage_flags & gl::Storage::write;
-    m_readable = m_storage_flags & gl::Storage::read;
+    m_dynamically_updatable = m_storage_flags & gl::storage::dynamic && m_storage_flags & gl::storage::write;
+    m_readable = m_storage_flags & gl::storage::read;
     m_storage_initialized = false;
 }
 
@@ -36,12 +36,12 @@ void vup::Buffer::delete_buffer() {
     glDeleteBuffers(1, &m_name);
 }
 
-bool vup::Buffer::is_initialized() {
+bool vup::Buffer::is_initialized() const {
     return m_storage_initialized;
 }
 
 void vup::Buffer::initialize_empty_storage(unsigned int size) {
     m_buffer_size = size;
-    glNamedBufferStorage(m_name, m_buffer_size, nullptr, gl::to_gl(m_storage_flags));
+    glNamedBufferStorage(m_name, m_buffer_size, nullptr, to_gl(m_storage_flags));
     m_storage_initialized = true;
 }

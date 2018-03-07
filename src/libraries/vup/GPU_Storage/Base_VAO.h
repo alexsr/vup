@@ -16,6 +16,7 @@ namespace vup
 {
     class Base_VAO {
     public:
+        virtual ~Base_VAO() = default;
         void bind();
         void unbind();
         void delete_vao();

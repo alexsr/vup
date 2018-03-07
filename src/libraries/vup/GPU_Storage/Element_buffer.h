@@ -14,11 +14,11 @@
 
 namespace vup
 {
-    class Element_buffer : public vup::Buffer {
+    class Element_buffer : public Buffer {
     public:
-        explicit Element_buffer(gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+        explicit Element_buffer(gl::storage flags = gl::storage::dynamic | gl::storage::write);
         explicit Element_buffer(const std::vector<unsigned int>& indices,
-                                gl::Storage flags = gl::Storage::dynamic | gl::Storage::write);
+                                gl::storage flags = gl::storage::dynamic | gl::storage::write);
         void set_data(const std::vector<unsigned int>& data);
         unsigned long get_count() const;
     private:

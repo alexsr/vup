@@ -36,8 +36,6 @@ namespace vup
                          float zoom_sens = 1.0f, glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f),
                          float fov = 60.0f, float near = 0.001f, float far = 1000.0f);
 
-        ~Trackball_camera();
-
         glm::mat4 get_view() const;
         glm::mat4 get_projection() const;
 
@@ -48,21 +46,21 @@ namespace vup
         void resize();
 
     private:
-        glm::vec3 m_center;
         glm::mat4 m_view;
         glm::mat4 m_projection;
+        int m_width;
+        int m_height;
         float m_sens;
-        float m_zoom_sens;
         float m_radius;
+        float m_zoom_sens;
+        glm::vec3 m_center;
         float m_theta;
         float m_phi;
-        double m_x;
-        double m_y;
+        double m_x{};
+        double m_y{};
         float m_fov;
         float m_near;
         float m_far;
-        int m_width;
-        int m_height;
 
         void update_view();
         void move_camera(Window window, float dt);

@@ -12,14 +12,14 @@
 
 namespace vup
 {
-    class VAO : public vup::Base_VAO {
+    class VAO : public Base_VAO {
     public:
-        explicit VAO(const vup::VBO& main_vbo,
-                     const std::initializer_list<vup::VBO>& vbos = {});
-        explicit VAO(const vup::Geometric_primitive& primitive,
-                     const std::initializer_list<vup::VBO>& vbos = {});
-        explicit VAO(vup::Mesh mesh,
-                     const std::initializer_list<vup::VBO>& vbos = {});
+        explicit VAO(const VBO& main_vbo,
+                     const std::initializer_list<VBO>& vbos = {});
+        explicit VAO(const Geometric_primitive& primitive,
+                     const std::initializer_list<VBO>& vbos = {});
+        explicit VAO(const Mesh& mesh,
+                     const std::initializer_list<VBO>& vbos = {});
         virtual void render(GLenum render_mode);
         virtual void render(GLenum render_mode, int offset, unsigned int count);
     };

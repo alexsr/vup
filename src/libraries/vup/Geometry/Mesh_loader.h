@@ -13,6 +13,7 @@
 #include <assimp/Importer.hpp>
 #include <stdexcept>
 #include <experimental/filesystem>
+#include <iostream>
 
 namespace filesystem = std::experimental::filesystem;
 

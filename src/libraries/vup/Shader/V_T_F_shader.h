@@ -18,7 +18,7 @@ namespace vup
                      const filesystem::path& control_path,
                      const filesystem::path& evaluation_path,
                      const filesystem::path& fragment_path,
-                     vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic,
+                     vup::gl::introspection introspection_flag = vup::gl::introspection::basic,
                      const std::vector<Shader_define>& defines = {});
         void reload() override;
     private:

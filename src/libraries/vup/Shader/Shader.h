@@ -12,8 +12,8 @@
 #include <vup/GPU_Storage/Uniform.h>
 #include <vup/GPU_Storage/Storage_buffer.h>
 #include <map>
-#include <memory>
 #include <iostream>
+#include <utility>
 #include <array>
 #include "shader_utils.h"
 
@@ -52,29 +52,28 @@ namespace vup
         void update_uniform(const std::string& name, glm::mat3 v);
         void update_uniform(const std::string& name, glm::mat4 v);
     protected:
-        explicit Shader(vup::gl::Introspection introspection_flag = vup::gl::Introspection::basic,
-                        const std::vector<Shader_define>& defines = {});
+        explicit Shader(gl::introspection introspection_flag = gl::introspection::basic,
+                        std::vector<Shader_define> defines = {});
         ~Shader();
         GLuint load_shader(const filesystem::path& path, GLenum type);
-        std::vector<filesystem::path> find_includes(const std::string& source);
         void link_program() const;
         void init_shader_program(const std::vector<GLuint>& shader_ids);
         void attach_shaders(const std::vector<GLuint>& shader_ids) const;
         void detach_shaders(const std::vector<GLuint>& shader_ids) const;
-        void delete_shaders(const std::vector<GLuint>& shader_ids) const;
+        static void delete_shaders(const std::vector<GLuint>& shader_ids);
         void inspect_uniforms();
         void add_uniform(const std::string& name, GLint type, GLint location);
         void inspect_uniform_blocks();
         void inspect_shader_storage_blocks();
         template <typename T>
-        bool find_map_entry(const std::string& name,
+        static bool find_map_entry(const std::string& name,
                             const std::map<std::string, T>& m);
         void clear_maps();
         GLuint m_program_id;
-        vup::gl::Introspection m_introspection_flag;
+        gl::introspection m_introspection_flag;
         std::vector<Shader_define> m_defines;
-        std::map<std::string, vup::UBO> m_ubos;
-        std::map<std::string, vup::SSBO> m_ssbos;
+        std::map<std::string, UBO> m_ubos;
+        std::map<std::string, SSBO> m_ssbos;
         std::map<std::string, Uniform<int>> m_int_uniforms;
         std::map<std::string, Uniform<glm::ivec2>> m_ivec2_uniforms;
         std::map<std::string, Uniform<glm::ivec3>> m_ivec3_uniforms;
@@ -90,7 +89,7 @@ namespace vup
 
 
     template <typename T>
-    void vup::Shader::update_ubo(const std::string& name, const T& data) {
+    void Shader::update_ubo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ubos)) {
             m_ubos.at(name).update_data(data);
         }
@@ -100,7 +99,7 @@ namespace vup
     }
 
     template <typename T>
-    void vup::Shader::set_ssbo_data(const std::string& name, const T& data) {
+    void Shader::set_ssbo_data(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {
             m_ssbos.at(name).set_data(data);
         }
@@ -110,7 +109,7 @@ namespace vup
     }
 
     template <typename T>
-    void vup::Shader::update_ssbo(const std::string& name, const T& data) {
+    void Shader::update_ssbo(const std::string& name, const T& data) {
         if (find_map_entry(name, m_ssbos)) {
             m_ssbos.at(name).update_data(data);
         }
@@ -120,8 +119,8 @@ namespace vup
     }
 
     template <typename T>
-    bool vup::Shader::find_map_entry(const std::string& name,
-                                     const std::map<std::string, T>& m) {
+    bool Shader::find_map_entry(const std::string& name,
+                                const std::map<std::string, T>& m) {
         return m.end() != m.find(name);
     }
 }

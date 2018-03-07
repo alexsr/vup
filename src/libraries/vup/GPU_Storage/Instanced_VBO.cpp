@@ -7,7 +7,7 @@
 
 #include "Instanced_VBO.h"
 
-vup::Instanced_VBO::Instanced_VBO(GLint vertex_size, GLuint divisor, GLenum type, gl::Storage flags)
+vup::Instanced_VBO::Instanced_VBO(GLint vertex_size, GLuint divisor, GLenum type, gl::storage flags)
     : VBO(vertex_size, type, flags), m_divisor(divisor) {
 
 }

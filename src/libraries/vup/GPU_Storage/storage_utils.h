@@ -14,7 +14,7 @@ namespace vup
 {
     namespace gl
     {
-        enum class Storage : GLbitfield {
+        enum class storage : GLbitfield {
             dynamic = GL_DYNAMIC_STORAGE_BIT,
             read = GL_MAP_READ_BIT,
             write = GL_MAP_WRITE_BIT,
@@ -26,19 +26,19 @@ namespace vup
 
         };
 
-        constexpr std::underlying_type_t<Storage> to_gl(Storage s) {
-            return static_cast<std::underlying_type_t<Storage>>(s);
+        constexpr std::underlying_type_t<storage> to_gl(storage s) {
+            return static_cast<std::underlying_type_t<storage>>(s);
         }
 
-        constexpr Storage operator|(Storage s1, Storage s2) {
-            return static_cast<Storage>(to_gl(s1) | to_gl(s2));
+        constexpr storage operator|(const storage s1, const storage s2) {
+            return static_cast<storage>(to_gl(s1) | to_gl(s2));
         }
 
-        constexpr bool operator&(Storage s1, Storage s2) {
+        constexpr bool operator&(const storage s1, const storage s2) {
             return (to_gl(s1) & to_gl(s2)) != 0;
         }
 
-        enum class Map_access : GLbitfield {
+        enum class map_access : GLbitfield {
             read = GL_MAP_READ_BIT,
             write = GL_MAP_WRITE_BIT,
             persistent_read = GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT,
@@ -52,15 +52,15 @@ namespace vup
 
         };
 
-        constexpr std::underlying_type_t<Map_access> to_gl(Map_access s) {
-            return static_cast<std::underlying_type_t<Map_access>>(s);
+        constexpr std::underlying_type_t<map_access> to_gl(map_access s) {
+            return static_cast<std::underlying_type_t<map_access>>(s);
         }
 
-        constexpr Map_access operator|(Map_access s1, Map_access s2) {
-            return static_cast<Map_access>(to_gl(s1) | to_gl(s2));
+        constexpr map_access operator|(const map_access s1, const map_access s2) {
+            return static_cast<map_access>(to_gl(s1) | to_gl(s2));
         }
 
-        constexpr bool operator&(Map_access s1, Map_access s2) {
+        constexpr bool operator&(const map_access s1, const map_access s2) {
             return (to_gl(s1) & to_gl(s2)) != 0;
         }
     }

@@ -8,7 +8,7 @@
 #include "Compute_shader.h"
 
 vup::Compute_shader::Compute_shader(const filesystem::path& compute_path,
-                                    vup::gl::Introspection introspection_flag,
+                                    vup::gl::introspection introspection_flag,
                                     const std::vector<Shader_define>& defines)
     : Shader(introspection_flag, defines), m_compute_path(compute_path) {
     std::vector<GLuint> shader_ids;

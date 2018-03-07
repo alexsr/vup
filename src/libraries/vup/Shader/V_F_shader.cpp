@@ -5,13 +5,14 @@
 // https://github.com/alexsr
 //
 #include "V_F_shader.h"
+#include <utility>
 
-vup::V_F_shader::V_F_shader(const filesystem::path& vertex_path,
-                            const filesystem::path& fragment_path,
-                            vup::gl::Introspection introspection_flag,
+vup::V_F_shader::V_F_shader(filesystem::path vertex_path,
+                            filesystem::path fragment_path,
+                            const gl::introspection introspection_flag,
                             const std::vector<Shader_define>& defines)
-    : Shader(introspection_flag, defines), m_vertex_path(vertex_path),
-      m_fragment_path(fragment_path) {
+    : Shader(introspection_flag, defines), m_vertex_path(std::move(vertex_path)),
+      m_fragment_path(std::move(fragment_path)) {
     std::vector<GLuint> shader_ids;
     shader_ids.push_back(load_shader(m_vertex_path, GL_VERTEX_SHADER));
     shader_ids.push_back(load_shader(m_fragment_path, GL_FRAGMENT_SHADER));

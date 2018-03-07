@@ -8,14 +8,21 @@
 #ifndef VUP_WINDOW_H
 #define VUP_WINDOW_H
 
-#include "vup.h"
 #include "gl_utils.h"
+#include "context_utils.h"
 #include <stdexcept>
 #include <functional>
 #include <string>
 
 namespace vup
 {
+    inline void init_GLFW() {
+        int glfw_error = glfwInit();
+        if (glfw_error == 0) {
+            throw std::runtime_error{ "Failed to initialize GLFW." };
+        }
+    }
+
     /*
      * The Window class encapsulates GLFWwindow and provides additional methods.
      * Every window has a unique id, which can be used to identify each window in a
@@ -43,6 +50,7 @@ namespace vup
         // Get the unique id of this window.
         int get_id() const;
         GLFWwindow* get() const;
+        Context get_context() const;
     private:
         // next_id stores the id of the next window that might be created.
         static int next_id;
@@ -50,6 +58,7 @@ namespace vup
         GLFWwindow* m_window;
         int m_width;
         int m_height;
+        Context m_context;
     };
 }
 

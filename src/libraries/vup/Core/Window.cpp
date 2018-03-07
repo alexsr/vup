@@ -14,6 +14,9 @@ vup::Window::Window(const int width, const int height, const std::string& title,
                     const int gl_major, const int gl_minor, GLFWmonitor* monitor,
                     GLFWwindow* share, const int swap_interval)
     : m_id(next_id++), m_width(width), m_height(height) {
+    if (m_id == 0) {
+        init_GLFW();
+    }
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // enable OpenGL debugging
     }
@@ -27,8 +30,13 @@ vup::Window::Window(const int width, const int height, const std::string& title,
     }
     make_current();
     glfwSwapInterval(swap_interval);
-    // Since GLEW has to be initialized separately for each OpenGL context, the method is called here.
-    gl::init_GLEW();
+    // Since OpenGL has to be initialized separately for each context, the method is called here.
+    gl::init_gl();
+    gl::set_viewport(width, height);
+    const auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
+    set_resize(resize_callback);
+    m_context.retrieve_info();
+    m_context.print_context_info();
 }
 
 void vup::Window::make_current() const {
@@ -72,4 +80,8 @@ void vup::Window::set_resize(GLFWwindowsizefun resize) const {
 
 GLFWwindow* vup::Window::get() const {
     return m_window;
+}
+
+Context vup::Window::get_context() const {
+    return m_context;
 }

@@ -10,7 +10,10 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GL/glew.h>
+#ifdef _WIN32
+#define APIENTRY __stdcall
+#endif
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #endif //VUP_VUP_H

@@ -4,8 +4,9 @@ project(${project_name})
 
 include_directories(
     ${OPENGL_INCLUDE_PATH}
-    ${GLEW_INCLUDE_PATH}
+    ${GLAD_INCLUDE_PATH}
     ${GLFW3_INCLUDE_PATH}
+	${IMGUI_INCLUDE_PATH}
     ${GLM_INCLUDE_PATH}
     ${STB_INCLUDE_PATH}
     ${ASSIMP_INCLUDE_PATH}
@@ -16,8 +17,8 @@ include_directories(
 file(GLOB_RECURSE SOURCES *.cpp)
 file(GLOB_RECURSE HEADER *.h)
 
-add_definitions(-DGLEW_STATIC)
-add_definitions(-DGLEW_NO_GLU)
+add_definitions(-DSHADER_PATH="${SHADER_PATH}")
+add_definitions(-DRESOURCE_PATH="${RESOURCE_PATH}")
 
 add_executable(${project_name} ${SOURCES} ${HEADER})
 
@@ -32,7 +33,8 @@ target_link_libraries(
     PRIVATE ${ALL_LIBRARIES}
     PUBLIC ${GLFW3_LIBRARIES}
     PUBLIC ${GLFW_STATIC_LIBRARIES}
-    PUBLIC ${GLEW_LIBRARIES}
+    PUBLIC ${GLAD_LIBRARIES}
+    PUBLIC ${IMGUI_LIBRARIES}
     PUBLIC ${OPENGL_LIBRARIES}
     PUBLIC ${ASSIMP_LIBRARIES}
     ${experimental_filesys_library}

@@ -26,6 +26,7 @@ namespace vup
 
     class Shader {
     public:
+        virtual ~Shader() = default;
         void use() const;
         virtual void reload() = 0;
         template <typename T>
@@ -54,7 +55,6 @@ namespace vup
     protected:
         explicit Shader(gl::introspection introspection_flag = gl::introspection::basic,
                         std::vector<Shader_define> defines = {});
-        ~Shader();
         GLuint load_shader(const filesystem::path& path, GLenum type);
         void link_program() const;
         void init_shader_program(const std::vector<GLuint>& shader_ids);

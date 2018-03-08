@@ -14,18 +14,7 @@
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
 #include <vup/Shader/Compute_shader.h>
-
-struct MVP {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 projection;
-
-    void update(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p) {
-        model = m;
-        view = v;
-        projection = p;
-    }
-};
+#include "vup/Shader/Compute_pipeline.h"
 
 int main() {
     vup::init_GLFW();
@@ -37,13 +26,14 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     float delta = 0.01f;
+    float visc_const = 0.02f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
                                  "../../src/shader/rendering/minimal.frag");
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
-    MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
+    vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
     float smoothing_length = 0.1;
     float mass_scaling = 2.0f / 3.0f;
     float h = smoothing_length * mass_scaling;
@@ -79,30 +69,21 @@ int main() {
                                       vup::gl::introspection::ubos, sph_defines);
     particle_renderer.update_ubo("mvp", mats);
 
-    vup::Compute_shader find_neighbors("../../src/shader/particles/iisph/find_neighbors.comp",
-                                       vup::gl::introspection::basic, sph_defines);
-    find_neighbors.update_uniform("dt", delta);
 
-    vup::Compute_shader calc_density("../../src/shader/particles/iisph/calc_density.comp",
-                                     vup::gl::introspection::basic, sph_defines);
-    calc_density.update_uniform("dt", delta);
+    vup::Compute_pipeline prepare_iteration({
+        "find_neighbors.comp", "calc_density.comp",
+        "predict_advection.comp", "init_pressure_solver.comp"
+        },
+        vup::gl::introspection::basic, sph_defines,
+        "../../src/shader/particles/iisph/");
+    prepare_iteration.update_uniform("dt", delta);
+    prepare_iteration.update_uniform_at(2, "visc_const", visc_const);
 
-    vup::Compute_shader predict_advection("../../src/shader/particles/iisph/predict_advection.comp",
-                                          vup::gl::introspection::basic, sph_defines);
-    predict_advection.update_uniform("dt", delta);
-
-    vup::Compute_shader init_pressure_solver("../../src/shader/particles/iisph/init_pressure_solver.comp",
-                                             vup::gl::introspection::basic, sph_defines);
-    init_pressure_solver.update_uniform("dt", delta);
-
-    vup::Compute_shader calc_dijpjsum("../../src/shader/particles/iisph/calc_dijpjsum.comp",
-                                      vup::gl::introspection::basic, sph_defines);
-    calc_dijpjsum.update_uniform("dt", delta);
-
-    vup::Compute_shader solve_pressure("../../src/shader/particles/iisph/solve_pressure.comp",
-                                       vup::gl::introspection::basic, sph_defines);
-    solve_pressure.update_uniform("dt", delta);
-
+    vup::Compute_pipeline iisph_iteration({ "calc_dijpjsum.comp", "solve_pressure.comp" },
+        vup::gl::introspection::basic, sph_defines,
+        "../../src/shader/particles/iisph/");
+    iisph_iteration.update_uniform("dt", delta);
+    
     vup::Compute_shader integrate("../../src/shader/particles/iisph/integrate.comp",
                                   vup::gl::introspection::basic, sph_defines);
     integrate.update_uniform("dt", delta);
@@ -129,17 +110,13 @@ int main() {
         rotate_box.run(bounds_cube.vertices.size());
         cam.update(curr_window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
-        find_neighbors.run_with_barrier(instances);
-        calc_density.run_with_barrier(instances);
-        predict_advection.run_with_barrier(instances);
-        init_pressure_solver.run_with_barrier(instances);
+        prepare_iteration.run_with_barrier(instances);
         density_avg = 0;
         int iteration = 0;
         while ((density_avg - density_rest) > eta || iteration < 2) {
-            calc_dijpjsum.run_with_barrier(instances);
-            solve_pressure.run_with_barrier(instances);
+            iisph_iteration.run_with_barrier(instances);
 
-            reduce_densities.run(instances);
+            reduce_densities.run_with_barrier(instances);
             densities.get_data(new_densities);
             for (auto v : new_densities) {
                 density_avg += v;

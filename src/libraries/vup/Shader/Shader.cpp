@@ -13,10 +13,6 @@ vup::Shader::Shader(const gl::introspection introspection_flag,
     m_program_id = glCreateProgram();
 }
 
-vup::Shader::~Shader() {
-    glDeleteProgram(m_program_id);
-}
-
 GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
     std::cout << "Loading shader from file: " << path.string() << "\n";
     File_loader f(path);

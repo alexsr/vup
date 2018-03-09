@@ -16,8 +16,6 @@ namespace vup
     protected:
         explicit Storage_buffer(GLenum target, GLuint binding = 0,
                                 gl::storage flags = gl::storage::dynamic | gl::storage::write);
-        Storage_buffer(GLenum target, GLuint binding, unsigned int size,
-                       gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit Storage_buffer(GLenum target, const T& data, GLuint binding = 0,
                                 gl::storage flags = gl::storage::dynamic | gl::storage::write);
@@ -25,20 +23,34 @@ namespace vup
         GLuint m_binding;
     };
 
+    class Empty_storage_buffer : public Storage_buffer {
+    protected:
+        explicit Empty_storage_buffer(unsigned int size, GLenum target, GLuint binding = 0,
+            gl::storage flags = gl::storage::dynamic | gl::storage::write);
+    };
+
     class UBO : public Storage_buffer {
     public:
         explicit UBO(GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
-        UBO(GLuint binding, unsigned int size, gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit UBO(const T& data, GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+    };
+
+    class Empty_UBO : public Empty_storage_buffer {
+    public: 
+        explicit Empty_UBO(unsigned int size, GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
     };
 
     class SSBO : public Storage_buffer {
     public:
         explicit SSBO(GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
-        SSBO(GLuint binding, unsigned int size, gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit SSBO(const T& data, GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
+    };
+
+    class Empty_SSBO : public Empty_storage_buffer {
+    public:
+        explicit Empty_SSBO(unsigned int size, GLuint binding = 0, gl::storage flags = gl::storage::dynamic | gl::storage::write);
     };
 }
 

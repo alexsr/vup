@@ -63,6 +63,23 @@ float cubic(float h, float r) {
     return res;
 }
 
+float cubic(float h, vec4 v) {
+    float r = length(v);
+    float res = 0.0;
+    float q = r / h;
+    if (q <= 1.0) {
+        if (q <= 0.5) {
+            float q2 = q * q;
+            float q3 = q2 * q;
+            res = (6.0*q3 - 6.0*q2 + 1.0);
+        }
+        else {
+            res = (2.0*pow(1.0 - q, 3));
+        }
+    }
+    return res;
+}
+
 vec4 cubic_grad(float h, vec4 v) {
     vec4 res;
     float rl = length(v);

@@ -5,14 +5,14 @@ layout (location = 1) in vec4 normal;
 
 #include "particles.inc.comp"
 
+layout (std430, binding = 0) buffer particles {
+    Fluid_particle p[N];
+};
+
 layout (std140, binding = 8) uniform mvp {
     mat4 model;
     mat4 view;
     mat4 projection;
-};
-
-layout (std430, binding = 3) buffer particles {
-    Fluid_particle p[N];
 };
 
 out vec3 pass_normal;

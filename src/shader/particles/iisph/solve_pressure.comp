@@ -4,25 +4,11 @@ layout (local_size_x = 128) in;
 
 #include "particles.inc.comp"
 
+#include "ssbos.inc.comp"
+
 uniform float dt;
 
-layout (std430, binding = 3) buffer particles {
-    Fluid_particle p[N];
-};
-
-layout (std430, binding = 4) buffer demo_constants{
-    SPH_demo_constants demo_consts;
-};
-
-layout (std430, binding = 5) buffer neighborhood_data {
-    int neighbor[NEIGHBOR_ARRAY_SIZE];
-};
-
-layout (std430, binding = 6) buffer neighborhood_count {
-    int neighbor_counter[N];
-};
-
-layout (std430, binding = 7) buffer densities {
+layout (std430, binding = 6) buffer densities {
     float rho_new[N];
 };
 
@@ -42,10 +28,11 @@ void main() {
     }
 
     float w = 0.5f;
+    float b = p[id].rest_density - p[id].density_adv;
     float aii_dt2 = p[id].aii * dt * dt;
     if (abs(aii_dt2) > 1.0e-9) {
         p[id].pressure = max((1.0f - w) * p[id].last_pressure + w / aii_dt2
-                         * (p[id].rest_density - p[id].density_adv - dt * dt * p[id].aij_pj_sum), 0);
+                         * (b - dt * dt * p[id].aij_pj_sum), 0);
      }
      else {
          p[id].pressure = 0.0f;

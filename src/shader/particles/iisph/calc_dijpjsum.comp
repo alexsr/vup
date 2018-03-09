@@ -4,27 +4,13 @@ layout (local_size_x = 128) in;
 
 #include "particles.inc.comp"
 
-uniform float dt;
-
-layout (std430, binding = 3) buffer particles {
-    Fluid_particle p[N];
-};
-
-layout (std430, binding = 4) buffer demo_constants{
-    SPH_demo_constants demo_consts;
-};
-
-layout (std430, binding = 5) buffer neighborhood_data {
-    int neighbor[NEIGHBOR_ARRAY_SIZE];
-};
-
-layout (std430, binding = 6) buffer neighborhood_count {
-    int neighbor_counter[N];
-};
+#include "ssbos.inc.comp"
 
 layout (std430, binding = 6) buffer densities {
     float rho_new[N];
 };
+
+uniform float dt;
 
 void main() {
     uint id = gl_GlobalInvocationID.x;

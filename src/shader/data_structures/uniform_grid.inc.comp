@@ -1,0 +1,7 @@
+struct Grid_consts {
+    vec3 cell_size;
+    int cell_capacity;
+    vec3 grid_size;
+    int cell_count;
+    vec4 grid_pos;
+}

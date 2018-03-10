@@ -29,6 +29,7 @@
 
 dependencies/include/*
 dependencies/lib/*
+src/libraries/external/*
 build*
 cmake-build*
 .idea/

@@ -43,7 +43,7 @@ namespace vup
         bool should_close() const;
         void swap_buffer() const;
         // Run a loop with a fixed time step.
-        void run_loop_fixed(float dt, const std::function<void(float)>& loop) const;
+        virtual void run_loop_fixed(float dt, const std::function<void(float)>& loop) const;
         // Run a single step of loop with a fixed time step.
         // This method already clears buffers, swaps buffers, and polls events.
         virtual void step_loop_fixed(float dt, const std::function<void(float)>& loop) const;

@@ -55,6 +55,7 @@ void vup::Window::run_loop_fixed(const float dt, const std::function<void(float)
     while (!should_close()) {
         step_loop_fixed(dt, loop);
     }
+    glfwTerminate();
 }
 
 void vup::Window::step_loop_fixed(const float dt, const std::function<void(float)>& loop) const {

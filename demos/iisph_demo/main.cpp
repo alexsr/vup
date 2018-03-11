@@ -15,13 +15,13 @@
 #include <vup/Utility/OpenGL_debug_logger.h>
 #include <vup/Shader/Compute_pipeline.h>
 #include <vup/Simulation/Acceleration_structure.h>
-#include "vup/Core/imgui_utils.h"
+#include <vup/Core/Gui_window.h>
 
 int main() {
     vup::init_GLFW();
     int width = 800;
     int height = 600;
-    vup::Window curr_window(width, height, "IISPH demo", true);
+    vup::Gui_window curr_window(width, height, "IISPH demo", true);
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
@@ -114,10 +114,7 @@ int main() {
     float density_rest = 1000.0f;
     float eta = 1.0f;
 
-
-    vup::gui::init_imgui(curr_window.get(), true);
     const auto loop = [&](float dt) {
-        vup::gui::start_new_frame();
         ImGui::Begin("My First Tool");
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -149,11 +146,8 @@ int main() {
         box_renderer.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         bounds_vao.render(GL_TRIANGLES);
-        vup::gui::render_draw_data();
-        //gl_debug_logger.retrieve_log(std::cout);
+        gl_debug_logger.retrieve_log(std::cout);
     };
     curr_window.run_loop_fixed(delta, loop);
-    vup::gui::shutdown_imgui();
-    glfwTerminate();
     return 0;
 }

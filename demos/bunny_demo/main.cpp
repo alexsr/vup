@@ -39,6 +39,5 @@ int main() {
     };
 
     window.run_loop_fixed(0.01f, loop);
-    glfwTerminate();
     return 0;
 }

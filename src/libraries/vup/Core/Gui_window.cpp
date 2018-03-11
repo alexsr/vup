@@ -12,11 +12,15 @@ vup::Gui_window::Gui_window(const int width, const int height, const std::string
                             const int gl_major, const int gl_minor,
                             GLFWmonitor* monitor, GLFWwindow* share)
     : Window(width, height, title, debug, swap_interval, gl_major, gl_minor, monitor, share) {
-    gui::init_imgui(m_window, install_callback);
+    m_gui_context = gui::init_imgui(m_window, install_callback);
 }
 
-vup::Gui_window::~Gui_window() {
-    gui::shutdown_imgui();
+void vup::Gui_window::run_loop_fixed(float dt, const std::function<void(float)>& loop) const {
+    while (!should_close()) {
+        step_loop_fixed(dt, loop);
+    }
+    gui::shutdown_imgui(m_gui_context);
+    glfwTerminate();
 }
 
 void vup::Gui_window::step_loop_fixed(const float dt, const std::function<void(float)>& loop) const {

@@ -339,8 +339,8 @@ namespace vup
             glfwSetCharCallback(window, char_callback);
         }
 
-        inline bool init_imgui(GLFWwindow* window, const bool install) {
-            ImGui::CreateContext();
+        inline ImGuiContext* init_imgui(GLFWwindow* window, const bool install) {
+            auto context = ImGui::CreateContext();
             auto& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
             g_window = window;
@@ -387,10 +387,10 @@ namespace vup
             if (install) {
                 install_callbacks(window);
             }
-            return true;
+            return context;
         }
 
-        inline void shutdown_imgui() {
+        inline void shutdown_imgui(ImGuiContext* context) {
             // Destroy GLFW mouse cursors
             for (auto& g_mouse_cursor : g_mouse_cursors) {
                 glfwDestroyCursor(g_mouse_cursor);
@@ -400,7 +400,7 @@ namespace vup
             // Destroy OpenGL objects
             invalidate_device_objects();
 
-            ImGui::DestroyContext();
+            ImGui::DestroyContext(context);
         }
 
         inline void start_new_frame() {

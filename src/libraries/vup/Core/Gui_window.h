@@ -24,13 +24,15 @@ namespace vup
         Gui_window(int width, int height, const std::string& title, bool debug = false,
                    int swap_interval = 0, bool install_callback = true, int gl_major = 4, int gl_minor = 5,
                    GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
-        ~Gui_window();
+        void run_loop_fixed(float dt, const std::function<void(float)>& loop) const override;
         // Run a single step of loop with a fixed time step.
         // This method already clears buffers, swaps buffers, and polls events.
         void step_loop_fixed(float dt, const std::function<void(float)>& loop) const override;
         
         bool check_mouse_action(int button, int action) const override;
         bool check_key_action(int, int) const override;
+    private:
+        ImGuiContext* m_gui_context;
     };
 }
 

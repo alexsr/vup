@@ -9,8 +9,6 @@
 #define VUP_DEMO_UTILS_H
 
 #include "vup.h"
-#include "Window.h"
-#include <iostream>
 #include <random>
 
 namespace vup

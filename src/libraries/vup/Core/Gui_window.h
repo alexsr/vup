@@ -22,7 +22,7 @@ namespace vup
     class Gui_window : public Window {
     public:
         Gui_window(int width, int height, const std::string& title, bool debug = false,
-                   int swap_interval = 0, bool install_callback, int gl_major = 4, int gl_minor = 5,
+                   int swap_interval = 0, bool install_callback = true, int gl_major = 4, int gl_minor = 5,
                    GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         ~Gui_window();
         // Run a single step of loop with a fixed time step.

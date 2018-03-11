@@ -33,7 +33,7 @@ namespace vup
 
     template <typename T>
     void Compute_pipeline::update_uniform(const std::string& name, T v) {
-        for (Compute_shader& c : m_compute_shaders) {
+        for (auto& c : m_compute_shaders) {
             c.update_uniform(name, v);
         }
     }

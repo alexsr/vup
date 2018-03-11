@@ -33,7 +33,6 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
         const auto eol = f_source.find('\n', start);
         auto inc = load_file_str(path_inc);
         f_source.replace(start, eol - start, inc.data());
-        start += inc.size();
         main_start += inc.size();
     }
     const GLchar* source = f_source.data();

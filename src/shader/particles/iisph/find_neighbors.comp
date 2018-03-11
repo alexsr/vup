@@ -2,7 +2,7 @@
 
 layout (local_size_x = 128) in;
 
-#include "particles.inc.comp"
+#include "particle_util.inc.comp"
 
 #include "ssbos.inc.comp"
 

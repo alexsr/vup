@@ -3,32 +3,9 @@
 layout (location = 0) in vec4 position;
 layout (location = 1) in vec4 normal;
 
-struct Fluid_particle {
-    vec4 pos;
-    vec4 vel;
-    vec4 vel_adv;
-    vec4 pressure_accel;
-    vec4 dii;
-    vec4 dij_pj_sum;
-    float mass;
-    float rest_density;
-    float density;
-    float density_adv;
-    float pressure;
-    float last_pressure;
-    float aii;
-    float aij_pj_sum;
-};
+#include "particle_util.inc.comp"
 
-struct Fixed_uniform_grid_params {
-    vec4 grid_min;
-    ivec4 cell_count;
-    vec4 cell_size;
-    vec4 grid_pos;
-    int cell_capacity;
-    int total_cell_count;
-    int grid_capacity;
-};
+#include "/../../data_structures/uniform_grid.inc.comp"
 
 layout (std430, binding = 0) buffer particles {
     Fluid_particle p[N];

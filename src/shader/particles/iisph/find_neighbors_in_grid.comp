@@ -2,7 +2,7 @@
 
 layout (local_size_x = 128) in;
 
-#include "particles.inc.comp"
+#include "particle_util.inc.comp"
 
 #include "ssbos.inc.comp"
 
@@ -20,21 +20,26 @@ layout (std430, binding = 6) buffer grid_parameters {
     Fixed_uniform_grid_params grid_params;
 };
 
+uniform int stop_unroll = 0;
+
 int find_neighbors(uint id, vec4 pos) {
     int i = int((pos.x - grid_params.grid_min.x) / grid_params.cell_size.x);
     int j = int((pos.y - grid_params.grid_min.y) / grid_params.cell_size.y);
     int k = int((pos.z - grid_params.grid_min.z) / grid_params.cell_size.z);
     int neighbor_count = 0;
-    for (int x = max(0, i - 1); x < min(i + 2, grid_params.cell_count.x); x++) {
+    int max_x = stop_unroll + min(i + 2, grid_params.cell_count.x);
+    int max_y = stop_unroll + min(j + 2, grid_params.cell_count.y);
+    int max_z = stop_unroll + min(k + 2, grid_params.cell_count.z);
+    for (int x = max(0, i - 1); x < max_x; x++) {
         int x_counter_offset = x * grid_params.cell_count.y * grid_params.cell_count.z;
         int x_offset = x_counter_offset * grid_params.cell_capacity;
-        for (int y = max(0, j - 1); y < min(j + 2, grid_params.cell_count.y); y++) {
+        for (int y = max(0, j - 1); y < max_y; y++) {
             int y_counter_offset = y * grid_params.cell_count.z;
             int y_offset = y_counter_offset * grid_params.cell_capacity;
-            for (int z = max(0, k - 1); z < min(k + 2, grid_params.cell_count.z); z++) {
+            for (int z = max(0, k - 1); z < max_z; z++) {
                 int z_offset = z * grid_params.cell_capacity;
-                int n = cell_counter[x_counter_offset + y_counter_offset + z];
-                for (int o = 0; o < min(n, grid_params.cell_capacity); o++) {
+                int n = stop_unroll + min(grid_params.cell_capacity, cell_counter[x_counter_offset + y_counter_offset + z]);
+                for (int o = 0; o < n; o++) {
                     int other = grid[x_offset + y_offset + z_offset + o];
                     float dist = distance(pos.xyz, p[other].pos.xyz);
                     if (neighbor_count >= NEIGHBOR_AMOUNT) {

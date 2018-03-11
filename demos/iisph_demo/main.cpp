@@ -13,7 +13,9 @@
 #include <vup/GPU_Storage/Instanced_VAO.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include "vup/Shader/Compute_pipeline.h"
+#include <vup/Shader/Compute_pipeline.h>
+#include <vup/Simulation/Acceleration_structure.h>
+#include "vup/Core/imgui_utils.h"
 
 int main() {
     vup::init_GLFW();
@@ -26,7 +28,7 @@ int main() {
     vup::init_demo_OpenGL_params();
     float delta = 0.001f;
     float visc_const = 0.02f;
-    float tension_const = 2.0f;
+    float tension_const = 0.2f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
@@ -49,15 +51,21 @@ int main() {
     int neighbor_amount = 100;
     vup::Empty_SSBO neighbors_ssbo(neighbor_amount * instances * sizeof(int), 2);
     vup::Empty_SSBO neighbor_count_ssbo(instances * sizeof(int), 3);
-    std::vector<float> new_densities(instances);
-    vup::SSBO densities(new_densities, 6, vup::gl::storage::read);
 
-    gl_debug_logger.retrieve_log(std::cout);
+    vup::Cube_uniform_grid_params grid_params(4.0f, demo_consts.h, 40);
+    vup::Empty_SSBO uniform_grid_ssbo(grid_params.grid_capacity * sizeof(int), 4);
+    vup::Empty_SSBO uniform_grid_cell_counter_ssbo(grid_params.total_cell_count * sizeof(int), 5);
+    vup::SSBO grid_params_buffer(grid_params, 6);
+
+    std::vector<float> new_densities(instances);
+    vup::SSBO densities(new_densities, 7, vup::gl::storage::read);
 
     std::vector<vup::Shader_define> sph_defines = {
         {"N", std::to_string(instances)},
         {"NEIGHBOR_AMOUNT", std::to_string(neighbor_amount)},
-        {"NEIGHBOR_ARRAY_SIZE", std::to_string(instances * neighbor_amount)}
+        {"NEIGHBOR_ARRAY_SIZE", std::to_string(instances * neighbor_amount)},
+        {"GRID_CAPACITY", std::to_string(grid_params.grid_capacity)},
+        {"CELL_COUNT", std::to_string(grid_params.total_cell_count)}
     };
 
     vup::V_F_shader particle_renderer("../../src/shader/particles/iisph/instanced_iisph.vert",
@@ -66,22 +74,23 @@ int main() {
 
     vup::UBO mvp(mats, 8);
 
-    gl_debug_logger.retrieve_log(std::cout);
+    vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp",
+                                   vup::gl::introspection::basic, sph_defines);
+    vup::Compute_pipeline init_iteration({
+                                             "populate_grid.comp", "find_neighbors_in_grid.comp",
+                                             "calc_density.comp", "predict_advection.comp",
+                                             "init_pressure_solver.comp"
+                                         },
+                                         vup::gl::introspection::basic, sph_defines,
+                                         "../../src/shader/particles/iisph/");
+    init_iteration.update_uniform("dt", delta);
+    init_iteration.update_uniform("visc_const", visc_const);
+    init_iteration.update_uniform("tension_const", tension_const);
 
-    vup::Compute_pipeline prepare_iteration({
-                                                "find_neighbors.comp", "calc_density.comp",
-                                                "predict_advection.comp", "init_pressure_solver.comp"
-                                            },
-                                            vup::gl::introspection::basic, sph_defines,
-                                            "../../src/shader/particles/iisph/");
-    prepare_iteration.update_uniform("dt", delta);
-    prepare_iteration.update_uniform_at(2, "visc_const", visc_const);
-    prepare_iteration.update_uniform_at(2, "tension_const", tension_const);
-
-    vup::Compute_pipeline iisph_iteration({"calc_dijpjsum.comp", "solve_pressure.comp"},
+    vup::Compute_pipeline pressure_solver({"calc_dijpjsum.comp", "solve_pressure.comp"},
                                           vup::gl::introspection::basic, sph_defines,
                                           "../../src/shader/particles/iisph/");
-    iisph_iteration.update_uniform("dt", delta);
+    pressure_solver.update_uniform("dt", delta);
 
     vup::Compute_shader integrate("../../src/shader/particles/iisph/integrate.comp",
                                   vup::gl::introspection::basic, sph_defines);
@@ -105,15 +114,23 @@ int main() {
     float density_rest = 1000.0f;
     float eta = 1.0f;
 
+
+    vup::gui::init_imgui(curr_window.get(), true);
     const auto loop = [&](float dt) {
+        vup::gui::start_new_frame();
+        ImGui::Begin("My First Tool");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                    1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
         rotate_box.run(bounds_cube.vertices.size());
         cam.update(curr_window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
-        prepare_iteration.run_with_barrier(instances);
+        reset_grid.run_with_barrier(grid_params.total_cell_count);
+        init_iteration.run_with_barrier(instances);
         density_avg = 0;
         int iteration = 0;
         while ((density_avg - density_rest) > eta || iteration < 2) {
-            iisph_iteration.run_with_barrier(instances);
+            pressure_solver.run_with_barrier(instances);
 
             reduce_densities.run_with_barrier(instances);
             densities.get_data(new_densities);
@@ -132,9 +149,11 @@ int main() {
         box_renderer.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         bounds_vao.render(GL_TRIANGLES);
-        gl_debug_logger.retrieve_log(std::cout);
+        vup::gui::render_draw_data();
+        //gl_debug_logger.retrieve_log(std::cout);
     };
     curr_window.run_loop_fixed(delta, loop);
+    vup::gui::shutdown_imgui();
     glfwTerminate();
     return 0;
 }

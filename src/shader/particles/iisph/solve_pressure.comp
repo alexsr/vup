@@ -8,7 +8,7 @@ layout (local_size_x = 128) in;
 
 uniform float dt;
 
-layout (std430, binding = 6) buffer densities {
+layout (std430, binding = 7) buffer densities {
     float rho_new[N];
 };
 

@@ -1,7 +1,9 @@
-struct Grid_consts {
-    vec3 cell_size;
-    int cell_capacity;
-    vec3 grid_size;
-    int cell_count;
+struct Fixed_uniform_grid_params {
+    vec4 grid_min;
+    ivec4 cell_count;
+    vec4 cell_size;
     vec4 grid_pos;
-}
+    int cell_capacity;
+    int total_cell_count;
+    int grid_capacity;
+};

@@ -12,6 +12,7 @@
 #include <vup/Core/Window.h>
 #include <array>
 #include <iostream>
+#include <imgui/imgui.h>
 
 namespace vup
 {
@@ -42,7 +43,7 @@ namespace vup
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls
         // * float dt - delta time between camera updates
-        void update(Window window, float dt);
+        void update(const Window& window, float dt);
         void resize();
 
     private:
@@ -63,7 +64,7 @@ namespace vup
         float m_far;
 
         void update_view();
-        void move_camera(Window window, float dt);
+        void move_camera(const Window& window, float dt);
     };
 }
 

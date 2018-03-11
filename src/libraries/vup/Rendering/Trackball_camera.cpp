@@ -27,13 +27,12 @@ glm::mat4 vup::Trackball_camera::get_projection() const {
     return m_projection;
 }
 
-void vup::Trackball_camera::update(Window window, float dt) {
-    double x, y;
-    glfwGetCursorPos(window.get(), &x, &y);
-    if (glfwGetMouseButton(window.get(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+void vup::Trackball_camera::update(const Window& window, const float dt) {
+    auto cursor = window.get_cursor_pos();
+    if (window.check_mouse_action(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS)) {
         const float dt_sens = m_sens * dt;
-        const auto change_x = static_cast<float>(x - m_x);
-        const auto change_y = static_cast<float>(y - m_y);
+        const auto change_x = static_cast<float>(cursor.x - m_x);
+        const auto change_y = static_cast<float>(cursor.y - m_y);
         m_theta -= change_y * dt_sens;
         if (m_theta < 0.01f) {
             m_theta = 0.01f;
@@ -49,8 +48,8 @@ void vup::Trackball_camera::update(Window window, float dt) {
             m_phi -= 2 * glm::pi<float>();
         }
     }
-    m_x = x;
-    m_y = y;
+    m_x = cursor.x;
+    m_y = cursor.y;
     move_camera(window, dt);
     update_view();
     resize();
@@ -75,14 +74,14 @@ void vup::Trackball_camera::update_view() {
     m_view = glm::lookAt(eye, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void vup::Trackball_camera::move_camera(Window window, float dt) {
-    if (glfwGetKey(window.get(), GLFW_KEY_UP) == GLFW_PRESS) {
+void vup::Trackball_camera::move_camera(const Window& window, const float dt) {
+    if (window.check_key_action(GLFW_KEY_UP, GLFW_PRESS)) {
         m_radius -= m_zoom_sens * dt;
         if (m_radius < 0.1f) {
             m_radius = 0.1f;
         }
     }
-    else if (glfwGetKey(window.get(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+    else if (window.check_key_action(GLFW_KEY_DOWN, GLFW_PRESS)) {
         m_radius += m_zoom_sens * dt;
     }
 }

@@ -11,8 +11,8 @@
 int vup::Window::next_id = 0;
 
 vup::Window::Window(const int width, const int height, const std::string& title, const bool debug,
-                    const int gl_major, const int gl_minor, GLFWmonitor* monitor,
-                    GLFWwindow* share, const int swap_interval)
+                    const int swap_interval, const int gl_major, const int gl_minor,
+                    GLFWmonitor* monitor, GLFWwindow* share)
     : m_id(next_id++), m_width(width), m_height(height) {
     if (m_id == 0) {
         init_GLFW();
@@ -58,10 +58,10 @@ void vup::Window::run_loop_fixed(const float dt, const std::function<void(float)
 }
 
 void vup::Window::step_loop_fixed(const float dt, const std::function<void(float)>& loop) const {
+    glfwPollEvents();
     gl::clear_buffers();
     loop(dt);
     swap_buffer();
-    glfwPollEvents();
 }
 
 int vup::Window::get_id() const {
@@ -84,4 +84,18 @@ GLFWwindow* vup::Window::get() const {
 
 Context vup::Window::get_context() const {
     return m_context;
+}
+
+glm::dvec2 vup::Window::get_cursor_pos() const {
+    glm::dvec2 pos;
+    glfwGetCursorPos(m_window, &pos.x, &pos.y);
+    return pos;
+}
+
+bool vup::Window::check_mouse_action(const int button, const int action) const {
+    return glfwGetMouseButton(m_window, button) == action;
+}
+
+bool vup::Window::check_key_action(const int key, const int action) const {
+    return glfwGetKey(m_window, key) == action;
 }

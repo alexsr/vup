@@ -14,7 +14,7 @@ vup::Shader::Shader(const gl::introspection introspection_flag,
     m_program_id = glCreateProgram();
 }
 
-GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
+GLuint vup::Shader::load_shader(const filesystem::path& path, const GLenum type) {
     std::cout << "Loading shader from file: " << path.string() << "\n";
     auto f_source = load_file_str(path);
     const auto version_start = f_source.find("#version", 0);
@@ -64,7 +64,7 @@ void vup::Shader::use() const {
     glUseProgram(m_program_id);
 }
 
-void vup::Shader::link_program() const {
+void vup::Shader::link_program() {
     glLinkProgram(m_program_id);
     GLint link_status = 0;
     glGetProgramiv(m_program_id, GL_LINK_STATUS, &link_status);
@@ -137,7 +137,7 @@ void vup::Shader::inspect_uniforms() {
     }
 }
 
-void vup::Shader::add_uniform(const std::string& name, GLint type,
+void vup::Shader::add_uniform(const std::string& name, const GLint type,
                               GLint location) {
     switch (type) {
         case GL_BOOL:
@@ -232,119 +232,119 @@ void vup::Shader::clear_maps() {
     m_mat4_uniforms.clear();
 }
 
-void vup::Shader::update_uniform(const std::string& name, bool v) {
+void vup::Shader::update_uniform(const std::string& name, const bool v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_int_uniforms)) {
         m_int_uniforms.at(name).update({static_cast<const int>(v)});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, unsigned int v) {
+void vup::Shader::update_uniform(const std::string& name, const unsigned int v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_int_uniforms)) {
         m_int_uniforms.at(name).update({static_cast<int>(v)});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, int v) {
+void vup::Shader::update_uniform(const std::string& name, const int v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_int_uniforms)) {
         m_int_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, float v) {
+void vup::Shader::update_uniform(const std::string& name, const float v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_float_uniforms)) {
         m_float_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, double v) {
+void vup::Shader::update_uniform(const std::string& name, const double v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_float_uniforms)) {
         m_float_uniforms.at(name).update({static_cast<float>(v)});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::vec2 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::vec2 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec2_uniforms)) {
         m_vec2_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::vec3 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::vec3 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec3_uniforms)) {
         m_vec3_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::vec4 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::vec4 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec4_uniforms)) {
         m_vec4_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::ivec2 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::ivec2 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_ivec2_uniforms)) {
         m_ivec2_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::ivec3 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::ivec3 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_ivec3_uniforms)) {
         m_ivec3_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::ivec4 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::ivec4 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_ivec4_uniforms)) {
         m_ivec4_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, std::vector<glm::vec2> v) {
+void vup::Shader::update_uniform(const std::string& name, const std::vector<glm::vec2>& v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec2_uniforms)) {
         m_vec2_uniforms.at(name).update(v);
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, std::vector<glm::vec3> v) {
+void vup::Shader::update_uniform(const std::string& name, const std::vector<glm::vec3>& v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec3_uniforms)) {
         m_vec3_uniforms.at(name).update(v);
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, std::vector<glm::vec4> v) {
+void vup::Shader::update_uniform(const std::string& name, const std::vector<glm::vec4>& v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_vec4_uniforms)) {
         m_vec4_uniforms.at(name).update(v);
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::mat2 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::mat2 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_mat2_uniforms)) {
         m_mat2_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::mat3 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::mat3 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_mat3_uniforms)) {
         m_mat3_uniforms.at(name).update({v});
     }
 }
 
-void vup::Shader::update_uniform(const std::string& name, glm::mat4 v) {
+void vup::Shader::update_uniform(const std::string& name, const glm::mat4 v) const {
     glUseProgram(m_program_id);
     if (find_map_entry(name, m_mat4_uniforms)) {
         m_mat4_uniforms.at(name).update({v});

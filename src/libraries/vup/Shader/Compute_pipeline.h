@@ -19,27 +19,27 @@ namespace vup
                                   const std::vector<Shader_define>& defines = {},
                                   const filesystem::path& main_dir_path = "");
         void reload();
-        void run(float x = 1, float y = 1, float z = 1);
+        void run(float x = 1, float y = 1, float z = 1) const;
         void run_with_barrier(float x = 1, float y = 1, float z = 1,
-                              GLbitfield barriers = GL_SHADER_STORAGE_BARRIER_BIT);
-        void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1);
+                              GLbitfield barriers = GL_SHADER_STORAGE_BARRIER_BIT) const;
+        void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1) const;
         template <typename T>
-        void update_uniform(const std::string& name, T v);
+        void update_uniform(const std::string& name, T v) const;
         template <typename T>
-        void update_uniform_at(unsigned int id, const std::string& name, T v);
+        void update_uniform_at(unsigned int id, const std::string& name, T v) const;
     private:
         std::vector<Compute_shader> m_compute_shaders;
     };
 
     template <typename T>
-    void Compute_pipeline::update_uniform(const std::string& name, T v) {
-        for (auto& c : m_compute_shaders) {
+    void Compute_pipeline::update_uniform(const std::string& name, T v) const {
+        for (const auto& c : m_compute_shaders) {
             c.update_uniform(name, v);
         }
     }
 
     template <typename T>
-    void Compute_pipeline::update_uniform_at(unsigned int id, const std::string& name, T v) {
+    void Compute_pipeline::update_uniform_at(const unsigned int id, const std::string& name, T v) const {
         m_compute_shaders.at(id).update_uniform(name, v);
     }
 }

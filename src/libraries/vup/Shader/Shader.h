@@ -35,28 +35,28 @@ namespace vup
         void set_ssbo_data(const std::string& name, const T& data);
         template <typename T>
         void update_ssbo(const std::string& name, const T& data);
-        void update_uniform(const std::string& name, bool v);
-        void update_uniform(const std::string& name, unsigned int v);
-        void update_uniform(const std::string& name, int v);
-        void update_uniform(const std::string& name, float v);
-        void update_uniform(const std::string& name, double v);
-        void update_uniform(const std::string& name, glm::vec2 v);
-        void update_uniform(const std::string& name, glm::vec3 v);
-        void update_uniform(const std::string& name, glm::vec4 v);
-        void update_uniform(const std::string& name, glm::ivec2 v);
-        void update_uniform(const std::string& name, glm::ivec3 v);
-        void update_uniform(const std::string& name, glm::ivec4 v);
-        void update_uniform(const std::string& name, std::vector<glm::vec2> v);
-        void update_uniform(const std::string& name, std::vector<glm::vec3> v);
-        void update_uniform(const std::string& name, std::vector<glm::vec4> v);
-        void update_uniform(const std::string& name, glm::mat2 v);
-        void update_uniform(const std::string& name, glm::mat3 v);
-        void update_uniform(const std::string& name, glm::mat4 v);
+        void update_uniform(const std::string& name, bool v) const;
+        void update_uniform(const std::string& name, unsigned int v) const;
+        void update_uniform(const std::string& name, int v) const;
+        void update_uniform(const std::string& name, float v) const;
+        void update_uniform(const std::string& name, double v) const;
+        void update_uniform(const std::string& name, glm::vec2 v) const;
+        void update_uniform(const std::string& name, glm::vec3 v) const;
+        void update_uniform(const std::string& name, glm::vec4 v) const;
+        void update_uniform(const std::string& name, glm::ivec2 v) const;
+        void update_uniform(const std::string& name, glm::ivec3 v) const;
+        void update_uniform(const std::string& name, glm::ivec4 v) const;
+        void update_uniform(const std::string& name, const std::vector<glm::vec2>& v) const;
+        void update_uniform(const std::string& name, const std::vector<glm::vec3>& v) const;
+        void update_uniform(const std::string& name, const std::vector<glm::vec4>& v) const;
+        void update_uniform(const std::string& name, glm::mat2 v) const;
+        void update_uniform(const std::string& name, glm::mat3 v) const;
+        void update_uniform(const std::string& name, glm::mat4 v) const;
     protected:
         explicit Shader(gl::introspection introspection_flag = gl::introspection::basic,
                         std::vector<Shader_define> defines = {});
         GLuint load_shader(const filesystem::path& path, GLenum type);
-        void link_program() const;
+        void link_program();
         void init_shader_program(const std::vector<GLuint>& shader_ids);
         void attach_shaders(const std::vector<GLuint>& shader_ids) const;
         void detach_shaders(const std::vector<GLuint>& shader_ids) const;

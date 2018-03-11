@@ -11,22 +11,14 @@
 #include <fstream>
 #include <string_view>
 #include <experimental/filesystem>
+#include <sstream>
 
 namespace filesystem = std::experimental::filesystem;
 
 namespace vup
 {
-    class File_loader {
-    public:
-        explicit File_loader(const filesystem::path& path,
-                             std::ios_base::openmode mode = std::ios::in);
-        void load(const filesystem::path& path, std::ios_base::openmode mode = std::ios::in);
-        std::string get_source();
-        std::string_view get_source_view();
-        unsigned long get_size();
-    private:
-        std::string m_source{""};
-    };
+    std::string load_file_str(const filesystem::path& path, std::ios_base::openmode mode = std::ios::in);
+    const char* load_file_cstr(const filesystem::path& path, std::ios_base::openmode mode = std::ios::in);
 }
 
 

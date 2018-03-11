@@ -6,6 +6,7 @@
 //
 
 #include "Shader.h"
+#include <functional>
 
 vup::Shader::Shader(const gl::introspection introspection_flag,
                     std::vector<Shader_define> defines)
@@ -15,22 +16,25 @@ vup::Shader::Shader(const gl::introspection introspection_flag,
 
 GLuint vup::Shader::load_shader(const filesystem::path& path, GLenum type) {
     std::cout << "Loading shader from file: " << path.string() << "\n";
-    File_loader f(path);
-    auto f_source = f.get_source();
+    auto f_source = load_file_str(path);
     const auto version_start = f_source.find("#version", 0);
     auto start = f_source.find('\n', version_start) + 1;
+    std::string define_string;
     for (auto& d : m_defines) {
-        f_source.insert(start, "#define " + d.name + " " + d.value + "\n");
+        define_string += "#define " + d.name + " " + d.value + "\n";
     }
-    while ((start = f_source.find("#include", start)) != std::string::npos) {
+    f_source.insert(start, define_string);
+    auto main_start = f_source.find("void main");
+    while ((start = f_source.find("#include", start)) <= main_start) {
         const auto path_start = f_source.find('\"', start);
         const auto path_end = f_source.find('\"', path_start + 1);
         auto path_inc(path.parent_path() / f_source.substr(path_start + 1, path_end - path_start - 1));
         std::cout << "Including " << path_inc.string() << "\n";
         const auto eol = f_source.find('\n', start);
-        f_source.erase(start, eol - start);
-        File_loader f_inc(path_inc);
-        f_source.insert(start, f_inc.get_source().c_str());
+        auto inc = load_file_str(path_inc);
+        f_source.replace(start, eol - start, inc.data());
+        start += inc.size();
+        main_start += inc.size();
     }
     const GLchar* source = f_source.data();
     auto size = static_cast<GLint>(f_source.size());

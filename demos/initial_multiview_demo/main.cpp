@@ -13,7 +13,6 @@
 #include <vup/Geometry/Mesh_loader.h>
 
 int main() {
-    vup::init_GLFW();
     int width = 800;
     int height = 800;
     vup::Window window(width, height, "Initial multiview rendering demo", true);

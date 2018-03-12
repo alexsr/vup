@@ -11,7 +11,6 @@
 #include <vup/GPU_Storage/VAO.h>
 
 int main() {
-    vup::init_GLFW();
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();

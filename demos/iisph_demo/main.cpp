@@ -18,7 +18,7 @@
 #include <vup/Core/Gui_window.h>
 
 int main() {
-    vup::init_GLFW();
+    vup::init_glfw();
     int width = 800;
     int height = 600;
     vup::Gui_window curr_window(width, height, "IISPH demo", true);

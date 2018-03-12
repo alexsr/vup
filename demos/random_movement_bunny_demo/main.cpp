@@ -14,7 +14,6 @@
 #include <vup/Shader/Compute_shader.h>
 
 int main() {
-    vup::init_GLFW();
     int width = 800;
     int height = 600;
     vup::Window window(width, height, "Randomly move bunny vertices", true);

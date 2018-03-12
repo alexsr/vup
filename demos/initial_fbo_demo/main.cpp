@@ -25,7 +25,6 @@ struct MVP {
 };
 
 int main() {
-    vup::init_GLFW();
     int width = 800;
     int height = 600;
     vup::Window window(width, height, "Initial instanced rendering demo", true);

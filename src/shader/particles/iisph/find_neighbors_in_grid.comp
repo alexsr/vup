@@ -9,11 +9,11 @@ layout (local_size_x = 128) in;
 #include "/../../data_structures/uniform_grid.inc.comp"
 
 layout (std430, binding = 4) buffer grid_buffer {
-    int grid[GRID_CAPACITY];
+    int grid[];
 };
 
 layout (std430, binding = 5) buffer cell_counter_buffer {
-    int cell_counter[CELL_COUNT];
+    int cell_counter[];
 };
 
 layout (std430, binding = 6) buffer grid_parameters {

@@ -1,5 +1,5 @@
 layout (std430, binding = 0) buffer particles {
-    Fluid_particle p[N];
+    Fluid_particle p[];
 };
 
 layout (std430, binding = 1) buffer demo_constants{
@@ -7,9 +7,9 @@ layout (std430, binding = 1) buffer demo_constants{
 };
 
 layout (std430, binding = 2) buffer neighborhood_data {
-    int neighbor[NEIGHBOR_ARRAY_SIZE];
+    int neighbor[];
 };
 
 layout (std430, binding = 3) buffer neighborhood_count {
-    int neighbor_counter[N];
+    int neighbor_counter[];
 };

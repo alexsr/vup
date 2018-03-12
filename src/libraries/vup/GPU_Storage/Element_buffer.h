@@ -5,8 +5,6 @@
 // https://github.com/alexsr
 //
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "HidingNonVirtualFunction"
 #ifndef VUP_ELEMENT_BUFFER_H
 #define VUP_ELEMENT_BUFFER_H
 
@@ -27,5 +25,3 @@ namespace vup
 }
 
 #endif //VUP_ELEMENT_BUFFER_H
-
-#pragma clang diagnostic pop

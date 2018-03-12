@@ -17,15 +17,15 @@ vup::VAO::VAO(const Geometric_primitive& primitive,
     : Base_VAO(primitive, vbos) {
 }
 
-vup::VAO::VAO(const Mesh& mesh, const std::initializer_list<VBO>& vbos) : Base_VAO(mesh) {
+vup::VAO::VAO(const Mesh& mesh, const std::initializer_list<VBO>& vbos) : Base_VAO(mesh, vbos) {
 }
 
-void vup::VAO::render(GLenum render_mode) {
+void vup::VAO::render(const GLenum render_mode) const {
     bind();
     glDrawArrays(render_mode, 0, m_count);
 }
 
-void vup::VAO::render(GLenum render_mode, int offset, unsigned int count) {
+void vup::VAO::render(const GLenum render_mode, const int offset, const unsigned int count) const {
     bind();
     glDrawArrays(render_mode, offset, count);
 }

@@ -13,23 +13,23 @@
 
 namespace vup
 {
-    class Instanced_element_VAO : public vup::Instanced_VAO {
+    class Instanced_element_VAO : public Instanced_VAO {
     public:
-        explicit Instanced_element_VAO(const vup::VBO& main_vbo,
-                                       const vup::Element_buffer& element_vbo,
-                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
-        explicit Instanced_element_VAO(const vup::VBO& main_vbo,
-                                       const vup::Element_buffer& element_vbo,
-                                       const std::initializer_list<vup::VBO>& vbos,
-                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
-        explicit Instanced_element_VAO(const vup::Geometric_primitive& primitive,
-                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
-        explicit Instanced_element_VAO(const vup::Geometric_primitive& primitive,
-                                       const std::initializer_list<vup::VBO>& vbos,
-                                       const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
-        void render(GLenum render_mode, unsigned int instances) override;
+        explicit Instanced_element_VAO(const VBO& main_vbo,
+                                       const Element_buffer& element_vbo,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_element_VAO(const VBO& main_vbo,
+                                       const Element_buffer& element_vbo,
+                                       const std::initializer_list<VBO>& vbos,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos);
+        explicit Instanced_element_VAO(const Geometric_primitive& primitive,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_element_VAO(const Geometric_primitive& primitive,
+                                       const std::initializer_list<VBO>& vbos,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos);
+        void render(GLenum render_mode, unsigned int instances) const override;
         void render(GLenum render_mode, int offset, unsigned int count,
-                    unsigned int instances) override;
+                    unsigned int instances) const override;
     };
 }
 

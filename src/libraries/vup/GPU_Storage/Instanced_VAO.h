@@ -13,26 +13,25 @@
 
 namespace vup
 {
-    class Instanced_VAO : public vup::Base_VAO {
+    class Instanced_VAO : public Base_VAO {
     public:
-        explicit Instanced_VAO(const vup::VBO& main_vbo,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
-        explicit Instanced_VAO(const vup::VBO& main_vbo,
-                               const std::initializer_list<vup::VBO>& vbos,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
-        explicit Instanced_VAO(const vup::Geometric_primitive& primitive,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
-        explicit Instanced_VAO(const vup::Geometric_primitive& primitive,
-                               const std::initializer_list<vup::VBO>& vbos,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos);
-        explicit Instanced_VAO(const vup::Mesh& mesh,
-                               const std::initializer_list<vup::Instanced_VBO>& instanced_vbos = {});
-        virtual void render(GLenum render_mode, unsigned int instances);
+        explicit Instanced_VAO(const VBO& main_vbo,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_VAO(const VBO& main_vbo,
+                               const std::initializer_list<VBO>& vbos,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos);
+        explicit Instanced_VAO(const Geometric_primitive& primitive,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_VAO(const Geometric_primitive& primitive,
+                               const std::initializer_list<VBO>& vbos,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos);
+        explicit Instanced_VAO(const Mesh& mesh,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        virtual void render(GLenum render_mode, unsigned int instances) const;
         virtual void render(GLenum render_mode, int offset, unsigned int count,
-                            unsigned int instances);
+                            unsigned int instances) const;
     private:
-        void set_divisor_qualifier(const vup::Instanced_VBO& v,
-                                   unsigned int index);
+        void set_divisor_qualifier(const Instanced_VBO& v, unsigned int index) const;
     };
 }
 

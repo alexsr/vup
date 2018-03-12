@@ -7,7 +7,7 @@
 
 #include "VBO.h"
 
-vup::VBO::VBO(GLint vertex_size, GLenum format, gl::storage flags)
+vup::VBO::VBO(const GLint vertex_size, const GLenum format, const gl::storage flags)
     : Buffer(GL_ARRAY_BUFFER, flags), m_vertex_size(vertex_size),
       m_format(format) {
     m_format_size = determine_format_size(format);
@@ -30,11 +30,11 @@ int vup::VBO::get_stride() const {
     return m_stride;
 }
 
-void vup::VBO::bind_base(GLuint binding) {
+void vup::VBO::bind_base(const GLuint binding) const {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_name);
 }
 
-int vup::VBO::determine_format_size(const GLenum format) {
+constexpr int vup::VBO::determine_format_size(const GLenum format) {
     switch (format) {
         case GL_DOUBLE:
             return sizeof(double);

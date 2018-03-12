@@ -20,8 +20,8 @@ namespace vup
                      const std::initializer_list<VBO>& vbos = {});
         explicit VAO(const Mesh& mesh,
                      const std::initializer_list<VBO>& vbos = {});
-        virtual void render(GLenum render_mode);
-        virtual void render(GLenum render_mode, int offset, unsigned int count);
+        virtual void render(GLenum render_mode) const;
+        virtual void render(GLenum render_mode, int offset, unsigned int count) const;
     };
 }
 

@@ -49,7 +49,7 @@ vup::Base_VAO::Base_VAO(const Mesh& mesh,
     }
 }
 
-void vup::Base_VAO::bind() {
+void vup::Base_VAO::bind() const {
     glBindVertexArray(m_name);
 }
 
@@ -57,7 +57,7 @@ void vup::Base_VAO::unbind() {
     glBindVertexArray(0);
 }
 
-void vup::Base_VAO::delete_vao() {
+void vup::Base_VAO::delete_vao() const {
     unbind();
     glDeleteVertexArrays(1, &m_name);
 }
@@ -71,7 +71,7 @@ void vup::Base_VAO::set_attrib_buffer(const VBO& v, unsigned int i) {
 
 }
 
-void vup::Base_VAO::set_attrib_format(unsigned int index, GLint vertex_size, GLenum format) {
+void vup::Base_VAO::set_attrib_format(const unsigned int index, const GLint vertex_size, const GLenum format) const {
     if (format == GL_DOUBLE) {
         glVertexArrayAttribLFormat(m_name, index, vertex_size, format, 0);
     }
@@ -85,6 +85,6 @@ void vup::Base_VAO::set_attrib_format(unsigned int index, GLint vertex_size, GLe
     }
 }
 
-vup::VBO vup::Base_VAO::get_vbo(unsigned long i) {
+vup::VBO vup::Base_VAO::get_vbo(const unsigned long i) const {
     return m_vbos.at(i);
 }

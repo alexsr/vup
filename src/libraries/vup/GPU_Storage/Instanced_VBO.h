@@ -26,8 +26,8 @@ namespace vup
     };
 
     template <typename T>
-    Instanced_VBO::Instanced_VBO(const std::vector<T>& data, GLint vertex_size,
-                                 GLuint divisor, GLenum type, gl::storage flags)
+    Instanced_VBO::Instanced_VBO(const std::vector<T>& data, const GLint vertex_size,
+                                 const GLuint divisor, const GLenum type, const gl::storage flags)
         : VBO(data, vertex_size, type, flags), m_divisor(divisor) {
 
     }

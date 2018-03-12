@@ -17,10 +17,10 @@ namespace vup
     class Base_VAO {
     public:
         virtual ~Base_VAO() = default;
-        void bind();
-        void unbind();
-        void delete_vao();
-        VBO get_vbo(unsigned long i);
+        void bind() const;
+        static void unbind();
+        void delete_vao() const;
+        VBO get_vbo(unsigned long i) const;
     protected:
         explicit Base_VAO(const VBO& main_vbo,
                           const std::initializer_list<VBO>& vbos = {});
@@ -29,7 +29,7 @@ namespace vup
         explicit Base_VAO(const Mesh& mesh,
                           const std::initializer_list<VBO>& vbos = {});
         void set_attrib_buffer(const VBO& v, unsigned int i);
-        void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format);
+        void set_attrib_format(unsigned int index, GLint vertex_size, GLenum format) const;
         GLuint m_name = 0;
         unsigned int m_count = 0;
         std::vector<VBO> m_vbos;

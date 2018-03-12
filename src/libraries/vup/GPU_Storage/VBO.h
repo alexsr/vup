@@ -26,9 +26,9 @@ namespace vup
         GLenum get_format() const;
         int get_format_size() const;
         int get_stride() const;
-        void bind_base(GLuint binding);
+        void bind_base(GLuint binding) const;
     private:
-        static int determine_format_size(GLenum format);
+        static constexpr int determine_format_size(GLenum format);
         GLint m_vertex_size;
         GLenum m_format;
         int m_format_size;
@@ -37,7 +37,7 @@ namespace vup
 }
 
 template <typename T>
-vup::VBO::VBO(const T& data, GLint vertex_size, GLenum format, gl::storage flags)
+vup::VBO::VBO(const T& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
     : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
       m_format(format) {
     m_format_size = determine_format_size(format);
@@ -45,7 +45,7 @@ vup::VBO::VBO(const T& data, GLint vertex_size, GLenum format, gl::storage flags
 }
 
 template <typename T>
-vup::VBO::VBO(const std::vector<T>& data, GLint vertex_size, GLenum format, gl::storage flags)
+vup::VBO::VBO(const std::vector<T>& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
     : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
       m_format(format) {
     m_format_size = determine_format_size(format);

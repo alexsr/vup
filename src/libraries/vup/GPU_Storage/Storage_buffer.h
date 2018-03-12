@@ -19,7 +19,7 @@ namespace vup
         template <typename T>
         explicit Storage_buffer(GLenum target, const T& data, GLuint binding = 0,
                                 gl::storage flags = gl::storage::dynamic | gl::storage::write);
-        void bind_base(GLuint binding);
+        void bind_base(GLuint binding) const;
         GLuint m_binding;
     };
 

@@ -13,15 +13,15 @@
 
 namespace vup
 {
-    class Element_VAO : public vup::VAO {
+    class Element_VAO : public VAO {
     public:
-        explicit Element_VAO(const vup::VBO& main_vbo, const vup::Element_buffer& element_vbo,
-                             const std::initializer_list<vup::VBO>& vbos = {});
-        explicit Element_VAO(const vup::Geometric_primitive& primitive,
-                             const std::initializer_list<vup::VBO>& vbos = {});
-        explicit Element_VAO(vup::Mesh mesh);
-        void render(GLenum render_mode) override;
-        void render(GLenum render_mode, int offset, unsigned int count) override;
+        explicit Element_VAO(const VBO& main_vbo, const Element_buffer& element_vbo,
+                             const std::initializer_list<VBO>& vbos = {});
+        explicit Element_VAO(const Geometric_primitive& primitive,
+                             const std::initializer_list<VBO>& vbos = {});
+        explicit Element_VAO(Mesh mesh);
+        void render(GLenum render_mode) const override;
+        void render(GLenum render_mode, int offset, unsigned int count) const override;
     };
 }
 

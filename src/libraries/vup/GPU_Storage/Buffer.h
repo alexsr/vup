@@ -38,9 +38,9 @@ namespace vup
         void get_data(std::vector<T>& data, int offset);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
-        void bind();
-        void unbind();
-        void delete_buffer();
+        void bind() const;
+        void unbind() const;
+        void delete_buffer() const;
         bool is_initialized() const;
     protected:
         explicit Buffer(GLenum target, gl::storage flags = gl::storage::dynamic | gl::storage::write);
@@ -65,7 +65,7 @@ namespace vup
 }
 
 template <typename T>
-vup::Buffer::Buffer(GLenum target, const T& data, gl::storage flags)
+vup::Buffer::Buffer(const GLenum target, const T& data, const gl::storage flags)
     : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
@@ -74,7 +74,7 @@ vup::Buffer::Buffer(GLenum target, const T& data, gl::storage flags)
 }
 
 template <typename T>
-vup::Buffer::Buffer(GLenum target, const std::vector<T>& data, gl::storage flags)
+vup::Buffer::Buffer(const GLenum target, const std::vector<T>& data, const gl::storage flags)
     : m_target(target), m_storage_flags(flags), m_storage_initialized(true) {
     glCreateBuffers(1, &m_name);
     initialize_storage(data);
@@ -109,7 +109,7 @@ void vup::Buffer::update_data(const std::vector<T>& data) {
 }
 
 template <typename T>
-void vup::Buffer::update_data(const T& data, int offset, int size) {
+void vup::Buffer::update_data(const T& data, const int offset, const int size) {
     if (!m_dynamically_updatable) {
         throw std::runtime_error{"Buffer " + std::to_string(m_name) + " is not dynamically updatable."};
     }

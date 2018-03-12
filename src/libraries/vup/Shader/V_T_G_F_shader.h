@@ -12,14 +12,14 @@
 
 namespace vup
 {
-    class V_T_G_F_shader : public vup::Shader {
+    class V_T_G_F_shader : public Shader {
     public:
-        V_T_G_F_shader(const filesystem::path& vertex_path,
-                       const filesystem::path& control_path,
-                       const filesystem::path& evaluation_path,
-                       const filesystem::path& geometry_path,
-                       const filesystem::path& fragment_path,
-                       vup::gl::introspection introspection_flag = vup::gl::introspection::basic,
+        V_T_G_F_shader(filesystem::path vertex_path,
+                       filesystem::path control_path,
+                       filesystem::path evaluation_path,
+                       filesystem::path geometry_path,
+                       filesystem::path fragment_path,
+                       gl::introspection introspection_flag = gl::introspection::basic,
                        const std::vector<Shader_define>& defines = {});
         void reload() override;
     private:

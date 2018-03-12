@@ -13,16 +13,16 @@ vup::V_F_shader::V_F_shader(filesystem::path vertex_path,
                             const std::vector<Shader_define>& defines)
     : Shader(introspection_flag, defines), m_vertex_path(std::move(vertex_path)),
       m_fragment_path(std::move(fragment_path)) {
-    std::vector<GLuint> shader_ids;
-    shader_ids.push_back(load_shader(m_vertex_path, GL_VERTEX_SHADER));
-    shader_ids.push_back(load_shader(m_fragment_path, GL_FRAGMENT_SHADER));
+    std::vector<GLuint> shader_ids(2);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
     init_shader_program(shader_ids);
 }
 
 void vup::V_F_shader::reload() {
     clear_maps();
-    std::vector<GLuint> shader_ids;
-    shader_ids.push_back(load_shader(m_vertex_path, GL_VERTEX_SHADER));
-    shader_ids.push_back(load_shader(m_fragment_path, GL_FRAGMENT_SHADER));
+    std::vector<GLuint> shader_ids(2);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
     init_shader_program(shader_ids);
 }

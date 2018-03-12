@@ -14,7 +14,7 @@ namespace vup
 {
     class Compute_shader : public Shader {
     public:
-        explicit Compute_shader(const filesystem::path& compute_path,
+        explicit Compute_shader(filesystem::path compute_path,
                                 gl::introspection introspection_flag = gl::introspection::basic,
                                 const std::vector<Shader_define>& defines = {});
         void reload() override;

@@ -6,11 +6,12 @@
 //
 
 #include "Compute_shader.h"
+#include <utility>
 
-vup::Compute_shader::Compute_shader(const filesystem::path& compute_path,
-                                    gl::introspection introspection_flag,
+vup::Compute_shader::Compute_shader(filesystem::path compute_path,
+                                    const gl::introspection introspection_flag,
                                     const std::vector<Shader_define>& defines)
-    : Shader(introspection_flag, defines), m_compute_path(compute_path) {
+    : Shader(introspection_flag, defines), m_compute_path(std::move(compute_path)) {
     std::vector<GLuint> shader_ids;
     shader_ids.push_back(load_shader(m_compute_path, GL_COMPUTE_SHADER));
     init_shader_program(shader_ids);

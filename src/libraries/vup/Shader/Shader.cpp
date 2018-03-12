@@ -64,7 +64,7 @@ void vup::Shader::use() const {
     glUseProgram(m_program_id);
 }
 
-void vup::Shader::link_program() {
+void vup::Shader::link_program() const {
     glLinkProgram(m_program_id);
     GLint link_status = 0;
     glGetProgramiv(m_program_id, GL_LINK_STATUS, &link_status);
@@ -138,7 +138,7 @@ void vup::Shader::inspect_uniforms() {
 }
 
 void vup::Shader::add_uniform(const std::string& name, const GLint type,
-                              GLint location) {
+                              const GLint location) {
     switch (type) {
         case GL_BOOL:
         case GL_INT:

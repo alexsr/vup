@@ -13,8 +13,8 @@
 #include <vup/GPU_Storage/Storage_buffer.h>
 #include <map>
 #include <iostream>
-#include <utility>
 #include <array>
+#include <utility>
 #include "shader_utils.h"
 
 namespace vup
@@ -56,7 +56,7 @@ namespace vup
         explicit Shader(gl::introspection introspection_flag = gl::introspection::basic,
                         std::vector<Shader_define> defines = {});
         GLuint load_shader(const filesystem::path& path, GLenum type);
-        void link_program();
+        void link_program() const;
         void init_shader_program(const std::vector<GLuint>& shader_ids);
         void attach_shaders(const std::vector<GLuint>& shader_ids) const;
         void detach_shaders(const std::vector<GLuint>& shader_ids) const;

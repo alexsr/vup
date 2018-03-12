@@ -91,12 +91,6 @@ void vup::Shader::init_shader_program(const std::vector<GLuint>& shader_ids) {
     detach_shaders(shader_ids);
     if (m_introspection_flag != gl::introspection::none) {
         inspect_uniforms();
-        if (m_introspection_flag & gl::introspection::ubos) {
-            inspect_uniform_blocks();
-        }
-        if (m_introspection_flag & gl::introspection::ssbos) {
-            inspect_shader_storage_blocks();
-        }
     }
     delete_shaders(shader_ids);
 }
@@ -184,41 +178,7 @@ void vup::Shader::add_uniform(const std::string& name, const GLint type,
     }
 }
 
-void vup::Shader::inspect_uniform_blocks() {
-    GLint buffer_block_count = 0;
-    glGetProgramInterfaceiv(m_program_id, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &buffer_block_count);
-    std::array<GLenum, 3> properties = {GL_BUFFER_BINDING, GL_NAME_LENGTH, GL_BUFFER_DATA_SIZE};
-    for (int i = 0; i < buffer_block_count; i++) {
-        std::array<GLint, 3> info = {};
-        glGetProgramResourceiv(m_program_id, GL_UNIFORM_BLOCK, i, 3, properties.data(), 3, nullptr, info.data());
-        std::vector<char> name_data(static_cast<unsigned long>(info.at(1)));
-        glGetProgramResourceName(m_program_id, GL_UNIFORM_BLOCK, i, static_cast<GLsizei>(name_data.size()),
-                                 nullptr, name_data.data());
-        std::string name(name_data.begin(), name_data.end() - 1);
-        m_ubos.emplace(std::piecewise_construct, std::make_tuple(name),
-                       std::make_tuple(static_cast<GLuint>(info.at(0)), static_cast<unsigned int>(info.at(2))));
-    }
-}
-
-void vup::Shader::inspect_shader_storage_blocks() {
-    GLint buffer_block_count = 0;
-    glGetProgramInterfaceiv(m_program_id, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &buffer_block_count);
-    std::array<GLenum, 3> properties = {GL_BUFFER_BINDING, GL_NAME_LENGTH, GL_BUFFER_DATA_SIZE};
-    for (int i = 0; i < buffer_block_count; i++) {
-        std::array<GLint, 3> info = {};
-        glGetProgramResourceiv(m_program_id, GL_SHADER_STORAGE_BLOCK, i, 3, properties.data(), 3, nullptr, info.data());
-        std::vector<char> name_data(static_cast<unsigned long>(info.at(1)));
-        glGetProgramResourceName(m_program_id, GL_SHADER_STORAGE_BLOCK, i, static_cast<GLsizei>(name_data.size()),
-                                 nullptr, name_data.data());
-        std::string name(name_data.begin(), name_data.end() - 1);
-        m_ssbos.emplace(std::piecewise_construct, std::make_tuple(name),
-                        std::make_tuple(static_cast<GLuint>(info.at(0))));
-    }
-}
-
 void vup::Shader::clear_maps() {
-    m_ubos.clear();
-    m_ssbos.clear();
     m_int_uniforms.clear();
     m_float_uniforms.clear();
     m_ivec2_uniforms.clear();

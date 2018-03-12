@@ -7,7 +7,7 @@
 
 #include "File_loader.h"
 
-std::string vup::load_file_str(const filesystem::path& path, std::ios_base::openmode mode) {
+std::string vup::load_file_str(const filesystem::path& path, const std::ios_base::openmode mode) {
     if (!filesystem::exists(path)) {
         throw std::runtime_error{"File at " + path.string() + " not found."};
     }
@@ -26,7 +26,7 @@ std::string vup::load_file_str(const filesystem::path& path, std::ios_base::open
     return buffer;
 }
 
-const char* vup::load_file_cstr(const filesystem::path& path, std::ios_base::openmode mode) {
+const char* vup::load_file_cstr(const filesystem::path& path, const std::ios_base::openmode mode) {
     if (!filesystem::exists(path)) {
         throw std::runtime_error{ "File at " + path.string() + " not found." };
     }

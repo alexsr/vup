@@ -11,7 +11,6 @@
 #include <fstream>
 #include <string_view>
 #include <experimental/filesystem>
-#include <sstream>
 
 namespace filesystem = std::experimental::filesystem;
 

@@ -28,9 +28,9 @@ glm::mat4 vup::Trackball_camera::get_projection() const {
 }
 
 void vup::Trackball_camera::update(const Window& window, const float dt) {
-    auto cursor = window.get_cursor_pos();
+    const auto cursor = window.get_cursor_pos();
     if (window.check_mouse_action(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS)) {
-        const float dt_sens = m_sens * dt;
+        const auto dt_sens = m_sens * dt;
         const auto change_x = static_cast<float>(cursor.x - m_x);
         const auto change_y = static_cast<float>(cursor.y - m_y);
         m_theta -= change_y * dt_sens;

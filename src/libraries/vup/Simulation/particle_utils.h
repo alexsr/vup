@@ -14,7 +14,7 @@
 namespace vup
 {
     struct SPH_demo_constants {
-        SPH_demo_constants(float smoothing_length, float mass_scaling)
+        SPH_demo_constants(const float smoothing_length, const float mass_scaling)
             : kernel_const(0), kernel_grad_const(0), kernel_laplace_const(0), visc_const(0) {
             h = smoothing_length;
             r = 1.0f / glm::pow(4.0f / 3.0f * glm::pi<float>(), 1.0f / 3.0f) * h * mass_scaling;
@@ -29,10 +29,10 @@ namespace vup
     };
 
     struct Mueller_SPH_demo_constants : SPH_demo_constants {
-        Mueller_SPH_demo_constants(float smoothing_length, float mass_scaling) : SPH_demo_constants(
+        Mueller_SPH_demo_constants(const float smoothing_length, const float mass_scaling) : SPH_demo_constants(
             smoothing_length, mass_scaling) {
-            float h3 = h * h * h;
-            float h6 = h3 * h3;
+            const auto h3 = h * h * h;
+            const auto h6 = h3 * h3;
             kernel_const = 315.0f / (64.0f * glm::pi<float>() * h3 * h6);
             kernel_grad_const = 45.0f / (glm::pi<float>() * h6);
             kernel_laplace_const = 945.0f / (32.0f * glm::pi<float>() * h3 * h6);
@@ -42,24 +42,24 @@ namespace vup
     };
 
     struct IISPH_demo_constants : SPH_demo_constants {
-        IISPH_demo_constants(float smoothing_length, float mass_scaling) : SPH_demo_constants(
+        IISPH_demo_constants(const float smoothing_length, const float mass_scaling) : SPH_demo_constants(
             smoothing_length, mass_scaling) {
-            float h3 = h * h * h;
-            float h6 = h3 * h3;
+            const auto h3 = h * h * h;
+            const auto h6 = h3 * h3;
             kernel_const = 8.0f / (glm::pi<float>() * h3);
             kernel_grad_const = 48.0f / (glm::pi<float>() * h3);
             visc_const = 45.0f / (glm::pi<float>() * h6);
         }
     };
 
-    inline std::vector<SPH_particle> create_uniform_SPH_particles(float radius,
-                                                                  float lower,
-                                                                  float upper,
-                                                                  float rest_density,
-                                                                  float h) {
-        float step = radius * 2.0f;
-        float mass = rest_density * h * h * h;
-        auto n = static_cast<int>((upper - lower) / step) - 1;
+    inline std::vector<SPH_particle> create_uniform_SPH_particles(const float radius,
+                                                                  const float lower,
+                                                                  const float upper,
+                                                                  const float rest_density,
+                                                                  const float h) {
+        const auto step = radius * 2.0f;
+        const auto mass = rest_density * h * h * h;
+        const auto n = static_cast<int>((upper - lower) / step) - 1;
         std::vector<SPH_particle> result(static_cast<unsigned long>(n * n * n));
         for (unsigned long i = 0; i < n; i++) {
             for (unsigned long j = 0; j < n; j++) {
@@ -79,11 +79,12 @@ namespace vup
         return result;
     }
 
-    inline std::vector<IISPH_particle> create_uniform_IISPH_particles(float r, float h, float lower, float upper,
-                                                                      float rest_density) {
-        float mass = rest_density * h * h * h;
-        float step = r * 2.0f;
-        auto n = static_cast<unsigned long>((upper - lower) / step) - 1;
+    inline std::vector<IISPH_particle> create_uniform_IISPH_particles(const float r, const float h,
+                                                                      const float lower, const float upper,
+                                                                      const float rest_density) {
+        const auto mass = rest_density * h * h * h;
+        const auto step = r * 2.0f;
+        const auto n = static_cast<unsigned long>((upper - lower) / step) - 1;
         std::vector<IISPH_particle> result(static_cast<unsigned long>(n * n * n));
         for (unsigned long i = 0; i < n; i++) {
             for (unsigned long j = 0; j < n; j++) {

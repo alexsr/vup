@@ -15,7 +15,7 @@ vup::Window::Window(const int width, const int height, const std::string& title,
                     GLFWmonitor* monitor, GLFWwindow* share)
     : m_id(next_id++), m_width(width), m_height(height) {
     if (m_id == 0) {
-        init_GLFW();
+        init_glfw();
     }
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // enable OpenGL debugging
@@ -75,7 +75,7 @@ void vup::Window::resize(const int w, const int h) {
     m_height = h;
 }
 
-void vup::Window::set_resize(GLFWwindowsizefun resize) const {
+void vup::Window::set_resize(const GLFWwindowsizefun resize) const {
     glfwSetWindowSizeCallback(m_window, resize);
 }
 

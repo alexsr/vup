@@ -15,7 +15,7 @@ vup::Gui_window::Gui_window(const int width, const int height, const std::string
     m_gui_context = gui::init_imgui(m_window, install_callback);
 }
 
-void vup::Gui_window::run_loop_fixed(float dt, const std::function<void(float)>& loop) const {
+void vup::Gui_window::run_loop_fixed(const float dt, const std::function<void(float)>& loop) const {
     while (!should_close()) {
         step_loop_fixed(dt, loop);
     }

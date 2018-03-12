@@ -19,6 +19,7 @@ struct Context {
     GLint minor_version{};
     std::string vendor;
     std::string renderer;
+    std::string extended_glsl_version;
     std::string glsl_version;
 
     //    // Buffer information
@@ -44,7 +45,8 @@ struct Context {
         glGetIntegerv(GL_MINOR_VERSION, &minor_version);
         vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
         renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        glsl_version = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+        extended_glsl_version = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+        glsl_version = std::to_string(major_version * 100 + minor_version * 10);
         glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &max_work_group_count.at(0));
         glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &max_work_group_count.at(1));
         glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &max_work_group_count.at(2));
@@ -59,7 +61,7 @@ struct Context {
         std::cout << "OpenGL Version: " << major_version << "." << minor_version << "\n";
         std::cout << "Vendor: " << vendor << "\n";
         std::cout << "Renderer: " << renderer << "\n";
-        std::cout << "GLSL Version: " << glsl_version << "\n";
+        std::cout << "GLSL Version: " << extended_glsl_version << "\n";
         std::cout << "Compute shader info:\n";
         std::cout << " - Max workgroup count: " << max_work_group_count.at(0) << ", "
             << max_work_group_count.at(1) << ", " << max_work_group_count.at(2) << "\n";

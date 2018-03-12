@@ -24,7 +24,7 @@ void vup::Gui_window::run_loop_fixed(const float dt, const std::function<void(fl
 }
 
 void vup::Gui_window::step_loop_fixed(const float dt, const std::function<void(float)>& loop) const {
-    gui::start_new_frame();
+    gui::start_new_frame(m_context.glsl_version);
     glfwPollEvents();
     gl::clear_buffers();
     loop(dt);

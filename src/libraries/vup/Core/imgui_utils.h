@@ -16,18 +16,23 @@ namespace vup
     namespace gui
     {
         // GLFW data
-        static GLFWwindow* g_window = NULL;
+        static GLFWwindow* g_window = nullptr;
         static double g_time = 0.0f;
         static bool g_mouse_just_pressed[3] = { false, false, false };
         static GLFWcursor* g_mouse_cursors[ImGuiMouseCursor_COUNT] = { nullptr };
 
         // OpenGL460 data
-        static char g_GlslVersion[32] = "#version 460\n";
         static GLuint g_font_texture = 0;
-        static int g_shader_handle = 0, g_VertHandle = 0, g_frag_handle = 0;
-        static int g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
-        static int g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
-        static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
+        static int g_shader_handle = 0;
+        static int g_vert_handle = 0;
+        static int g_frag_handle = 0;
+        static int g_attrib_location_tex = 0;
+        static int g_attrib_location_proj_mtx = 0;
+        static int g_attrib_location_position = 0;
+        static int g_attrib_location_uv = 0;
+        static int g_attrib_location_color = 0;
+        static unsigned int g_vbo_handle = 0;
+        static unsigned int g_elements_handle = 0;
 
         // OpenGL3 Render function.
         // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
@@ -102,8 +107,8 @@ namespace vup
                 {-1.0f, 1.0f, 0.0f, 1.0f},
             };
             glUseProgram(g_shader_handle);
-            glUniform1i(g_AttribLocationTex, 0);
-            glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+            glUniform1i(g_attrib_location_tex, 0);
+            glUniformMatrix4fv(g_attrib_location_proj_mtx, 1, GL_FALSE, &ortho_projection[0][0]);
             glBindSampler(0, 0); // Rely on combined texture/sampler state.
 
             // Recreate the VAO every time 
@@ -111,15 +116,15 @@ namespace vup
             GLuint vao_handle = 0;
             glGenVertexArrays(1, &vao_handle);
             glBindVertexArray(vao_handle);
-            glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-            glEnableVertexAttribArray(g_AttribLocationPosition);
-            glEnableVertexAttribArray(g_AttribLocationUV);
-            glEnableVertexAttribArray(g_AttribLocationColor);
-            glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+            glBindBuffer(GL_ARRAY_BUFFER, g_vbo_handle);
+            glEnableVertexAttribArray(g_attrib_location_position);
+            glEnableVertexAttribArray(g_attrib_location_uv);
+            glEnableVertexAttribArray(g_attrib_location_color);
+            glVertexAttribPointer(g_attrib_location_position, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
                                   reinterpret_cast<GLvoid*>(IM_OFFSETOF(ImDrawVert, pos)));
-            glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+            glVertexAttribPointer(g_attrib_location_uv, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
                                   reinterpret_cast<GLvoid*>(IM_OFFSETOF(ImDrawVert, uv)));
-            glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
+            glVertexAttribPointer(g_attrib_location_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
                                   reinterpret_cast<GLvoid*>(IM_OFFSETOF(ImDrawVert, col)));
 
             // Draw
@@ -127,11 +132,11 @@ namespace vup
                 const ImDrawList* cmd_list = draw_data->CmdLists[n];
                 const ImDrawIdx* idx_buffer_offset = nullptr;
 
-                glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+                glBindBuffer(GL_ARRAY_BUFFER, g_vbo_handle);
                 glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(cmd_list->VtxBuffer.Size) * sizeof(ImDrawVert),
                              static_cast<const GLvoid*>(cmd_list->VtxBuffer.Data), GL_STREAM_DRAW);
 
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_elements_handle);
                 glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(cmd_list->IdxBuffer.Size) * sizeof(ImDrawIdx),
                              static_cast<const GLvoid*>(cmd_list->IdxBuffer.Data), GL_STREAM_DRAW);
 
@@ -245,59 +250,59 @@ namespace vup
             return true;
         }
 
-        inline bool create_device_objects() {
+        inline bool create_device_objects(const std::string& version_number) {
             // Backup GL state
             GLint last_texture, last_array_buffer, last_vertex_array;
             glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
             glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
             glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
 
-            const auto vertex_shader =
-                "uniform mat4 ProjMtx;\n"
-                "in vec2 Position;\n"
-                "in vec2 UV;\n"
-                "in vec4 Color;\n"
-                "out vec2 Frag_UV;\n"
-                "out vec4 Frag_Color;\n"
-                "void main()\n"
-                "{\n"
-                "	Frag_UV = UV;\n"
-                "	Frag_Color = Color;\n"
-                "	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-                "}\n";
+            const std::string vertex_shader("#version " + version_number + "\n"
+                + "uniform mat4 ProjMtx;\n"
+                + "in vec2 Position;\n"
+                + "in vec2 UV;\n"
+                + "in vec4 Color;\n"
+                + "out vec2 Frag_UV;\n"
+                + "out vec4 Frag_Color;\n"
+                + "void main()\n"
+                + "{\n"
+                + "  Frag_UV = UV;\n"
+                + "	 Frag_Color = Color;\n"
+                + "	 gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+                + "}\n");
 
-            const auto fragment_shader =
-                "uniform sampler2D Texture;\n"
-                "in vec2 Frag_UV;\n"
-                "in vec4 Frag_Color;\n"
-                "out vec4 Out_Color;\n"
-                "void main()\n"
-                "{\n"
-                "	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
-                "}\n";
+            const std::string fragment_shader("#version " + version_number + "\n"
+                + "uniform sampler2D Texture;\n"
+                + "in vec2 Frag_UV;\n"
+                + "in vec4 Frag_Color;\n"
+                + "out vec4 Out_Color;\n"
+                + "void main()\n"
+                + "{\n"
+                + "  Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+                + "}\n");
 
-            const GLchar* vertex_shader_with_version[2] = {g_GlslVersion, vertex_shader};
-            const GLchar* fragment_shader_with_version[2] = {g_GlslVersion, fragment_shader};
+            const GLchar* vertex_shader_with_version = vertex_shader.c_str();
+            const GLchar* fragment_shader_with_version = fragment_shader.c_str();
 
             g_shader_handle = glCreateProgram();
-            g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
+            g_vert_handle = glCreateShader(GL_VERTEX_SHADER);
             g_frag_handle = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(g_VertHandle, 2, vertex_shader_with_version, nullptr);
-            glShaderSource(g_frag_handle, 2, fragment_shader_with_version, nullptr);
-            glCompileShader(g_VertHandle);
+            glShaderSource(g_vert_handle, 1, &vertex_shader_with_version, nullptr);
+            glShaderSource(g_frag_handle, 1, &fragment_shader_with_version, nullptr);
+            glCompileShader(g_vert_handle);
             glCompileShader(g_frag_handle);
-            glAttachShader(g_shader_handle, g_VertHandle);
+            glAttachShader(g_shader_handle, g_vert_handle);
             glAttachShader(g_shader_handle, g_frag_handle);
             glLinkProgram(g_shader_handle);
 
-            g_AttribLocationTex = glGetUniformLocation(g_shader_handle, "Texture");
-            g_AttribLocationProjMtx = glGetUniformLocation(g_shader_handle, "ProjMtx");
-            g_AttribLocationPosition = glGetAttribLocation(g_shader_handle, "Position");
-            g_AttribLocationUV = glGetAttribLocation(g_shader_handle, "UV");
-            g_AttribLocationColor = glGetAttribLocation(g_shader_handle, "Color");
+            g_attrib_location_tex = glGetUniformLocation(g_shader_handle, "Texture");
+            g_attrib_location_proj_mtx = glGetUniformLocation(g_shader_handle, "ProjMtx");
+            g_attrib_location_position = glGetAttribLocation(g_shader_handle, "Position");
+            g_attrib_location_uv = glGetAttribLocation(g_shader_handle, "UV");
+            g_attrib_location_color = glGetAttribLocation(g_shader_handle, "Color");
 
-            glGenBuffers(1, &g_VboHandle);
-            glGenBuffers(1, &g_ElementsHandle);
+            glGenBuffers(1, &g_vbo_handle);
+            glGenBuffers(1, &g_elements_handle);
 
             create_fonts_texture();
 
@@ -310,13 +315,13 @@ namespace vup
         }
 
         inline void invalidate_device_objects() {
-            if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
-            if (g_ElementsHandle) glDeleteBuffers(1, &g_ElementsHandle);
-            g_VboHandle = g_ElementsHandle = 0;
+            if (g_vbo_handle) glDeleteBuffers(1, &g_vbo_handle);
+            if (g_elements_handle) glDeleteBuffers(1, &g_elements_handle);
+            g_vbo_handle = g_elements_handle = 0;
 
-            if (g_shader_handle && g_VertHandle) glDetachShader(g_shader_handle, g_VertHandle);
-            if (g_VertHandle) glDeleteShader(g_VertHandle);
-            g_VertHandle = 0;
+            if (g_shader_handle && g_vert_handle) glDetachShader(g_shader_handle, g_vert_handle);
+            if (g_vert_handle) glDeleteShader(g_vert_handle);
+            g_vert_handle = 0;
 
             if (g_shader_handle && g_frag_handle) glDetachShader(g_shader_handle, g_frag_handle);
             if (g_frag_handle) glDeleteShader(g_frag_handle);
@@ -327,7 +332,7 @@ namespace vup
 
             if (g_font_texture) {
                 glDeleteTextures(1, &g_font_texture);
-                ImGui::GetIO().Fonts->TexID = 0;
+                ImGui::GetIO().Fonts->TexID = nullptr;
                 g_font_texture = 0;
             }
         }
@@ -340,7 +345,7 @@ namespace vup
         }
 
         inline ImGuiContext* init_imgui(GLFWwindow* window, const bool install) {
-            auto context = ImGui::CreateContext();
+            const auto context = ImGui::CreateContext();
             auto& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
             g_window = window;
@@ -403,9 +408,9 @@ namespace vup
             ImGui::DestroyContext(context);
         }
 
-        inline void start_new_frame() {
+        inline void start_new_frame(const std::string& version_number) {
             if (!g_font_texture)
-                create_device_objects();
+                create_device_objects(version_number);
 
             auto& io = ImGui::GetIO();
 
@@ -447,7 +452,7 @@ namespace vup
             }
 
             // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-            ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+            const auto cursor = ImGui::GetMouseCursor();
             if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None) {
                 glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
             }
@@ -463,9 +468,10 @@ namespace vup
                 // Update gamepad inputs
 #define MAP_BUTTON(NAV_NO, BUTTON_NO) { if (buttons_count > BUTTON_NO && buttons[BUTTON_NO] == GLFW_PRESS) io.NavInputs[NAV_NO] = 1.0f; }
 #define MAP_ANALOG(NAV_NO, AXIS_NO, V0, V1) { float v = (axes_count > AXIS_NO) ? axes[AXIS_NO] : V0; v = (v - V0) / (V1 - V0); if (v > 1.0f) v = 1.0f; if (io.NavInputs[NAV_NO] < v) io.NavInputs[NAV_NO] = v; }
-                int axes_count = 0, buttons_count = 0;
-                const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axes_count);
-                const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttons_count);
+                int axes_count = 0;
+                int buttons_count = 0;
+                const auto axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axes_count);
+                const auto buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttons_count);
                 MAP_BUTTON(ImGuiNavInput_Activate, 0); // Cross / A
                 MAP_BUTTON(ImGuiNavInput_Cancel, 1); // Circle / B
                 MAP_BUTTON(ImGuiNavInput_Menu, 2); // Square / X

@@ -8,7 +8,7 @@ layout (location = 1) in vec4 normal;
 #include "/../../data_structures/uniform_grid.inc.comp"
 
 layout (std430, binding = 0) buffer particles {
-    Fluid_particle p[N];
+    Fluid_particle p[];
 };
 
 layout (std430, binding = 6) buffer grid_parameters {
@@ -28,9 +28,9 @@ void main() {
     float i = (pos.x - grid_params.grid_min.x) / grid_params.cell_size.x;
     float j = (pos.y - grid_params.grid_min.y) / grid_params.cell_size.y;
     float k = (pos.z - grid_params.grid_min.z) / grid_params.cell_size.z;
-    pass_normal = vec3(i / grid_params.cell_count.x,
-                       j / grid_params.cell_count.y,
-                       k / grid_params.cell_count.z);
+    pass_normal = vec3(normal);//vec3(i / grid_params.cell_count.x,
+                    //    j / grid_params.cell_count.y,
+                    //    k / grid_params.cell_count.z);
     //pass_normal = vec3(0, p[gl_InstanceID].pressure / 1.0f, 0);
 	gl_Position = projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0);
 }

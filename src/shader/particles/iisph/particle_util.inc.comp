@@ -5,6 +5,7 @@ struct SPH_demo_constants {
     float h;
     float kernel;
     float kernel_grad;
+    float kernel_laplace;
     float visc;
 };
 

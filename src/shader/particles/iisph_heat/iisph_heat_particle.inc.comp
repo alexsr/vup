@@ -1,0 +1,21 @@
+struct Particle {
+    vec4 pos;
+    vec4 vel;
+    vec4 vel_adv;
+    vec4 pressure_accel;
+    vec4 dii;
+    vec4 dij_pj_sum;
+    vec4 temperature_grad;
+    float mass;
+    float rest_density;
+    float density;
+    float density_adv;
+    float pressure;
+    float last_pressure;
+    float aii;
+    float aij_pj_sum;
+    float temperature;
+    float temp_change;
+    float heat_const;
+    float heat_buffer;
+};

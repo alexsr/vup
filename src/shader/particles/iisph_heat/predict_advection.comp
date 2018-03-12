@@ -1,0 +1,43 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "/../viscosity.inc.comp"
+
+#include "ssbos.inc.comp"
+
+uniform float dt;
+uniform float visc_const;
+uniform float tension_const;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    float diam = 2.0f * demo_consts.r;
+    float diam2 = diam * diam;
+    p[id].dii = vec4(0.0);
+    vec4 visc_force = vec4(0.0f);
+    vec4 surface_tension_force = vec4(0.0f);
+    float density2 = p[id].density * p[id].density;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        vec4 pij = p[id].pos - p[j].pos;
+        float r2 = dot(pij, pij);
+        visc_force -= calc_xsph_visc_force(p[j].mass, p[id].vel, p[j].vel, p[j].density)
+                      * demo_consts.visc * visc(demo_consts.h, length(pij));
+        if (r2 > diam2) {
+            surface_tension_force -= p[j].mass * pij * demo_consts.kernel * cubic(demo_consts.h, pij);
+        }
+        else {
+            surface_tension_force -= p[j].mass * pij * demo_consts.kernel * cubic(demo_consts.h, diam);
+        }
+        p[id].dii -= p[j].mass / density2 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+    }
+    vec4 extern_force = vec4(0.0f);
+    extern_force.y = -9.81f * p[id].mass;
+    p[id].vel_adv = p[id].vel + dt * (visc_force * visc_const + surface_tension_force * tension_const + extern_force) / p[id].mass;
+}

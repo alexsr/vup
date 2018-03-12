@@ -1,0 +1,23 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+uniform float dt;
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    vec4 temperature_grad = vec4(0);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        temperature_grad += p[j].mass * (p[j].temperature - p[id].temperature) / p[j].density
+                            * demo_consts.kernel_grad * cubic_grad(demo_consts.h, p[id].pos - p[j].pos);
+    }
+    p[id].temperature_grad = temperature_grad;
+}

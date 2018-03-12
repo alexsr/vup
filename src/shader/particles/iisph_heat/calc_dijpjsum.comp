@@ -1,0 +1,27 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+layout (std430, binding = 7) buffer densities {
+    float rho_new[];
+};
+
+uniform float dt;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    p[id].dij_pj_sum = vec4(0.0f);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        vec4 pij = p[id].pos - p[j].pos;
+        p[id].dij_pj_sum -= p[j].mass / (p[j].density * p[j].density) * p[j].last_pressure
+                            * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+    }
+}

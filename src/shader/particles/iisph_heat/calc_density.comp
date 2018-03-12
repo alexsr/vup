@@ -1,0 +1,20 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    float density = p[id].mass * demo_consts.kernel * cubic(demo_consts.h, 0.0);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        density += p[j].mass * demo_consts.kernel * cubic(demo_consts.h, distance(p[id].pos.xyz, p[j].pos.xyz));
+    }
+    p[id].density = density;
+}

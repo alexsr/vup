@@ -1,0 +1,44 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+
+#include "particle_util.inc.comp"
+
+#include "/../../data_structures/uniform_grid.inc.comp"
+
+layout (std430, binding = 0) buffer particles {
+    Particle p[];
+};
+
+layout (std430, binding = 4) buffer grid_buffer {
+    int grid[];
+};
+
+layout (std430, binding = 5) buffer cell_counter_buffer {
+    int cell_counter[];
+};
+
+layout (std430, binding = 6) buffer grid_parameters {
+    Fixed_uniform_grid_params grid_params;
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    vec4 pos = p[id].pos;
+    int i = int((pos.x - grid_params.grid_min.x) / grid_params.cell_size.x);
+    int j = int((pos.y - grid_params.grid_min.y) / grid_params.cell_size.y);
+    int k = int((pos.z - grid_params.grid_min.z) / grid_params.cell_size.z);
+    int cell_index = i * grid_params.cell_count.y * grid_params.cell_count.z
+                     + j * grid_params.cell_count.z + k;
+    if (cell_index < CELL_COUNT) {
+        int particles_in_cell = atomicAdd(cell_counter[cell_index], 1);
+        int grid_index = cell_index * grid_params.cell_capacity + particles_in_cell;
+        if (grid_index < GRID_CAPACITY) {
+            grid[grid_index] = int(id);
+        }
+    }
+}

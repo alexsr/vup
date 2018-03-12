@@ -1,0 +1,29 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+uniform float dt;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+
+    p[id].density_adv = p[id].density;
+    p[id].aii = 0;
+    p[id].last_pressure = 0.5f * p[id].pressure;
+    float mass_per_density2 = p[id].mass / (p[id].density * p[id].density);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        vec4 pij = p[id].pos - p[j].pos;
+        vec4 vij = p[id].vel_adv - p[j].vel_adv;
+        p[id].density_adv += dt * p[j].mass * dot(vij, demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
+        p[id].aii += p[j].mass * dot(p[id].dii - mass_per_density2 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij),
+                     demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
+    }
+}

@@ -1,0 +1,24 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+uniform float dt;
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    float temp = 0;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        temp += p[j].mass / p[j].density * dot(p[j].temperature_grad, demo_consts.kernel_grad * cubic_grad(demo_consts.h, p[id].pos - p[j].pos));
+    }
+    float t = clamp(distance(p[id].pos, vec4(0,-1,0,1)), 0, 1);
+    float temp_ext = (p[id].temperature - demo_consts.temperature) * demo_consts.heat_const;
+    p[id].temp_change = temp * p[id].heat_const - temp_ext * (1 - t);
+}

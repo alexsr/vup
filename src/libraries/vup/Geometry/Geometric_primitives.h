@@ -29,7 +29,8 @@ namespace vup
     };
 
     struct Cube : Geometric_primitive {
-        explicit Cube(float x = 1.0f, float y = 1.0f, float z = 1.0f);
+        explicit Cube(float r);
+        Cube(float x, float y, float z);
     };
 
     struct Sphere : Geometric_primitive {

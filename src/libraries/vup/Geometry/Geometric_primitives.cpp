@@ -57,6 +57,9 @@ vup::Rectangle_strip::Rectangle_strip(float x, float y) {
     indices = {0, 1, 2, 1, 2, 3};
 }
 
+vup::Cube::Cube(float r) : Cube(r, r, r) {
+}
+
 vup::Cube::Cube(float x, float y, float z) {
     float x_lower = -x / 2.0f;
     float x_upper = x / 2.0f;

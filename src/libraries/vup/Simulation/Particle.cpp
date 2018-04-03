@@ -96,7 +96,7 @@ std::vector<vup::IISPH_heat_particle> vup::create_uniform_IISPH_heat_particles(c
                 result.at(i * n * n + j * n + k).temperature_grad = glm::vec4(0.0f);
                 result.at(i * n * n + j * n + k).temperature = temperature_in_celsius + 273.15f;
                 result.at(i * n * n + j * n + k).temp_change = 0.0f;
-                result.at(i * n * n + j * n + k).heat_const = 0.00143f; // 0.591f / 4181.3f;
+                result.at(i * n * n + j * n + k).heat_const = 0.591f / 4181.3f; // 0.00143f;
                 result.at(i * n * n + j * n + k).heat_buffer = 0.0f;
             }
         }

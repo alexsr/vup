@@ -26,6 +26,8 @@ namespace vup
         float kernel_grad_const;
         float kernel_laplace_const;
         float visc_const;
+        float temperature{};
+        float heat_const{};
     };
 
     struct Mueller_SPH_demo_constants : SPH_demo_constants {
@@ -48,18 +50,17 @@ namespace vup
             const auto h6 = h3 * h3;
             kernel_const = 8.0f / (glm::pi<float>() * h3);
             kernel_grad_const = 48.0f / (glm::pi<float>() * h3);
-            kernel_laplace_const = -945.0f / (32.0f * glm::pi<float>() * h3 * h6);
+            kernel_laplace_const = 945.0f / (32.0f * glm::pi<float>() * h3 * h6);
             visc_const = 45.0f / (glm::pi<float>() * h6);
         }
     };
 
     struct IISPH_heat_demo_constants : IISPH_demo_constants {
         IISPH_heat_demo_constants(const float smoothing_length, const float mass_scaling, const float temperature_in_celcius)
-            : IISPH_demo_constants(smoothing_length, mass_scaling), temperature(temperature_in_celcius + 273.15f) {
+            : IISPH_demo_constants(smoothing_length, mass_scaling) {
+            temperature = temperature_in_celcius + 273.15f;
             heat_const = 0.024f / 1.0035f;
         }
-        float temperature;
-        float heat_const;
     };
 }
 

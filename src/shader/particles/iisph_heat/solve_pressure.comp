@@ -33,11 +33,11 @@ void main() {
     if (abs(aii_dt2) > 1.0e-9) {
         p[id].pressure = max((1.0f - w) * p[id].last_pressure + w / aii_dt2
                          * (b - dt * dt * p[id].aij_pj_sum), 0);
-     }
-     else {
-         p[id].pressure = 0.0f;
-     }
-     if (p[id].pressure != 0.0f) {
+    }
+    else {
+        p[id].pressure = 0.0f;
+    }
+    if (p[id].pressure != 0.0f) {
         rho_new[id] = dt * dt * (p[id].aii * p[id].pressure + p[id].aij_pj_sum) + p[id].density_adv;
     }
     else {

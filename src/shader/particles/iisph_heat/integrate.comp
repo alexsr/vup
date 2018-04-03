@@ -92,17 +92,17 @@ void integrate_euler(float dt) {
         return;
     }
     p[id].pressure_accel = vec4(0.0f);
-    float pressure_per_density2 = p[id].pressure / (p[id].density * p[id].density);
+    float pressure_per_density2 = p[id].last_pressure / (p[id].density * p[id].density);
     for (int i = 0; i < neighbor_counter[id]; i++) {
         int j = neighbor[id * NEIGHBOR_AMOUNT + i];
         vec4 pij = p[id].pos - p[j].pos;
-        p[id].pressure_accel -= p[j].mass * (pressure_per_density2 + p[j].pressure / (p[j].density * p[j].density))
+        p[id].pressure_accel -= p[j].mass * (pressure_per_density2 + p[j].last_pressure / (p[j].density * p[j].density))
                                 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
     }
     vec4 a = vec4(p[id].pressure_accel.xyz, 0.0f);
     p[id].vel = p[id].vel_adv + a * dt;
     p[id].pos += p[id].vel * dt;
-    
+
     p[id].temperature += p[id].temp_change * dt;
 }
 

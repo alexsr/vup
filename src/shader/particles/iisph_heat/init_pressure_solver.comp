@@ -14,7 +14,7 @@ void main() {
         return;
     }
 
-    p[id].density_adv = p[id].density;
+    p[id].density_adv = 0;
     p[id].aii = 0;
     p[id].last_pressure = 0.5f * p[id].pressure;
     float mass_per_density2 = p[id].mass / (p[id].density * p[id].density);
@@ -22,8 +22,9 @@ void main() {
         int j = neighbor[id * NEIGHBOR_AMOUNT + i];
         vec4 pij = p[id].pos - p[j].pos;
         vec4 vij = p[id].vel_adv - p[j].vel_adv;
-        p[id].density_adv += dt * p[j].mass * dot(vij, demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
+        p[id].density_adv += dt * dot(vij, demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
         p[id].aii += p[j].mass * dot(p[id].dii - mass_per_density2 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij),
                      demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij));
     }
+    p[id].density_adv = p[id].density_adv * p[id].mass + p[id].density;
 }

@@ -6,6 +6,8 @@ layout (local_size_x = 128) in;
 
 #include "ssbos.inc.comp"
 
+//https://animation.rwth-aachen.de/media/papers/2018-EG-ImplicitVisco.pdf
+
 uniform float dt;
 
 void main() {    
@@ -14,11 +16,18 @@ void main() {
         return;
     }
     float temp = 0;
+    p[id].temp_change = 0.0f;
     for (int i = 0; i < neighbor_counter[id]; i++) {
         int j = neighbor[id * NEIGHBOR_AMOUNT + i];
-        temp += p[j].mass / p[j].density * dot(p[j].temperature_grad, demo_consts.kernel_grad * cubic_grad(demo_consts.h, p[id].pos - p[j].pos));
+        vec4 pij = p[id].pos - p[j].pos;
+        temp += p[j].mass / p[j].density * (p[id].temperature - p[j].temperature)
+                * demo_consts.visc * dot(pij, cubic_grad(demo_consts.h, pij))
+                / (abs(dot(pij, pij)) + 0.01f * demo_consts.h * demo_consts.h);
+        //temp += p[j].mass / p[j].density * dot(p[j].temperature_grad, demo_consts.kernel_grad * cubic_grad(demo_consts.h, p[id].pos - p[j].pos));
     }
     float t = clamp(distance(p[id].pos, vec4(0,-1,0,1)), 0, 1);
-    float temp_ext = (p[id].temperature - demo_consts.temperature) * demo_consts.heat_const;
-    p[id].temp_change = temp * p[id].heat_const - temp_ext * (1 - t);
+    float temp_ext = (demo_consts.temperature - p[id].temperature) * demo_consts.heat_const;
+    p[id].temp_change = 2.0f * temp * p[id].heat_const / p[id].density;// + temp_ext * (1 - t);
+    
+    //p[id].density = p[id].density / (1.0f + 0.88 * 0.0001 * p[id].temp_change);
 }

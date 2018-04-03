@@ -13,7 +13,7 @@ void main() {
     if (id >= N) {
         return;
     }
-    vec4 temperature_grad = vec4(0);
+    dvec4 temperature_grad = dvec4(0);
     for (int i = 0; i < neighbor_counter[id]; i++) {
         int j = neighbor[id * NEIGHBOR_AMOUNT + i];
         temperature_grad += p[j].mass * (p[j].temperature - p[id].temperature) / p[j].density

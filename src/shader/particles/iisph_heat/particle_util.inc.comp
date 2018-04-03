@@ -19,6 +19,15 @@ float visc(float h, float r) {
     return 0.0f;
 }
 
+float visc(float h, vec4 v) {
+    float r = length(v);
+    if (0 <= r && r < h) {
+        return h - r;
+    }
+    return 0.0f;
+}
+
+
 float cubic(float h, float r) {
     float res = 0.0;
     float q = r / h;
@@ -74,22 +83,10 @@ vec4 cubic_grad(float h, vec4 v) {
     return res;
 }
 
-float poly6_laplace(float h, float r) {
-    float r2 = r * r;
-    float h2 = h * h;
-    float res = 0;
-    if (r2 <= h2) {
-        res = (h2 - r2) * (3.0f * h2 - 7.0f * r2);
+vec4 spiky_grad(float h, vec4 v) {
+    float r = abs(length(v));
+    if (0 <= r && r < h) {
+        return v * (h - r) * (h - r) / r;
     }
-    return res;
-}
-
-float poly6_laplace(float h, vec4 v) {
-    float r2 = dot(v, v);
-    float h2 = h * h;
-    float res = 0;
-    if (r2 <= h2) {
-        res = (h2 - r2) * (3.0f * h2 - 7.0f * r2);
-    }
-    return res;
+    return vec4(0.0f);
 }

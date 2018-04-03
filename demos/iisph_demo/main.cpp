@@ -72,35 +72,31 @@ int main() {
     };
 
     vup::V_F_shader particle_renderer("../../src/shader/particles/iisph/instanced_iisph.vert",
-                                      "../../src/shader/particles/particles.frag",
-                                      vup::gl::introspection::basic, sph_defines);
+                                      "../../src/shader/particles/particles.frag", sph_defines);
 
     vup::UBO mvp(mats, 8);
 
-    vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp",
-                                   vup::gl::introspection::basic, sph_defines);
+    vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp", sph_defines);
     vup::Compute_pipeline init_iteration({
                                              "populate_grid.comp", "find_neighbors_in_grid.comp",
                                              "calc_density.comp", "predict_advection.comp",
                                              "init_pressure_solver.comp"
                                          },
-                                         vup::gl::introspection::basic, sph_defines,
+                                         sph_defines, vup::gl::introspection::basic,
                                          "../../src/shader/particles/iisph/");
     init_iteration.update_uniform("dt", delta);
     init_iteration.update_uniform("visc_const", visc_const);
     init_iteration.update_uniform("tension_const", tension_const);
 
     vup::Compute_pipeline pressure_solver({"calc_dijpjsum.comp", "solve_pressure.comp"},
-                                          vup::gl::introspection::basic, sph_defines,
+                                          sph_defines, vup::gl::introspection::basic,
                                           "../../src/shader/particles/iisph/");
     pressure_solver.update_uniform("dt", delta);
 
-    vup::Compute_shader integrate("../../src/shader/particles/iisph/integrate.comp",
-                                  vup::gl::introspection::basic, sph_defines);
+    vup::Compute_shader integrate("../../src/shader/particles/iisph/integrate.comp", sph_defines);
     integrate.update_uniform("dt", delta);
 
     vup::Compute_shader reduce_densities("../../src/shader/particles/iisph/reduce_densities.comp",
-                                         vup::gl::introspection::basic,
                                          {{"X", "1024"}, {"N", std::to_string(instances)}});
     const auto max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
                                                        / reduce_densities.get_workgroup_size_x()));
@@ -118,14 +114,14 @@ int main() {
         ImGui::Begin("My First Tool");
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        if(ImGui::SliderFloat("Smoothing length", &smoothing_length, 0.0f, 1.0f)) {
+        if (ImGui::SliderFloat("Smoothing length", &smoothing_length, 0.0f, 1.0f)) {
             demo_consts = vup::IISPH_demo_constants(smoothing_length, mass_scaling);
             demo_consts_buffer.update_data(demo_consts);
         }
-        if(ImGui::SliderFloat("Viscosity", &visc_const, 0.0f, 1.0f)) {
+        if (ImGui::SliderFloat("Viscosity", &visc_const, 0.0f, 1.0f)) {
             init_iteration.update_uniform("visc_const", visc_const);
         }
-        if(ImGui::SliderFloat("Surface Tension", &tension_const, 0.0f, 10.0f)) {
+        if (ImGui::SliderFloat("Surface Tension", &tension_const, 0.0f, 10.0f)) {
             init_iteration.update_uniform("tension_const", tension_const);
         }
         ImGui::SliderFloat("Density difference", &eta, 0.0f, 10.0f);

@@ -15,8 +15,8 @@ namespace vup
     class Compute_pipeline {
     public:
         explicit Compute_pipeline(const std::vector<filesystem::path>& shader_paths,
-                                  gl::introspection introspection_flag = gl::introspection::basic,
                                   const std::vector<Shader_define>& defines = {},
+                                  gl::introspection introspection_flag = gl::introspection::basic,
                                   const filesystem::path& main_dir_path = "");
         void reload();
         void run(float x = 1, float y = 1, float z = 1) const;

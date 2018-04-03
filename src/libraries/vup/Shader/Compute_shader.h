@@ -15,8 +15,8 @@ namespace vup
     class Compute_shader : public Shader {
     public:
         explicit Compute_shader(filesystem::path compute_path,
-                                gl::introspection introspection_flag = gl::introspection::basic,
-                                const std::vector<Shader_define>& defines = {});
+                                const std::vector<Shader_define>& defines = {},
+                                gl::introspection introspection_flag = gl::introspection::basic);
         void reload() override;
         void run(float x = 1, float y = 1, float z = 1) const;
         void run_with_barrier(float x = 1, float y = 1, float z = 1,

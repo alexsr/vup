@@ -8,11 +8,11 @@
 #include "Compute_pipeline.h"
 
 vup::Compute_pipeline::Compute_pipeline(const std::vector<filesystem::path>& shader_paths,
-                                        gl::introspection introspection_flag,
                                         const std::vector<Shader_define>& defines,
+                                        gl::introspection introspection_flag,
                                         const filesystem::path& main_dir_path) {
     for (const auto& p : shader_paths) {
-        m_compute_shaders.emplace_back(main_dir_path / p, introspection_flag, defines);;
+        m_compute_shaders.emplace_back(main_dir_path / p, defines, introspection_flag);;
     }
 }
 

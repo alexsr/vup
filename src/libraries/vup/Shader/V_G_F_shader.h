@@ -17,8 +17,8 @@ namespace vup
         V_G_F_shader(filesystem::path vertex_path,
                      filesystem::path geometry_path,
                      filesystem::path fragment_path,
-                     gl::introspection introspection_flag = gl::introspection::basic,
-                     const std::vector<Shader_define>& defines = {});
+                     const std::vector<Shader_define>& defines = {},
+                     gl::introspection introspection_flag = gl::introspection::basic);
         void reload() override;
     private:
         filesystem::path m_vertex_path;

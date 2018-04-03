@@ -15,7 +15,7 @@ namespace vup
 {
     namespace gl
     {
-        inline std::string shader_type_to_string(GLenum type) {
+        inline std::string shader_type_to_string(const GLenum type) {
             switch (type) {
                 case GL_VERTEX_SHADER:
                     return "vertex shader";
@@ -36,20 +36,18 @@ namespace vup
 
         enum class introspection : GLbitfield {
             none = 0,
-            basic = 2,
-            ubos = 4,
-            ssbos = 8
+            basic = 2
         };
 
         constexpr std::underlying_type_t<introspection> to_gl(introspection i) {
             return static_cast<std::underlying_type_t<introspection>>(i);
         }
 
-        constexpr introspection operator|(introspection i1, introspection i2) {
+        constexpr introspection operator|(const introspection i1, const introspection i2) {
             return static_cast<introspection>(to_gl(i1) | to_gl(i2));
         }
 
-        constexpr bool operator&(introspection i1, introspection i2) {
+        constexpr bool operator&(const introspection i1, const introspection i2) {
             return (to_gl(i1) & to_gl(i2)) != 0;
         }
     }

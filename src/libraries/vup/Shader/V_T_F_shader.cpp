@@ -11,9 +11,9 @@ vup::V_T_F_shader::V_T_F_shader(filesystem::path vertex_path,
                                 filesystem::path control_path,
                                 filesystem::path evaluation_path,
                                 filesystem::path fragment_path,
-                                const gl::introspection introspection_flag,
-                                const std::vector<Shader_define>& defines)
-    : Shader(introspection_flag, defines), m_vertex_path(std::move(vertex_path)),
+                                const std::vector<Shader_define>& defines,
+                                const gl::introspection introspection_flag)
+    : Shader(defines, introspection_flag), m_vertex_path(std::move(vertex_path)),
       m_control_path(std::move(control_path)), m_evaluation_path(std::move(evaluation_path)),
       m_fragment_path(std::move(fragment_path)) {
     std::vector<GLuint> shader_ids(4);

@@ -26,9 +26,9 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    float delta = 0.005f;
+    float delta = 0.01f;
     float visc_const = 0.02f;
-    float tension_const = 0.2f;
+    float tension_const = 0.0f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
@@ -41,17 +41,19 @@ int main() {
     float h = smoothing_length * mass_scaling;
 
     float density_avg = 0.0f;
-    float density_rest = 1000.0f;
+    float density_rest = 1000.0f; // density at 4°C
     float temperature = 0.0f;
     float heat_source_temp = 100.0f;
-    float eta = 1.0f;
+    float eta = 0.1f;
     vup::IISPH_heat_demo_constants demo_consts(smoothing_length, mass_scaling, heat_source_temp);
-    auto particle_data = vup::create_uniform_IISPH_heat_particles(demo_consts.r, h, -0.6f, 1.0f,
+    auto particle_data = vup::create_uniform_IISPH_heat_particles(demo_consts.r, h, -0.7f, 0.7f,
                                                                   density_rest, temperature);
     auto instances = static_cast<int>(particle_data.size());
-//    for (auto i = 0; i < instances * 0.02f; i++) {
-//        particle_data.at(i).temperature = 373.0f;
-//    }
+    for (auto i = 0; i < static_cast<float>(instances) * 0.5f; i++) {
+        particle_data.at(i).temperature = 373.0f;
+        particle_data.at(i).rest_density = 500;
+        particle_data.at(i).mass /= 2.0f;
+    }
     const vup::Sphere sphere(demo_consts.r);
     vup::Instanced_VAO particle_spheres(sphere);
     vup::SSBO particles(particle_data, 0);
@@ -76,35 +78,32 @@ int main() {
     };
 
     vup::V_F_shader particle_renderer("../../src/shader/particles/iisph_heat/instanced_iisph.vert",
-                                      "../../src/shader/particles/particles.frag",
-                                      vup::gl::introspection::basic, sph_defines);
+                                      "../../src/shader/particles/particles.frag", sph_defines);
 
     vup::UBO mvp(mats, 8);
 
-    vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp",
-                                   vup::gl::introspection::basic, sph_defines);
+    vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp", sph_defines);
     vup::Compute_pipeline init_iteration({
                                              "populate_grid.comp", "find_neighbors_in_grid.comp",
-                                             "calc_density.comp", "calc_heat_transfer_grad.comp", "calc_heat_transfer.comp",
+                                             "calc_density.comp", /*"calc_heat_transfer_grad.comp", */
+                                             "calc_heat_transfer.comp",
                                              "predict_advection.comp", "init_pressure_solver.comp"
                                          },
-                                         vup::gl::introspection::basic, sph_defines,
+                                         sph_defines, vup::gl::introspection::basic,
                                          "../../src/shader/particles/iisph_heat/");
     init_iteration.update_uniform("dt", delta);
     init_iteration.update_uniform("visc_const", visc_const);
     init_iteration.update_uniform("tension_const", tension_const);
 
     vup::Compute_pipeline pressure_solver({"calc_dijpjsum.comp", "solve_pressure.comp"},
-                                          vup::gl::introspection::basic, sph_defines,
+                                          sph_defines, vup::gl::introspection::basic,
                                           "../../src/shader/particles/iisph_heat/");
     pressure_solver.update_uniform("dt", delta);
 
-    vup::Compute_shader integrate("../../src/shader/particles/iisph_heat/integrate.comp",
-                                  vup::gl::introspection::basic, sph_defines);
+    vup::Compute_shader integrate("../../src/shader/particles/iisph_heat/integrate.comp", sph_defines);
     integrate.update_uniform("dt", delta);
 
     vup::Compute_shader reduce_densities("../../src/shader/particles/iisph_heat/reduce_densities.comp",
-                                         vup::gl::introspection::basic,
                                          {{"X", "1024"}, {"N", std::to_string(instances)}});
     const auto max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
                                                        / reduce_densities.get_workgroup_size_x()));
@@ -114,7 +113,7 @@ int main() {
 
     vup::Compute_shader rotate_box("../../src/shader/compute/rotate_box.comp");
     bounds_vao.get_vbo(0).bind_base(10);
-    bb_model = rotate(bb_model, delta * 0.1f, glm::vec3(0.3, 0.3f, 0.3f));
+    //bb_model = rotate(bb_model, delta * 0.1f, glm::vec3(0.3, 0.3f, 0.3f));
     rotate_box.update_uniform("model", bb_model);
 
     bool pause_sim = false;
@@ -170,7 +169,7 @@ int main() {
             init_iteration.run_with_barrier(instances);
             density_avg = 0;
             int iteration = 0;
-            while ((density_avg - density_rest > eta || iteration < 2) && iteration < 15) {
+            while ((abs(density_avg - 750.0f) > eta || iteration < 2) && iteration < 15) {
                 pressure_solver.run_with_barrier(instances);
 
                 reduce_densities.run_with_barrier(instances);

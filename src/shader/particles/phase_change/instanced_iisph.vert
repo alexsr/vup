@@ -60,7 +60,7 @@ vec3 hsv_to_rgb(vec3 hsv) {
 
 void main() {
     vec4 pos = p[gl_InstanceID].pos;
-    pass_normal = hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), (float(p[gl_InstanceID].temperature) - 273.15f)/100.0f));                   
+    pass_normal = hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), (float(p[gl_InstanceID].temperature) - 273.15f)/100.0f));
     //pass_normal = vec3(0, p[gl_InstanceID].pressure / 1.0f, 0);
 	gl_Position = projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0);
 }

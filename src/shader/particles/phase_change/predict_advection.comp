@@ -9,7 +9,6 @@ layout (local_size_x = 128) in;
 #include "ssbos.inc.comp"
 
 uniform float dt;
-uniform float visc_const;
 uniform float tension_const;
 
 void main() {
@@ -27,7 +26,7 @@ void main() {
         int j = neighbor[id * NEIGHBOR_AMOUNT + i];
         vec4 pij = p[id].pos - p[j].pos;
         float r2 = dot(pij, pij);
-        visc_force -= calc_xsph_visc_force(p[j].mass, p[id].vel, p[j].vel, p[j].density)
+        visc_force -= (p[id].viscosity + p[j].viscosity) / 2.0f * calc_xsph_visc_force(p[j].mass, p[id].vel, p[j].vel, p[j].density)
                       * demo_consts.visc * visc(demo_consts.h, length(pij));
         if (r2 > diam2) {
             surface_tension_force -= p[j].mass * pij * demo_consts.kernel * cubic(demo_consts.h, pij);
@@ -39,5 +38,5 @@ void main() {
     }
     vec4 extern_force = vec4(0.0f);
     extern_force.y = -9.81f * p[id].mass;
-    p[id].vel_adv = p[id].vel + dt * (visc_force * visc_const + surface_tension_force * tension_const + extern_force) / p[id].mass;
+    p[id].vel_adv = p[id].vel + dt * (visc_force + surface_tension_force * tension_const + extern_force) / p[id].mass;
 }

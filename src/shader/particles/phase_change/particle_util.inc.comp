@@ -1,4 +1,4 @@
-#include "iisph_heat_particle.inc.comp"
+#include "phase_change_particle.inc.comp"
 
 struct Demo_constants {
     float r;

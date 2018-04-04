@@ -27,7 +27,7 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     float delta = 0.01f;
-    float visc_const = 0.02f;
+    float visc_alpha = 1.0f;
     float tension_const = 0.0f;
     vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
@@ -46,13 +46,13 @@ int main() {
     float heat_source_temp = 100.0f;
     float eta = 0.1f;
     vup::IISPH_heat_demo_constants demo_consts(smoothing_length, mass_scaling, heat_source_temp);
-    auto particle_data = vup::create_uniform_IISPH_heat_particles(demo_consts.r, h, -0.7f, 0.7f,
-                                                                  density_rest, temperature);
+    auto particle_data = vup::create_uniform_Phase_change_particles(demo_consts.r, h, -0.7f, 0.7f,
+                                                                    density_rest, temperature, 0.0f, 0.02f,
+                                                                    visc_alpha);
     auto instances = static_cast<int>(particle_data.size());
     for (auto i = 0; i < static_cast<float>(instances) * 0.5f; i++) {
         particle_data.at(i).temperature = 373.0f;
-        particle_data.at(i).rest_density = 500;
-        particle_data.at(i).mass /= 2.0f;
+        particle_data.at(i).viscosity = 0.000005f * glm::pow(glm::e<float>(), visc_alpha * (0.0f - temperature));
     }
     const vup::Sphere sphere(demo_consts.r);
     vup::Instanced_VAO particle_spheres(sphere);
@@ -74,10 +74,11 @@ int main() {
         {"NEIGHBOR_AMOUNT", std::to_string(neighbor_amount)},
         {"NEIGHBOR_ARRAY_SIZE", std::to_string(instances * neighbor_amount)},
         {"GRID_CAPACITY", std::to_string(grid_params.grid_capacity)},
-        {"CELL_COUNT", std::to_string(grid_params.total_cell_count)}
+        {"CELL_COUNT", std::to_string(grid_params.total_cell_count)},
+        {"M_E", std::to_string(glm::e<float>())}
     };
 
-    vup::V_F_shader particle_renderer("../../src/shader/particles/iisph_heat/instanced_iisph.vert",
+    vup::V_F_shader particle_renderer("../../src/shader/particles/phase_change/instanced_iisph.vert",
                                       "../../src/shader/particles/particles.frag", sph_defines);
 
     vup::UBO mvp(mats, 8);
@@ -90,20 +91,20 @@ int main() {
                                              "predict_advection.comp", "init_pressure_solver.comp"
                                          },
                                          sph_defines, vup::gl::introspection::basic,
-                                         "../../src/shader/particles/iisph_heat/");
+                                         "../../src/shader/particles/phase_change/");
     init_iteration.update_uniform("dt", delta);
-    init_iteration.update_uniform("visc_const", visc_const);
     init_iteration.update_uniform("tension_const", tension_const);
 
     vup::Compute_pipeline pressure_solver({"calc_dijpjsum.comp", "solve_pressure.comp"},
                                           sph_defines, vup::gl::introspection::basic,
-                                          "../../src/shader/particles/iisph_heat/");
+                                          "../../src/shader/particles/phase_change/");
     pressure_solver.update_uniform("dt", delta);
 
-    vup::Compute_shader integrate("../../src/shader/particles/iisph_heat/integrate.comp", sph_defines);
+    vup::Compute_shader integrate("../../src/shader/particles/phase_change/integrate.comp", sph_defines);
     integrate.update_uniform("dt", delta);
+    integrate.update_uniform("visc_alpha", visc_alpha);
 
-    vup::Compute_shader reduce_densities("../../src/shader/particles/iisph_heat/reduce_densities.comp",
+    vup::Compute_shader reduce_densities("../../src/shader/particles/phase_change/reduce_densities.comp",
                                          {{"X", "1024"}, {"N", std::to_string(instances)}});
     const auto max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
                                                        / reduce_densities.get_workgroup_size_x()));
@@ -125,8 +126,8 @@ int main() {
             demo_consts = vup::IISPH_heat_demo_constants(smoothing_length, mass_scaling, heat_source_temp);
             demo_consts_buffer.update_data(demo_consts);
         }
-        if (ImGui::SliderFloat("Viscosity", &visc_const, 0.0f, 1.0f)) {
-            init_iteration.update_uniform("visc_const", visc_const);
+        if (ImGui::SliderFloat("Viscosity temp scaling", &visc_alpha, 0.0f, 5.0f)) {
+            integrate.update_uniform("visc_alpha", visc_alpha);
         }
         if (ImGui::SliderFloat("Surface Tension", &tension_const, 0.0f, 10.0f)) {
             init_iteration.update_uniform("tension_const", tension_const);
@@ -160,7 +161,7 @@ int main() {
             pressure_solver.update_uniform("dt", dt);
             init_iteration.update_uniform("dt", dt);
             init_iteration.update_uniform("tension_const", tension_const);
-            init_iteration.update_uniform("visc_const", visc_const);
+            integrate.update_uniform("visc_const", visc_alpha);
         }
         ImGui::End();
         if (!pause_sim) {

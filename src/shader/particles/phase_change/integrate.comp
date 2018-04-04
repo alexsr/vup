@@ -7,6 +7,7 @@ layout (local_size_x = 128) in;
 #include "ssbos.inc.comp"
 
 uniform float dt;
+uniform float visc_alpha;
 
 layout (std430, binding = 10) buffer bound_buffer {
     vec4 bounds[36];
@@ -104,6 +105,7 @@ void integrate_euler(float dt) {
     p[id].pos += p[id].vel * dt;
 
     p[id].temperature += p[id].temp_change * dt;
+    p[id].viscosity = p[id].rest_viscosity * pow(M_E, visc_alpha * (p[id].rest_temperature - p[id].temperature));
 }
 
 void main() {

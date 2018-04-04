@@ -23,17 +23,16 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::Compute_shader calc_box1024("../../src/shader/bounding_box/calc_aabb_world.comp",
-                                     vup::gl::introspection::basic, {{"N", "1024"}});
-    vup::Compute_shader calc_box64("../../src/shader/bounding_box/reduce_aabb.comp",
-                                   vup::gl::introspection::basic, {{"N", "64"}});
+    vup::Compute_shader calc_box1024("../../src/shader/bounding_box/calc_aabb_world.comp", {{"N", "1024"}});
+    vup::Compute_shader calc_box64("../../src/shader/bounding_box/reduce_aabb.comp", {{"N", "64"}});
     vup::Compute_shader transform_vertices("../../src/shader/compute/transform_vertices.comp");
-    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert", "../../src/shader/rendering/normal_rendering.frag",
-                            vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert",
+                            "../../src/shader/rendering/normal_rendering.frag");
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    minimal.update_ubo("mvp", mats);
+    vup::UBO mvp_ubo(mats, 8);
+    mvp_ubo.update_data(mats);
     bool allow_reset;
     const float delta = 0.001f;
     auto max_blocks = static_cast<int>(glm::ceil(bunny.get_count() / calc_box1024.get_workgroup_size_x()));
@@ -69,7 +68,7 @@ int main() {
         cam.update(window, dt);
         rotation = glm::rotate(rotation, dt, glm::vec3(0, 1, 0));
         mats.update(rotation, cam.get_view(), cam.get_projection());
-        minimal.update_ubo("mvp", mats);
+        mvp_ubo.update_data(mats);
         auto start = std::chrono::system_clock::now();
         calc_box1024.run(bunny.get_count());
         calc_box64.run(max_blocks);

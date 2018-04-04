@@ -18,7 +18,7 @@ int main() {
     auto resize_callback = [](GLFWwindow* window, int w, int h) { glViewport(0, 0, w, h); };
     resize_callback(nullptr, 800, 600);
     window.set_resize(resize_callback);
-    vup::Cube q;
+    vup::Cube q(1.0f);
     vup::VBO vertices(q.vertices);
     vup::VBO normals(q.normals, 3);
     vup::VBO uv_coords(q.uv_coords, 2);

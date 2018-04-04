@@ -32,12 +32,11 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/rendering/gbuffer.vert", "../../src/shader/rendering/gbuffer.frag",
-                            vup::gl::introspection::ubos);
+    vup::V_F_shader minimal("../../src/shader/rendering/gbuffer.vert", "../../src/shader/rendering/gbuffer.frag");
     vup::V_F_shader screenfilling_quad("../../src/shader/rendering/screenfilling_quad.vert",
                                        "../../src/shader/rendering/screenfilling_quad.frag");
     vup::Rectangle r(2.0f, 2.0f);
-    vup::Cube q;
+    vup::Cube q(1.0f);
     vup::VAO vao(q);
     vup::VAO r_vao(r);
     vup::FBO_attachment t;
@@ -45,6 +44,7 @@ int main() {
     vup::FBO fbo(width, height, {t, t, t, d});
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};
+    vup::UBO mvp_ubo(mats, 9);
     fbo.get_texture(0).activate(0);
     screenfilling_quad.update_uniform("image", 0);
     auto loop = [&](float dt) {
@@ -53,7 +53,7 @@ int main() {
         minimal.use();
         cam.update(window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
-        minimal.update_ubo("mvp", mats);
+        mvp_ubo.update_data(mats);
         vao.render(GL_TRIANGLES);
         fbo.unbind();
         screenfilling_quad.use();

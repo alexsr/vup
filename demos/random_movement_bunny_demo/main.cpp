@@ -23,8 +23,7 @@ int main() {
     vup::init_demo_OpenGL_params();
     vup::Compute_shader move_verts("../../src/shader/compute/randomly_move_verts.comp");
     vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert",
-                            "../../src/shader/rendering/normal_rendering.frag",
-                            vup::gl::introspection::ubos | vup::gl::introspection::ssbos);
+                            "../../src/shader/rendering/normal_rendering.frag");
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
@@ -32,6 +31,7 @@ int main() {
     vup::SSBO random_pos(vup::generate_random_float_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
     vup::MVP mats{model, cam.get_view(), cam.get_projection()};
+    vup::UBO mvp_ubo(mats, 8);
     bool allow_reset;
     move_verts.update_uniform("dt", 0.0001f);
     auto loop = [&](float dt) {
@@ -39,7 +39,7 @@ int main() {
         minimal.use();
         cam.update(window, dt);
         mats.update(model, cam.get_view(), cam.get_projection());
-        minimal.update_ubo("mvp", mats);
+        mvp_ubo.update_data(mats);
         vao.render(GL_TRIANGLES);
         gl_debug_logger.retrieve_log(std::cout);
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {

@@ -21,11 +21,10 @@ int main() {
     unsigned int instances = 16 * 16;
     vup::V_F_shader multiviewport("../../src/shader/multiview/multiview.vert",
                                   "../../src/shader/multiview/multiview.frag",
-                                  vup::gl::introspection::basic,
                                   {{"N", std::to_string(instances)}});
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
-    vup::Cube c;
+    vup::Cube c(1.0f);
     auto color_vec = vup::generate_random_float_data(instances * 4, 0, 1);
     vup::Instanced_VBO color(color_vec);
     vup::Instanced_VAO vao(bunny, {color});

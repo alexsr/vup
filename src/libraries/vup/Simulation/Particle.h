@@ -63,6 +63,40 @@ namespace vup
         float heat_buffer{};
     };
 
+    struct Phase_change_particle {
+        // Standard data 2
+        glm::vec4 pos;
+        glm::vec4 vel;
+        // IISPH 6
+        glm::vec4 vel_adv;
+        glm::vec4 pressure_accel;
+        glm::vec4 dii;
+        glm::vec4 dij_pj_sum;
+        float mass;
+        float rest_density;
+        float density;
+        float density_adv;
+        float pressure;
+        float last_pressure;
+        float aii;
+        float aij_pj_sum;
+        // Temperature and phase 3 + 2
+        glm::vec4 temperature_grad;
+        float temperature;
+        float rest_temperature;
+        float temp_change;
+        float heat_const;
+        int phase;
+        float t_solidify;
+        float t_melt;
+        float t_boil;
+        float latent_heat_per_mass;
+        float heat_buffer;
+        // Viscosity 0 + 2
+        float viscosity;
+        float rest_viscosity;
+    };
+
     struct Collision_particle {
         glm::vec4 pos;
         glm::vec4 old_pos;
@@ -81,7 +115,13 @@ namespace vup
                                                                float rest_density);
 
     std::vector<IISPH_heat_particle> create_uniform_IISPH_heat_particles(float r, float h, float lower, float upper,
-                                                                         float rest_density, float temperature);
+                                                                         float rest_density,
+                                                                         float temperature_in_celsius);
+
+    std::vector<Phase_change_particle> create_uniform_Phase_change_particles(float r, float h, float lower, float upper,
+                                                                             float rest_density, float temperature,
+                                                                             float rest_temperature,
+                                                                             float rest_viscosity, float visc_alpha);
 }
 
 #endif //VUP_PARTICLE_H

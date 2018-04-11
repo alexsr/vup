@@ -1,12 +1,11 @@
 struct Particle {
-    // Standard data 2
     vec4 pos;
     vec4 vel;
-    // IISPH 6
     vec4 vel_adv;
     vec4 pressure_accel;
     vec4 dii;
     vec4 dij_pj_sum;
+    vec4 temperature_grad;
     float mass;
     float rest_density;
     float density;
@@ -15,19 +14,8 @@ struct Particle {
     float last_pressure;
     float aii;
     float aij_pj_sum;
-    // Temperature and phase 3 + 2
-    vec4 temperature_grad;
     float temperature;
-    float rest_temperature;
     float temp_change;
     float heat_const;
-    int phase;
-    float t_solidify;
-    float t_melt;
-    float t_boil;
-    float latent_heat_per_mass;
     float heat_buffer;
-    // Viscosity 0 + 2
-    float viscosity;
-    float rest_viscosity;
 };

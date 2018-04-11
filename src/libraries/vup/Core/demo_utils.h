@@ -10,9 +10,50 @@
 
 #include "vup.h"
 #include <random>
+#include <chrono>
 
 namespace vup
 {
+    typedef std::chrono::high_resolution_clock high_res_clock;
+    struct Time_counter {
+        float average_aps() {
+            return counter / time;
+        }
+        float current_aps() {
+            return 1.0f / dt.count();
+        }
+        float delta_time() {
+            return dt.count();
+        }
+        void reset() {
+            start = high_res_clock::now();
+            counter = 0;
+            time = 0.0f;
+            count_in_second = 0;
+            accumulate_until_second = 0.0f;
+        }
+        void advance() {
+            counter++;
+            dt = high_res_clock::now() - start;
+            time += delta_time();
+            count_in_second++;
+            accumulate_until_second += delta_time();
+            if (accumulate_until_second >= 1.0f) {
+                one_second_average = count_in_second / accumulate_until_second;
+                count_in_second = 0;
+                accumulate_until_second = 0.0f;
+            }
+            start = high_res_clock::now();
+        }
+        int counter = 0;
+        float time = 0.0f;
+        high_res_clock::time_point start = high_res_clock::now();
+        std::chrono::duration<float> dt{};
+        int count_in_second = 0;
+        float accumulate_until_second = 0;
+        float one_second_average = 0.0f;
+    };
+
     inline void init_demo_OpenGL_params() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

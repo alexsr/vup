@@ -39,8 +39,8 @@ int main() {
     vup::Cube q(1.0f);
     vup::VAO vao(q);
     vup::VAO r_vao(r);
-    vup::FBO_attachment t;
-    vup::FBO_attachment d{GL_TEXTURE_2D, vup::gl::Tex_format::depth, GL_R32F, vup::gl::Tex_type::f, true};
+    vup::Texture_definition t;
+    vup::Texture_definition d{GL_TEXTURE_2D, vup::gl::Tex_format::depth, GL_R32F, vup::gl::Tex_type::f, true};
     vup::FBO fbo(width, height, {t, t, t, d});
     glm::mat4 model(1.0f);
     MVP mats{model, cam.get_view(), cam.get_projection()};

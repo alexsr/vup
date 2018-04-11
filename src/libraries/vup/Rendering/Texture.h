@@ -14,13 +14,12 @@ namespace vup
 {
     class Texture {
     public:
-        Texture(FBO_attachment t, int width, int height);
+        Texture(Texture_definition t, int width, int height);
         void resize(int width, int height);
         GLuint get_id();
         GLenum get_target();
         void activate(GLuint unit);
-        void bind_to_image(GLuint unit, gl::Img_access access = gl::Img_access::read_write,
-                           GLenum format = GL_RGBA8);
+        void bind_to_image(GLuint unit, gl::Img_access access = gl::Img_access::read_write);
     private:
         int m_width = 0;
         int m_height = 0;

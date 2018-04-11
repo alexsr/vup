@@ -14,7 +14,7 @@ namespace vup
 {
     class Renderbuffer {
     public:
-        Renderbuffer(FBO_attachment t, int width, int height);
+        Renderbuffer(Texture_definition t, int width, int height);
         void resize(int width, int height);
         GLuint get_id();
     private:

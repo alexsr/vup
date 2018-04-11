@@ -7,7 +7,7 @@
 
 #include "Renderbuffer.h"
 
-vup::Renderbuffer::Renderbuffer(vup::FBO_attachment t, int width, int height) {
+vup::Renderbuffer::Renderbuffer(Texture_definition t, int width, int height) {
     glCreateRenderbuffers(1, &m_id);
     m_target = t.target;
     m_format = t.format;
@@ -19,7 +19,7 @@ vup::Renderbuffer::Renderbuffer(vup::FBO_attachment t, int width, int height) {
 void vup::Renderbuffer::resize(int width, int height) {
     m_width = width;
     m_height = height;
-    glNamedRenderbufferStorage(m_id, gl::to_gl(m_format), m_width, m_height);
+    glNamedRenderbufferStorage(m_id, to_gl(m_format), m_width, m_height);
 }
 
 GLuint vup::Renderbuffer::get_id() {

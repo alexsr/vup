@@ -65,7 +65,7 @@ namespace vup
         }
     }
 
-    struct FBO_attachment {
+    struct Texture_definition {
         GLenum target = GL_TEXTURE_2D;
         gl::Tex_format format = gl::Tex_format::rgba;
         GLint sized_format = GL_RGBA;

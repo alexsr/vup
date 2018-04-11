@@ -65,6 +65,20 @@ void vup::Window::step_loop_fixed(const float dt, const std::function<void(float
     swap_buffer();
 }
 
+void vup::Window::run_loop(const std::function<void()>& loop) const {
+    while (!should_close()) {
+        step_loop(loop);
+    }
+    glfwTerminate();
+}
+
+void vup::Window::step_loop(const std::function<void()>& loop) const {
+    glfwPollEvents();
+    gl::clear_buffers();
+    loop();
+    swap_buffer();
+}
+
 int vup::Window::get_id() const {
     return m_id;
 }

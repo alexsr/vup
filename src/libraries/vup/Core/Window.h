@@ -47,6 +47,10 @@ namespace vup
         // Run a single step of loop with a fixed time step.
         // This method already clears buffers, swaps buffers, and polls events.
         virtual void step_loop_fixed(float dt, const std::function<void(float)>& loop) const;
+        // Run a loop.
+        virtual void run_loop(const std::function<void()>& loop) const;
+        // This method already clears buffers, swaps buffers, and polls events.
+        virtual void step_loop(const std::function<void()>& loop) const;
         void resize(int w, int h);
         // Set the resize function which GLFW should use.
         void set_resize(GLFWwindowsizefun resize) const;

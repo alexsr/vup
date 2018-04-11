@@ -32,6 +32,23 @@ void vup::Gui_window::step_loop_fixed(const float dt, const std::function<void(f
     swap_buffer();
 }
 
+void vup::Gui_window::step_loop(const std::function<void()>& loop) const {
+    gui::start_new_frame(m_context.glsl_version);
+    glfwPollEvents();
+    gl::clear_buffers();
+    loop();
+    gui::render_draw_data();
+    swap_buffer();
+}
+
+void vup::Gui_window::run_loop(const std::function<void()>& loop) const {
+    while (!should_close()) {
+        step_loop(loop);
+    }
+    gui::shutdown_imgui(m_gui_context);
+    glfwTerminate();
+}
+
 bool vup::Gui_window::check_mouse_action(const int button, const int action) const {
     if (!ImGui::IsAnyWindowFocused()) {
         return glfwGetMouseButton(m_window, button) == action;

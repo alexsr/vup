@@ -28,7 +28,11 @@ namespace vup
         // Run a single step of loop with a fixed time step.
         // This method already clears buffers, swaps buffers, and polls events.
         void step_loop_fixed(float dt, const std::function<void(float)>& loop) const override;
-        
+        // This method already clears buffers, swaps buffers, and polls events.
+        void step_loop(const std::function<void()>& loop) const override;
+        //Run a loop.
+        void run_loop(const std::function<void()>& loop) const override;
+
         bool check_mouse_action(int button, int action) const override;
         bool check_key_action(int, int) const override;
     private:

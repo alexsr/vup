@@ -6,18 +6,12 @@ layout (local_size_x = 128) in;
 
 #include "../ssbos.inc.comp"
 
+#include "../boundary.inc.comp"
+
 uniform float visc_const;
 
-layout (std430, binding = 7) buffer residuals_buffer {
-    float residuals_cpu[];
-};
-
-layout (std430, binding = 8) buffer rhs_buffer {
+layout (std430, binding = 7) buffer rhs_buffer {
     float rhs_cpu[];
-};
-
-layout (std430, binding = 9) buffer boundary_buffer {
-    vec4 boundaries[];
 };
 
 void main() {
@@ -42,7 +36,7 @@ void main() {
         float boundary_psi = boundaries[j].w;
         vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
         if (dot(pij, pij) < demo_consts.h2) {
-            residual += 10.0f * p.viscosity
+            residual += 10.0f
                     * boundary_psi / p.density
                     * dot((p.x).xyz, pij.xyz)
                     * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij)
@@ -52,6 +46,5 @@ void main() {
     p.residual.xyz = p.vel.xyz - (p.x - demo_consts.dt / p.density * residual).xyz;
     particles[id].residual = p.residual;
     particles[id].x.xyz = p.x.xyz;
-    residuals_cpu[id] = dot(p.residual.xyz, p.residual.xyz);
     rhs_cpu[id] = dot(p.vel.xyz, p.vel.xyz);
 }

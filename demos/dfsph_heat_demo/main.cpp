@@ -42,7 +42,7 @@ int main() {
     sim_timer.time_scaling = 1.0;
     sim_timer.dt = 0.0001;
     float density_rest = 1000.0f; // density at 4C
-    float visc_const = 100000.0;
+    float visc_const = 500000.0;
     float tension_const = 0.0f;
     float temperature = 0.0f;
     float max_error = 0.1f;
@@ -69,7 +69,6 @@ int main() {
     vup::SSBO grid_params_buffer(grid_params, 6);
 
     vup::Empty_SSBO scalar_buffer(instances * sizeof(float), 7, vup::gl::storage::read);
-    vup::Empty_SSBO second_scalar_buffer(instances * sizeof(float), 8, vup::gl::storage::read);
 
     const auto boundary_data = vup::create_boundary_box(glm::vec3(2.0f), glm::vec4(0.0), demo_consts.r);
     vup::SSBO boundary(boundary_data, 9);
@@ -86,7 +85,7 @@ int main() {
 
     vup::UBO mvp(mats, 0);
 
-    vup::V_F_shader particle_renderer("../../src/shader/particles/dfsph/instanced_iisph.vert",
+    vup::V_F_shader particle_renderer("../../src/shader/particles/dfsph/heat_particle.vert",
                                       "../../src/shader/particles/particles.frag", sph_defines);
 
     vup::V_F_shader boundary_renderer("../../src/shader/particles/dfsph/instanced_boundary.vert",
@@ -136,9 +135,9 @@ int main() {
 
     vup::Compute_shader compute_Ap("../../src/shader/particles/dfsph/viscosity/compute_Ap.comp",
                                    sph_defines);
-
-    vup::Compute_pipeline update_solution({"update_solution.comp", "calc_residual_squared.comp"}, sph_defines,
-                                          "../../src/shader/particles/dfsph/viscosity/");
+    vup::Compute_shader calc_residual_squared("../../src/shader/particles/dfsph/viscosity/calc_residual_squared.comp",
+                                              sph_defines);
+    vup::Compute_shader update_solution("../../src/shader/particles/dfsph/viscosity/update_solution.comp", sph_defines);
 
     vup::Compute_shader precond_solve("../../src/shader/particles/dfsph/viscosity/precond_solve.comp",
                                       sph_defines);
@@ -147,13 +146,11 @@ int main() {
                                           sph_defines);
 
     vup::Compute_shader reduce_scalar("../../src/shader/particles/reduce_scalar.comp",
-                                      {{"X", "1024"}, {"ID", "7"}, {"N", std::to_string(instances)}});
-    vup::Compute_shader reduce_second_scalar("../../src/shader/particles/reduce_scalar.comp",
-                                             {{"X", "1024"}, {"ID", "8"}, {"N", std::to_string(instances)}});
+                                      {{"X", "512"}, {"BUFFER_ID", "7"}, {"N", std::to_string(instances)}});
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
-                                   {{"X", "1024"}, {"N", std::to_string(instances)}});
-    const auto max_blocks = static_cast<int>(glm::ceil(static_cast<float>(instances)
-                                                       / reduce_scalar.get_workgroup_size_x()));
+                                   {{"X", "512"}, {"N", std::to_string(instances)}});
+    const auto reduce_instances = instances / 2.0f;
+    const auto max_blocks = static_cast<int>(glm::ceil(reduce_instances / reduce_scalar.get_workgroup_size_x()));
     reduce_scalar.update_uniform("max_index", instances);
     reduce_scalar.update_uniform("max_blocks", max_blocks);
     max_scalar.update_uniform("max_index", instances);
@@ -245,7 +242,7 @@ int main() {
             int iteration_div = 0;
             while ((density_div_avg > div_eta || iteration_div < 1) && iteration_div < max_iterations) {
                 correct_divergence_error.run_with_barrier(instances);
-                reduce_scalar.run_with_barrier(instances);
+                reduce_scalar.run_with_barrier(reduce_instances);
                 scalar_buffer.get_data(new_scalar);
                 for (auto v : new_scalar) {
                     density_div_avg += v;
@@ -258,23 +255,24 @@ int main() {
             // initiate conjugate gradient solver
             initiate_viscosity_solver.run_with_barrier(instances);
             float residual_norm2 = 0;
-            reduce_scalar.run_with_barrier(instances);
+            reduce_scalar.run_with_barrier(reduce_instances);
+            scalar_buffer.get_data(new_scalar);
+            float rhs_norm2 = 0;
+            for (auto v : new_scalar) {
+                rhs_norm2 += v;
+            }
+            calc_residual_squared.run_with_barrier(instances);
+            reduce_scalar.run_with_barrier(reduce_instances);
             scalar_buffer.get_data(new_scalar);
             for (auto v : new_scalar) {
                 residual_norm2 += v;
-            }
-            float rhs_norm2 = 0;
-            reduce_second_scalar.run_with_barrier(instances);
-            second_scalar_buffer.get_data(new_scalar);
-            for (auto v : new_scalar) {
-                rhs_norm2 += v;
             }
             int iterations = 0;
             float cg_threshold = cg_max_error * cg_max_error * rhs_norm2;
             if (rhs_norm2 != 0 && residual_norm2 >= cg_threshold) {
                 float abs_r = 0.0f;
                 initial_precond_solve.run_with_barrier(instances);
-                reduce_scalar.run_with_barrier(instances);
+                reduce_scalar.run_with_barrier(reduce_instances);
                 scalar_buffer.get_data(new_scalar);
                 for (auto v : new_scalar) {
                     abs_r += v;
@@ -285,7 +283,7 @@ int main() {
                     iterations++;
                     float alpha_denom = 0.0f;
                     compute_Ap.run_with_barrier(instances);
-                    reduce_scalar.run_with_barrier(instances);
+                    reduce_scalar.run_with_barrier(reduce_instances);
                     scalar_buffer.get_data(new_scalar);
                     for (auto v : new_scalar) {
                         alpha_denom += v;
@@ -297,8 +295,9 @@ int main() {
                     }
                     update_solution.update_uniform("alpha", alpha);
                     update_solution.run_with_barrier(instances);
+                    calc_residual_squared.run_with_barrier(instances);
                     residual_norm2 = 0;
-                    reduce_scalar.run_with_barrier(instances);
+                    reduce_scalar.run_with_barrier(reduce_instances);
                     scalar_buffer.get_data(new_scalar);
                     for (auto v : new_scalar) {
                         residual_norm2 += v;
@@ -310,7 +309,7 @@ int main() {
                     abs_r_old = abs_r;
                     abs_r = 0.0f;
                     precond_solve.run_with_barrier(instances);
-                    reduce_scalar.run_with_barrier(instances);
+                    reduce_scalar.run_with_barrier(reduce_instances);
                     scalar_buffer.get_data(new_scalar);
                     for (auto v : new_scalar) {
                         abs_r += v;
@@ -327,7 +326,7 @@ int main() {
             //            float tol_error = sqrt(residual_norm2 / rhs_norm2);
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
-            max_scalar.run_with_barrier(instances);
+            max_scalar.run_with_barrier(reduce_instances);
             scalar_buffer.get_data(new_scalar);
             float max_vel = 0;
             for (auto v : new_scalar) {

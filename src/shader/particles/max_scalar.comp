@@ -3,27 +3,28 @@
 uniform int max_index;
 uniform int max_blocks;
 layout (local_size_x = X) in;
-shared float shared_scalar[gl_WorkGroupSize.x];
+shared float scalar_shared[gl_WorkGroupSize.x];
 layout (std430, binding = 7) buffer scalars {
     float scalar_new[];
 };
 void main() {
     uint bid = gl_WorkGroupID.x;
-    uint tid = gl_LocalInvocationIndex;
-    uint id = gl_GlobalInvocationID.x;
-    shared_scalar[tid] = 0;
-    if (id < max_index) {
-        shared_scalar[tid] = scalar_new[id];
+    uint wg_size = gl_WorkGroupSize.x;
+    uint grid_size = wg_size * 2 * gl_NumWorkGroups.x;
+    uint tid = gl_LocalInvocationID.x;
+    uint id = bid * wg_size * 2 + tid;
+    scalar_shared[tid] = 0;
+    while (id < max_index) {
+        scalar_shared[tid] = max(scalar_shared[tid], max(scalar_new[id], scalar_new[id + wg_size]));
+        id += grid_size;
     }
 	barrier();
     for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
         if (tid < s) {
-            if (shared_scalar[tid] < shared_scalar[tid+s]) {
-                shared_scalar[tid] = shared_scalar[tid+s];
-            }
+            scalar_shared[tid] = max(scalar_shared[tid], scalar_shared[tid+s]);
 	    }
     }
     if (tid == 0 && max_blocks > bid) {
-        scalar_new[bid] = shared_scalar[0];
+        scalar_new[bid] = scalar_shared[0];
     }
 }

@@ -5,23 +5,59 @@ uniform int max_blocks;
 layout (local_size_x = X) in;
 shared float scalar_shared[gl_WorkGroupSize.x];
 
-layout (std430, binding = ID) buffer scalars {
+layout (std430, binding = BUFFER_ID) buffer scalars {
     float scalar_new[];
 };
 
 void main() {
     uint bid = gl_WorkGroupID.x;
-    uint tid = gl_LocalInvocationIndex;
-    uint id = gl_GlobalInvocationID.x;
+    uint wg_size = gl_WorkGroupSize.x;
+    uint grid_size = wg_size * 2 * gl_NumWorkGroups.x;
+    uint tid = gl_LocalInvocationID.x;
+    uint id = bid * wg_size * 2 + tid;
     scalar_shared[tid] = 0;
-    if (id < max_index) {
-        scalar_shared[tid] = scalar_new[id];
+    while (id < max_index) {
+        scalar_shared[tid] += scalar_new[id] + scalar_new[id + wg_size];
+        id += grid_size;
     }
 	barrier();
-    for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
-        if (tid < s) {
-            scalar_shared[tid] += scalar_shared[tid+s];
-	    }
+    #if X >= 512
+    if (tid < 256) {
+        scalar_shared[tid] += scalar_shared[tid + 256];
+    }
+    barrier();
+    #endif
+    #if X >= 256
+    if (tid < 128) {
+        scalar_shared[tid] += scalar_shared[tid + 128];
+    }
+    barrier();
+    #endif
+    #if X >= 128
+    if (tid < 64) {
+        scalar_shared[tid] += scalar_shared[tid + 64];
+    }
+    barrier();
+    #endif
+    if (tid < 32) {
+        #if X >= 64
+        scalar_shared[tid] += scalar_shared[tid + 32];
+        #endif
+        #if X >= 32
+        scalar_shared[tid] += scalar_shared[tid + 16];
+        #endif
+        #if X >= 16
+        scalar_shared[tid] += scalar_shared[tid + 8];
+        #endif
+        #if X >= 8
+        scalar_shared[tid] += scalar_shared[tid + 4];
+        #endif
+        #if X >= 4
+        scalar_shared[tid] += scalar_shared[tid + 2];
+        #endif
+        #if X >= 2
+        scalar_shared[tid] += scalar_shared[tid + 1];
+        #endif
     }
     if (tid == 0 && max_blocks > bid) {
         scalar_new[bid] = scalar_shared[0];

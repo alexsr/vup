@@ -1,3 +1,8 @@
+struct Boundary_particle {
+    vec4 pos;
+    vec4 vel;
+};
+
 layout (std430, binding = 8) buffer boundary_buffer {
-    vec4 boundaries[];
+    Boundary_particle boundaries[];
 };

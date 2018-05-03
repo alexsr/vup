@@ -6,7 +6,7 @@ layout (local_size_x = 128) in;
 
 #include "ssbos.inc.comp"
 
-#include "../boundary.inc.comp"
+#include "boundary.inc.comp"
 
 void main() {    
     uint id = gl_GlobalInvocationID.x;
@@ -27,8 +27,8 @@ void main() {
         density_length_sum += dot(density_grad, density_grad);
     }
     for (int j = 0; j < B; j++) {
-        float boundary_psi = boundaries[j].w;
-        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        float boundary_psi = boundaries[j].pos.w;
+        vec4 pij = vec4((p.pos - boundaries[j].pos).xyz, 0);
         if (dot(pij, pij) < demo_consts.h2) {
             p.density += boundary_psi * demo_consts.kernel * cubic(demo_consts.h, pij);
             vec4 density_grad = boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);

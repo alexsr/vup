@@ -24,8 +24,8 @@ void main() {
                           * demo_consts.kernel_grad * cubic_grad(demo_consts.h, p.pos - p_other.pos);
     }
     for (int j = 0; j < B; j++) {
-        float boundary_psi = boundaries[j].w;
-        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        float boundary_psi = boundaries[j].pos.w;
+        vec4 pij = vec4((p.pos - boundaries[j].pos).xyz, 0);
         if (dot(pij, pij) < demo_consts.h2) {
             vel_adjustment += p.K_v * boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
         }

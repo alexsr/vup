@@ -7,7 +7,7 @@ layout (location = 1) in vec4 normal;
 
 #include "/../../data_structures/uniform_grid.inc.comp"
 
-#include "../boundary.inc.comp"
+#include "boundary.inc.comp"
 
 layout (std140, binding = 0) uniform mvp {
     mat4 model;
@@ -17,7 +17,7 @@ layout (std140, binding = 0) uniform mvp {
 
 out vec3 pass_normal;
 void main() {
-    vec4 pos = boundaries[gl_InstanceID];
+    vec4 pos = boundaries[gl_InstanceID].pos;
     pass_normal = vec3(pos.w);
 	gl_Position = projection * view * model * vec4((position + pos).xyz, 1.0);
 }

@@ -14,34 +14,35 @@ namespace vup
 {
     struct Boundary_particle {
         glm::vec4 pos;
+        glm::vec4 vel;
     };
 
-    inline std::vector<glm::vec4> create_boundary_box(glm::vec3 size, glm::vec4 box_mid,
+    inline std::vector<Boundary_particle> create_boundary_box(glm::vec3 size, glm::vec4 box_mid,
                                                       float radius) {
         size += glm::vec3(2 * radius);
         glm::vec4 box_min = box_mid - glm::vec4(size / 2.0f, 0.0f);
         glm::vec3 sampling = glm::ceil(size / (2.0f * radius));
         glm::vec3 sampling_dist = size / sampling;
         int res_size = 2 * (sampling.x - 1) * (sampling.y - 1) + (sampling.z + 1) * 2 * (sampling.x + 2 + sampling.y);
-        std::vector<glm::vec4> res(res_size);
+        std::vector<Boundary_particle> res(res_size);
         unsigned long long id = 0;
         for (unsigned long long i = 1; i < sampling.x; i++) {
             for (unsigned long long j = 1; j < sampling.y; j++) {
-                res.at(id++) = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y, 0, 0);
-                res.at(id++) = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y,
+                res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y, 0, 0);
+                res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y,
                                                    sampling.z * sampling_dist.z, 0);
             }
         }
 
         for (unsigned long long k = 0; k <= sampling.z; k++) {
             for (unsigned long long i = 0; i <= sampling.x; i++) {
-                res.at(id++) = box_min + glm::vec4(i * sampling_dist.x, 0, k * sampling_dist.z, 0);
-                res.at(id++) = box_min + glm::vec4(i * sampling_dist.x, sampling.y * sampling_dist.y,
+                res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, 0, k * sampling_dist.z, 0);
+                res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, sampling.y * sampling_dist.y,
                                                    k * sampling_dist.z, 0);
             }
             for (unsigned long long j = 0; j <= sampling.y; j++) {
-                res.at(id++) = box_min + glm::vec4(0, j * sampling_dist.y, k * sampling_dist.z, 0);
-                res.at(id++) = box_min + glm::vec4(sampling.x * sampling_dist.x, j * sampling_dist.y,
+                res.at(id++).pos = box_min + glm::vec4(0, j * sampling_dist.y, k * sampling_dist.z, 0);
+                res.at(id++).pos = box_min + glm::vec4(sampling.x * sampling_dist.x, j * sampling_dist.y,
                                                    k * sampling_dist.z, 0);
             }
         }

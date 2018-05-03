@@ -6,7 +6,7 @@ layout (local_size_x = 128) in;
 
 #include "ssbos.inc.comp"
 
-#include "../boundary.inc.comp"
+#include "boundary.inc.comp"
 
 void main() {    
     uint id = gl_GlobalInvocationID.x;
@@ -14,15 +14,15 @@ void main() {
         return;
     }
     float boundary_psi = 0.0f;
-    vec4 this_boundary = boundaries[id];
+    Boundary_particle this_boundary = boundaries[id];
     for (int j = 0; j < B; j++) {
         if (j == id) {
             continue;
         }
-        vec4 pij = vec4((this_boundary - boundaries[j]).xyz, 0.0f);
+        vec4 pij = vec4((this_boundary.pos - boundaries[j].pos).xyz, 0.0f);
         if (dot(pij, pij) <= demo_consts.h2) {
             boundary_psi += demo_consts.kernel * cubic(demo_consts.h, pij);
         }
     }
-    boundaries[id].w = 1000.0f / boundary_psi;
+    boundaries[id].pos.w = 1000.0f / boundary_psi;
 }

@@ -6,7 +6,6 @@
 //
 
 #include "Shader.h"
-#include <functional>
 
 vup::Shader::Shader(std::vector<Shader_define> defines,
                     const gl::introspection introspection_flag)
@@ -24,17 +23,8 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, const GLenum type)
         define_string += "#define " + d.name + " " + d.value + "\n";
     }
     f_source.insert(start, define_string);
-    auto main_start = f_source.find("void main");
-    while ((start = f_source.find("#include", start)) <= main_start) {
-        const auto path_start = f_source.find('\"', start);
-        const auto path_end = f_source.find('\"', path_start + 1);
-        auto path_inc(path.parent_path() / f_source.substr(path_start + 1, path_end - path_start - 1));
-        std::cout << "Including " << path_inc.string() << "\n";
-        const auto eol = f_source.find('\n', start);
-        auto inc = load_file_str(path_inc);
-        f_source.replace(start, eol - start, inc.data());
-        main_start += inc.size();
-    }
+    const auto main_start = f_source.find("void main");
+    process_includes(f_source, path, start, main_start);
     const GLchar* source = f_source.data();
     auto size = static_cast<GLint>(f_source.size());
     const auto shader_id = glCreateShader(type);
@@ -58,6 +48,22 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, const GLenum type)
         };
     }
     return shader_id;
+}
+
+void vup::Shader::process_includes(std::string& file, const filesystem::path& directory,
+                                   unsigned long long start, unsigned long long end_search) {
+    while ((start = file.find("#include", start)) <= end_search) {
+        const auto path_start = file.find('\"', start);
+        const auto path_end = file.find('\"', path_start + 1);
+        auto path_inc(directory.parent_path() / file.substr(path_start + 1, path_end - path_start - 1));
+        std::cout << "Including " << path_inc.string() << "\n";
+        const auto eol = file.find('\n', start);
+        auto inc = load_file_str(path_inc);
+        path_inc = filesystem::canonical(path_inc);
+        process_includes(inc, path_inc, 0, inc.size());
+        file.replace(start, eol - start, inc.data());
+        end_search += inc.size();
+    }
 }
 
 void vup::Shader::use() const {
@@ -309,4 +315,104 @@ void vup::Shader::update_uniform(const std::string& name, const glm::mat4 v) con
     if (find_map_entry(name, m_mat4_uniforms)) {
         m_mat4_uniforms.at(name).update(v);
     }
+}
+
+vup::V_F_shader::V_F_shader(filesystem::path vertex_path,
+    filesystem::path fragment_path,
+    const std::vector<Shader_define>& defines,
+    const gl::introspection introspection_flag)
+    : Shader(defines, introspection_flag), m_vertex_path(std::move(vertex_path)),
+    m_fragment_path(std::move(fragment_path)) {
+    std::vector<GLuint> shader_ids(2);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+void vup::V_F_shader::reload() {
+    clear_maps();
+    std::vector<GLuint> shader_ids(2);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+vup::V_G_F_shader::V_G_F_shader(filesystem::path vertex_path,
+    filesystem::path geometry_path,
+    filesystem::path fragment_path,
+    const std::vector<Shader_define>& defines,
+    const gl::introspection introspection_flag)
+    : Shader(defines, introspection_flag), m_vertex_path(std::move(vertex_path)),
+    m_geometry_path(std::move(geometry_path)), m_fragment_path(std::move(fragment_path)) {
+    std::vector<GLuint> shader_ids(3);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_geometry_path, GL_GEOMETRY_SHADER);
+    shader_ids.at(2) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+void vup::V_G_F_shader::reload() {
+    clear_maps();
+    std::vector<GLuint> shader_ids(3);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_geometry_path, GL_GEOMETRY_SHADER);
+    shader_ids.at(2) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+vup::V_T_F_shader::V_T_F_shader(filesystem::path vertex_path,
+    filesystem::path control_path,
+    filesystem::path evaluation_path,
+    filesystem::path fragment_path,
+    const std::vector<Shader_define>& defines,
+    const gl::introspection introspection_flag)
+    : Shader(defines, introspection_flag), m_vertex_path(std::move(vertex_path)),
+    m_control_path(std::move(control_path)), m_evaluation_path(std::move(evaluation_path)),
+    m_fragment_path(std::move(fragment_path)) {
+    std::vector<GLuint> shader_ids(4);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_control_path, GL_TESS_CONTROL_SHADER);
+    shader_ids.at(2) = load_shader(m_evaluation_path, GL_TESS_EVALUATION_SHADER);
+    shader_ids.at(3) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+void vup::V_T_F_shader::reload() {
+    clear_maps();
+    std::vector<GLuint> shader_ids(4);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_control_path, GL_TESS_CONTROL_SHADER);
+    shader_ids.at(2) = load_shader(m_evaluation_path, GL_TESS_EVALUATION_SHADER);
+    shader_ids.at(3) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+vup::V_T_G_F_shader::V_T_G_F_shader(filesystem::path vertex_path,
+    filesystem::path control_path,
+    filesystem::path evaluation_path,
+    filesystem::path geometry_path,
+    filesystem::path fragment_path,
+    const std::vector<Shader_define>& defines,
+    const gl::introspection introspection_flag)
+    : Shader(defines, introspection_flag), m_vertex_path(std::move(vertex_path)),
+    m_control_path(std::move(control_path)), m_evaluation_path(std::move(evaluation_path)),
+    m_geometry_path(std::move(geometry_path)), m_fragment_path(std::move(fragment_path)) {
+    std::vector<GLuint> shader_ids(5);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_control_path, GL_TESS_CONTROL_SHADER);
+    shader_ids.at(2) = load_shader(m_evaluation_path, GL_TESS_EVALUATION_SHADER);
+    shader_ids.at(3) = load_shader(m_geometry_path, GL_GEOMETRY_SHADER);
+    shader_ids.at(4) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
+}
+
+void vup::V_T_G_F_shader::reload() {
+    clear_maps();
+    std::vector<GLuint> shader_ids(5);
+    shader_ids.at(0) = load_shader(m_vertex_path, GL_VERTEX_SHADER);
+    shader_ids.at(1) = load_shader(m_control_path, GL_TESS_CONTROL_SHADER);
+    shader_ids.at(2) = load_shader(m_evaluation_path, GL_TESS_EVALUATION_SHADER);
+    shader_ids.at(3) = load_shader(m_geometry_path, GL_GEOMETRY_SHADER);
+    shader_ids.at(4) = load_shader(m_fragment_path, GL_FRAGMENT_SHADER);
+    init_shader_program(shader_ids);
 }

@@ -6,7 +6,7 @@
 //
 
 #include <vup/Core/demo_utils.h>
-#include <vup/Simulation/particle_demo_constants.h>
+#include <vup/Simulation/particle_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
 #include <vup/Shader/V_F_shader.h>
 #include <vup/Shader/V_G_F_shader.h>
@@ -82,14 +82,14 @@ int main() {
                                              "calc_density.comp", "predict_advection.comp",
                                              "init_pressure_solver.comp"
                                          },
-                                         sph_defines, vup::gl::introspection::basic,
+                                         sph_defines,
                                          "../../src/shader/particles/iisph/");
     init_iteration.update_uniform("dt", delta);
     init_iteration.update_uniform("visc_const", visc_const);
     init_iteration.update_uniform("tension_const", tension_const);
 
     vup::Compute_pipeline pressure_solver({"calc_dijpjsum.comp", "solve_pressure.comp"},
-                                          sph_defines, vup::gl::introspection::basic,
+                                          sph_defines,
                                           "../../src/shader/particles/iisph/");
     pressure_solver.update_uniform("dt", delta);
 
@@ -140,11 +140,8 @@ int main() {
             reset_grid.reload();
             init_iteration.reload();
             pressure_solver.reload();
-            reduce_densities.reload();
             bounds_vao.get_vbo(0).bind_base(10);
             rotate_box.update_uniform("model", bb_model);
-            reduce_densities.update_uniform("max_index", instances);
-            reduce_densities.update_uniform("max_blocks", max_blocks);
             integrate.update_uniform("dt", dt);
             pressure_solver.update_uniform("dt", dt);
             init_iteration.update_uniform("dt", dt);

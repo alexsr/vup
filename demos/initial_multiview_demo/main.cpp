@@ -19,7 +19,7 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     unsigned int instances = 16 * 16;
-    vup::V_F_shader multiviewport("../../src/shader/multiview/multiview.vert",
+    vup::boundary_renderer multiviewport("../../src/shader/multiview/multiview.vert",
                                   "../../src/shader/multiview/multiview.frag",
                                   {{"N", std::to_string(instances)}});
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");

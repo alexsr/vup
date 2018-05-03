@@ -12,13 +12,50 @@
 #include <vup/GPU_Storage/Uniform.h>
 #include <vup/GPU_Storage/Storage_buffer.h>
 #include <map>
+#include <functional>
 #include <iostream>
 #include <array>
-#include <utility>
-#include "shader_utils.h"
 
 namespace vup
 {
+    namespace gl
+    {
+        inline std::string shader_type_to_string(const GLenum type) {
+            switch (type) {
+            case GL_VERTEX_SHADER:
+                return "vertex shader";
+            case GL_FRAGMENT_SHADER:
+                return "fragment shader";
+            case GL_GEOMETRY_SHADER:
+                return "geometry shader";
+            case GL_TESS_CONTROL_SHADER:
+                return "tessellation control shader";
+            case GL_TESS_EVALUATION_SHADER:
+                return "tessellation evaluation shader";
+            case GL_COMPUTE_SHADER:
+                return "compute shader";
+            default:
+                return "unknown type of shader";
+            }
+        }
+
+        enum class introspection : GLbitfield {
+            none = 0,
+            basic = 2
+        };
+
+        constexpr std::underlying_type_t<introspection> to_gl(introspection i) {
+            return static_cast<std::underlying_type_t<introspection>>(i);
+        }
+
+        constexpr introspection operator|(const introspection i1, const introspection i2) {
+            return static_cast<introspection>(to_gl(i1) | to_gl(i2));
+        }
+
+        constexpr bool operator&(const introspection i1, const introspection i2) {
+            return (to_gl(i1) & to_gl(i2)) != 0;
+        }
+    }
     struct Shader_define {
         std::string name;
         std::string value;
@@ -50,6 +87,8 @@ namespace vup
         explicit Shader(std::vector<Shader_define> defines = {},
                         gl::introspection introspection_flag = gl::introspection::basic);
         GLuint load_shader(const filesystem::path& path, GLenum type);
+        void process_includes(std::string& file, const filesystem::path& directory,
+                              unsigned long long start, unsigned long long end_search);
         void link_program() const;
         void init_shader_program(const std::vector<GLuint>& shader_ids);
         void attach_shaders(const std::vector<GLuint>& shader_ids) const;
@@ -82,6 +121,67 @@ namespace vup
                                 const std::map<std::string, T>& m) {
         return m.end() != m.find(name);
     }
+
+    class V_F_shader : public Shader {
+    public:
+        V_F_shader(filesystem::path vertex_path,
+                   filesystem::path fragment_path,
+                   const std::vector<Shader_define>& defines = {},
+                   gl::introspection introspection_flag = gl::introspection::basic);
+        virtual ~V_F_shader() = default;
+        void reload() override;
+    private:
+        filesystem::path m_vertex_path;
+        filesystem::path m_fragment_path;
+    };
+
+    class V_G_F_shader : public Shader {
+    public:
+        V_G_F_shader(filesystem::path vertex_path,
+                     filesystem::path geometry_path,
+                     filesystem::path fragment_path,
+                     const std::vector<Shader_define>& defines = {},
+                     gl::introspection introspection_flag = gl::introspection::basic);
+        void reload() override;
+    private:
+        filesystem::path m_vertex_path;
+        filesystem::path m_geometry_path;
+        filesystem::path m_fragment_path;
+    };
+
+    class V_T_F_shader : public Shader {
+    public:
+        V_T_F_shader(filesystem::path vertex_path,
+                     filesystem::path control_path,
+                     filesystem::path evaluation_path,
+                     filesystem::path fragment_path,
+                     const std::vector<Shader_define>& defines = {},
+                     gl::introspection introspection_flag = gl::introspection::basic);
+        void reload() override;
+    private:
+        filesystem::path m_vertex_path;
+        filesystem::path m_control_path;
+        filesystem::path m_evaluation_path;
+        filesystem::path m_fragment_path;
+    };
+
+    class V_T_G_F_shader : public Shader {
+    public:
+        V_T_G_F_shader(filesystem::path vertex_path,
+                       filesystem::path control_path,
+                       filesystem::path evaluation_path,
+                       filesystem::path geometry_path,
+                       filesystem::path fragment_path,
+                       const std::vector<Shader_define>& defines = {},
+                       gl::introspection introspection_flag = gl::introspection::basic);
+        void reload() override;
+    private:
+        filesystem::path m_vertex_path;
+        filesystem::path m_control_path;
+        filesystem::path m_evaluation_path;
+        filesystem::path m_geometry_path;
+        filesystem::path m_fragment_path;
+    };
 }
 
 

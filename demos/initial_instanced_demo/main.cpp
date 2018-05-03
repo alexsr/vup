@@ -14,7 +14,7 @@ int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
-    vup::V_F_shader minimal("../../src/shader/rendering/mvp_instanced.vert",
+    vup::boundary_renderer minimal("../../src/shader/rendering/mvp_instanced.vert",
                             "../../src/shader/rendering/minimal_instanced.frag");
     unsigned int instances = 10;
     vup::Instanced_VBO offset(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f), 2);

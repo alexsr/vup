@@ -15,7 +15,7 @@ int main() {
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
     glEnable(GL_POINT_SPRITE);
-    vup::V_F_shader minimal("../../src/shader/rendering/point.vert", "../../src/shader/rendering/point.frag");
+    vup::boundary_renderer minimal("../../src/shader/rendering/point.vert", "../../src/shader/rendering/point.frag");
     unsigned int instances = 100;
     glPointSize(105.0f);
     vup::VBO positions(vup::generate_random_float_data(instances * 3, -1, 1), 3);

@@ -71,7 +71,7 @@ int main() {
     vup::Empty_SSBO scalar_buffer(instances * sizeof(float), 7, vup::gl::storage::read);
 
     const auto boundary_data = vup::create_boundary_box(glm::vec3(2.0f), glm::vec4(0.0), demo_consts.r);
-    vup::SSBO boundary(boundary_data, 9);
+    vup::SSBO boundary(boundary_data, 8);
 
 
     const std::vector<vup::Shader_define> sph_defines = {

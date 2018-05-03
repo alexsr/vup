@@ -73,7 +73,6 @@ int main() {
     const auto boundary_data = vup::create_boundary_box(glm::vec3(2.0f), glm::vec4(0.0), demo_consts.r);
     vup::SSBO boundary(boundary_data, 8);
 
-
     const std::vector<vup::Shader_define> sph_defines = {
         {"N", std::to_string(instances)},
         {"B", std::to_string(boundary_data.size())},
@@ -110,8 +109,6 @@ int main() {
 
     vup::Compute_shader compute_accel("../../src/shader/particles/dfsph/calc_non_pressure_accel.comp", sph_defines);
     vup::Compute_shader update_velocities("../../src/shader/particles/dfsph/update_velocities.comp", sph_defines);
-
-    vup::Compute_shader predict_density("../../src/shader/particles/dfsph/predict_density.comp", sph_defines);
 
     vup::Compute_pipeline correct_density_error({
                                                     "predict_density.comp",

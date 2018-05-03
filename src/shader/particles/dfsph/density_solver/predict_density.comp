@@ -2,16 +2,14 @@
 
 layout (local_size_x = 128) in;
 
-#include "particle_util.inc.comp"
+#include "../particle_util.inc.comp"
 
-#include "ssbos.inc.comp"
+#include "../ssbos.inc.comp"
+
+#include "../boundary.inc.comp"
 
 layout (std430, binding = 7) buffer densities {
     float scalar_new[];
-};
-
-layout (std430, binding = 9) buffer boundary_buffer {
-    vec4 boundaries[];
 };
 
 void main() {

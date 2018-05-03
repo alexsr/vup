@@ -118,7 +118,7 @@ int main() {
                                                     "adapt_vel_density.comp"
                                                 },
                                                 sph_defines,
-                                                "../../src/shader/particles/dfsph/");
+                                                "../../src/shader/particles/dfsph/density_solver/");
 
     vup::Compute_pipeline update_positions({"calc_heat_transfer.comp", "update_positions.comp"},
                                            sph_defines, "../../src/shader/particles/dfsph/");

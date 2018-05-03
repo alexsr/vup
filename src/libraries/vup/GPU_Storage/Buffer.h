@@ -32,10 +32,6 @@ namespace vup
         void get_data(T& data);
         template <typename T>
         void get_data(std::vector<T>& data);
-        template <typename T>
-        void get_data(T& data, int offset);
-        template <typename T>
-        void get_data(std::vector<T>& data, int offset);
         GLuint get_name() const;
         unsigned int get_buffer_size() const;
         void bind() const;
@@ -178,16 +174,6 @@ void vup::Buffer::get_data(std::vector<T>& data) {
                                             to_gl(gl::map_access::read));
     std::memcpy(data.data(), buffer_ptr, size);
     glUnmapNamedBuffer(m_name);
-}
-
-template <typename T>
-void vup::Buffer::get_data(T& data, int offset) {
-
-}
-
-template <typename T>
-void vup::Buffer::get_data(std::vector<T>& data, int offset) {
-
 }
 
 template <typename T>

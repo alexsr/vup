@@ -15,7 +15,7 @@ layout (std430, binding = 6) buffer grid_parameters {
     Fixed_uniform_grid_params grid_params;
 };
 
-layout (std140, binding = 8) uniform mvp {
+layout (std140, binding = 0) uniform mvp {
     mat4 model;
     mat4 view;
     mat4 projection;

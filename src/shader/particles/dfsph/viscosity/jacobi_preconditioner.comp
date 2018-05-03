@@ -1,0 +1,51 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "../particle_util.inc.comp"
+
+#include "../ssbos.inc.comp"
+
+layout (std430, binding = 9) buffer boundary_buffer {
+    vec4 boundaries[];
+};
+
+uniform float visc_const;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    mat3 A = mat3(0);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        Particle p_other = particles[j];
+        vec4 pij = vec4((p.pos - p_other.pos).xyz, 0.0f);
+        vec3 grad = 10.0f * (p.viscosity + p_other.viscosity) / 2.0f
+                 * p_other.mass / p_other.density
+                 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij).xyz
+                 / (dot(pij, pij) + 0.01 * demo_consts.h2);
+        A[0] += grad * pij.x;
+        A[1] += grad * pij.y;
+        A[2] += grad * pij.z;
+    }
+    for (int j = 0; j < B; j++) {
+        float boundary_psi = boundaries[j].w;
+        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        if (dot(pij, pij) < demo_consts.h2) {
+            vec3 grad = 10.0f * p.viscosity
+                 * boundary_psi / p.density
+                 * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij).xyz
+                 / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+            A[0] += grad * pij.x;
+            A[1] += grad * pij.y;
+            A[2] += grad * pij.z;
+        }
+    }
+    A = inverse(mat3(1.0) - demo_consts.dt / p.density * A);
+    particles[id].precond[0] = vec4(A[0], 0);
+    particles[id].precond[1] = vec4(A[1], 0);
+    particles[id].precond[2] = vec4(A[2], 0);
+}

@@ -1,0 +1,26 @@
+struct Particle {
+    mat4 precond;
+    vec4 residual;
+    vec4 p;
+    vec4 z;
+    vec4 x;
+    vec4 vel_diff;
+    vec4 pos;
+    vec4 vel;
+    vec4 accel;
+
+    float mass;
+    float rest_density;
+    float density;
+    float density_adv;
+
+    float K;
+    float K_v;
+    float alpha;
+    float viscosity;
+
+    float temperature;
+    float temp_change;
+    float heat_const;
+    float heat_buffer;
+};

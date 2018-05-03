@@ -1,0 +1,53 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+uniform float temp_scaling = 0.17;
+
+layout (std140, binding = 0) uniform mvp {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+};
+
+float p_in_box(vec4 pos, vec3 b) {
+    vec3 d = abs(pos.xyz) - b;
+    return -1.0f * (min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0)));
+}
+
+vec3 calc_box_normal(vec4 pos, vec3 b) {
+    vec4 eps = vec4(0.0005, 0.0, 0.0, 0.0);
+  	vec3 n = vec3(p_in_box(pos + eps, b) - p_in_box(pos - eps, b),
+                  p_in_box(pos + eps.yxyy, b) - p_in_box(pos - eps.yxyy, b),
+                  p_in_box(pos + eps.yyxy, b) - p_in_box(pos - eps.yyxy, b));
+  	return normalize(n);
+}
+vec3 reflect(vec3 d, vec3 n) {
+    if (dot(d, n) < 0) {
+        return d - 2.0f*dot(n, d)*n;
+    }
+    return d;
+}
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    p.pos += p.vel * demo_consts.dt;
+    // vec3 bounds = vec3(1, 1, 1) - demo_consts.r;
+    // float dist_p = p_in_box(p.pos, bounds);
+    // if (dist_p < 0) {
+    //     vec3 n = calc_box_normal(p.pos, bounds);
+    //     p.pos.xyz -= dist_p * n;
+    //     particles[id].vel.xyz = reflect(p.vel.xyz, n);
+    // }
+    particles[id].pos = p.pos;
+    particles[id].temperature += p.temp_change * demo_consts.dt;
+    particles[id].viscosity = 500000.0f * exp(temp_scaling * (273.0f - p.temperature));
+}

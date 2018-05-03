@@ -1,0 +1,30 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+layout (std430, binding = 9) buffer boundary_buffer {
+    vec4 boundaries[];
+};
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= B) {
+        return;
+    }
+    float boundary_psi = 0.0f;
+    vec4 this_boundary = boundaries[id];
+    for (int j = 0; j < B; j++) {
+        if (j == id) {
+            continue;
+        }
+        vec4 pij = vec4((this_boundary - boundaries[j]).xyz, 0.0f);
+        if (dot(pij, pij) < demo_consts.h2) {
+            boundary_psi += demo_consts.kernel * cubic(demo_consts.h, pij);
+        }
+    }
+    boundaries[id].w = 10000.0f / boundary_psi;
+}

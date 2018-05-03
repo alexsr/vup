@@ -1,0 +1,33 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+#include "ssbos.inc.comp"
+
+layout (std430, binding = 9) buffer boundary_buffer {
+    vec4 boundaries[];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    vec4 vel_adjustment = vec4(0.0f);
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        Particle p_other = particles[j];
+        vel_adjustment += p_other.mass * (p.K + p_other.K)
+                          * demo_consts.kernel_grad * cubic_grad(demo_consts.h, p.pos - p_other.pos);
+    }
+    for (int j = 0; j < B; j++) {
+        float boundary_psi = boundaries[j].w;
+        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        if (dot(pij, pij) < demo_consts.h2) {
+            vel_adjustment += p.K * boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+        }
+    }
+    particles[id].vel = p.vel + demo_consts.dt * vel_adjustment;
+}

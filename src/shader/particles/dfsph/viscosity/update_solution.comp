@@ -1,0 +1,22 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "../particle_util.inc.comp"
+
+#include "../ssbos.inc.comp"
+
+uniform float alpha;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    particles[id].x.xyz += alpha * p.p.xyz;
+    particles[id].residual.xyz -= alpha * p.z.xyz;
+    p.vel_diff.xyz = (p.x.xyz - p.vel.xyz);
+    particles[id].vel_diff = p.vel_diff;
+    particles[id].accel.xyz = p.vel_diff.xyz * demo_consts.inv_dt;
+}

@@ -1,0 +1,96 @@
+#include "dfsph_heat_particle.inc.comp"
+
+struct Demo_constants {
+    float dt;
+    float inv_dt;
+    float dt2;
+    float eps;
+    float r;
+    float h;
+    float h2;
+    float kernel;
+    float kernel_grad;
+    float kernel_laplace;
+    float visc;
+};
+
+float visc(float h, float r) {
+    r = abs(r);
+    if (0 <= r && r < h) {
+        return h - r;
+    }
+    return 0.0f;
+}
+
+float visc(float h, vec4 v) {
+    float r = length(v);
+    if (0 <= r && r < h) {
+        return h - r;
+    }
+    return 0.0f;
+}
+
+float cubic(float h, float r) {
+    float res = 0.0;
+    float q = r / h;
+    if (q <= 1.0) {
+        if (q <= 0.5) {
+            float q2 = q * q;
+            float q3 = q2 * q;
+            res = (6.0*q3 - 6.0*q2 + 1.0);
+        }
+        else {
+            res = (2.0*pow(1.0 - q, 3));
+        }
+    }
+    return res;
+}
+
+float cubic(float h, vec4 v) {
+    v = vec4(v.xyz, 0.0);
+    float r = length(v);
+    float res = 0.0;
+    float q = r / h;
+    if (q <= 1.0) {
+        if (q <= 0.5) {
+            float q2 = q * q;
+            float q3 = q2 * q;
+            res = (6.0*q3 - 6.0*q2 + 1.0);
+        }
+        else {
+            res = (2.0*pow(1.0 - q, 3));
+        }
+    }
+    return res;
+}
+
+vec4 cubic_grad(float h, vec4 v) {
+    vec4 res;
+    v = vec4(v.xyz, 0.0);
+    float rl = length(v);
+    float q = rl / h;
+    if (q <= 1.0) {
+        if (rl > 1.0e-6) {
+            vec4 gradq = v * (1.0f / (rl*h));
+            if (q <= 0.5) {
+                res = q*(3.0f*q - 2.0f)*gradq;
+            }
+            else {
+                float factor = 1.0 - q;
+                res = (-factor * factor)*gradq;
+            }
+        }
+    }
+    else {
+        res = vec4(0);
+    }
+    return res;
+}
+
+vec4 spiky_grad(float h, vec4 v) {
+    float r = abs(length(v));
+    if (0 <= r && r < h) {
+        return v * (h - r) * (h - r) / r;
+    }
+    return vec4(0.0f);
+}

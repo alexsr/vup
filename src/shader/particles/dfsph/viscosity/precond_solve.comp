@@ -1,0 +1,22 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "../particle_util.inc.comp"
+
+#include "../ssbos.inc.comp"
+
+layout (std430, binding = 7) buffer squared_residual_buffer {
+    float squared_residuals[];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    p.z.xyz = mat3(p.precond) * p.residual.xyz;
+    particles[id].z.xyz = p.z.xyz;
+    squared_residuals[id] = dot(p.residual.xyz, p.z.xyz);
+}

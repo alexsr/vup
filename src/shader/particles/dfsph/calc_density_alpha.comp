@@ -1,0 +1,45 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+layout (std430, binding = 9) buffer boundary_buffer {
+    vec4 boundaries[];
+};
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    p.density = p.mass * demo_consts.kernel * cubic(demo_consts.h, 0.0);
+    vec4 density_grad_sum = vec4(0.0f);
+    float density_length_sum = 0.0f;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        Particle p_other = particles[j];
+        vec4 pij = p.pos - p_other.pos;
+        p.density += p_other.mass * demo_consts.kernel * cubic(demo_consts.h, pij);
+        vec4 density_grad = p_other.mass * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+        density_grad_sum += density_grad;
+        density_length_sum += dot(density_grad, density_grad);
+    }
+    for (int j = 0; j < B; j++) {
+        float boundary_psi = boundaries[j].w;
+        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        if (dot(pij, pij) < demo_consts.h2) {
+            p.density += boundary_psi * demo_consts.kernel * cubic(demo_consts.h, pij);
+            vec4 density_grad = boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+            density_grad_sum += density_grad;
+            density_length_sum += dot(density_grad, density_grad);
+        }
+    }
+    density_length_sum += dot(density_grad_sum, density_grad_sum);
+    density_length_sum = max(density_length_sum, demo_consts.eps);
+    particles[id].density = p.density;
+    particles[id].alpha = -1.0f / density_length_sum;
+}

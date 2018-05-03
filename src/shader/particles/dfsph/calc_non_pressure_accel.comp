@@ -1,0 +1,46 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "/../viscosity.inc.comp"
+
+#include "ssbos.inc.comp"
+
+layout (std430, binding = 7) buffer scalars {
+    float scalar_new[];
+};
+
+uniform float tension_const;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    float diam = 2.0f * demo_consts.r;
+    float diam2 = diam * diam;
+    vec4 visc_force = vec4(0.0f);
+    vec4 surface_tension_force = vec4(0.0f);
+    float density2 = p.density * p.density;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        Particle p_other = particles[j];
+        vec4 pij = p.pos - p_other.pos;
+        float r2 = dot(pij, pij);
+        if (r2 > diam2) {
+            surface_tension_force -= p_other.mass * pij * demo_consts.kernel * cubic(demo_consts.h, pij);
+        }
+        else {
+            surface_tension_force -= p_other.mass * pij * demo_consts.kernel * cubic(demo_consts.h, diam);
+        }
+    }
+    vec4 extern_accel = vec4(0.0f);
+    extern_accel.y = -9.81f;
+    p.accel += extern_accel + (surface_tension_force * tension_const * 0.0f) / p.mass;
+    particles[id].accel = p.accel;
+    vec4 new_vel = p.vel + p.accel * demo_consts.dt;
+    scalar_new[id] = dot(new_vel.xyz, new_vel.xyz);
+}

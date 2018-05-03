@@ -1,0 +1,57 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "../particle_util.inc.comp"
+
+#include "../ssbos.inc.comp"
+
+uniform float visc_const;
+
+layout (std430, binding = 7) buffer residuals_buffer {
+    float residuals_cpu[];
+};
+
+layout (std430, binding = 8) buffer rhs_buffer {
+    float rhs_cpu[];
+};
+
+layout (std430, binding = 9) buffer boundary_buffer {
+    vec4 boundaries[];
+};
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p = particles[id];
+    vec4 residual = vec4(0);
+    p.x = p.vel + p.vel_diff;
+    for (int i = 0; i < neighbor_counter[id]; i++) {
+        int j = neighbor[id * NEIGHBOR_AMOUNT + i];
+        Particle p_other = particles[j];
+        vec4 pij = p.pos - p_other.pos;
+        residual += 10.0f * (p.viscosity + p_other.viscosity) / 2.0f
+                    * p_other.mass / p_other.density
+                    * dot((p.x - p_other.vel - p_other.vel_diff).xyz, pij.xyz)
+                    * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij)
+                    / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+    }
+    for (int j = 0; j < B; j++) {
+        float boundary_psi = boundaries[j].w;
+        vec4 pij = vec4((p.pos - boundaries[j]).xyz, 0);
+        if (dot(pij, pij) < demo_consts.h2) {
+            residual += 10.0f * p.viscosity
+                    * boundary_psi / p.density
+                    * dot((p.x).xyz, pij.xyz)
+                    * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij)
+                    / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+        }
+    }
+    p.residual.xyz = p.vel.xyz - (p.x - demo_consts.dt / p.density * residual).xyz;
+    particles[id].residual = p.residual;
+    particles[id].x.xyz = p.x.xyz;
+    residuals_cpu[id] = dot(p.residual.xyz, p.residual.xyz);
+    rhs_cpu[id] = dot(p.vel.xyz, p.vel.xyz);
+}

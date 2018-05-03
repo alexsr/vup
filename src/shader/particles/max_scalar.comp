@@ -1,0 +1,29 @@
+#version 450
+
+uniform int max_index;
+uniform int max_blocks;
+layout (local_size_x = X) in;
+shared float shared_scalar[gl_WorkGroupSize.x];
+layout (std430, binding = 7) buffer scalars {
+    float scalar_new[];
+};
+void main() {
+    uint bid = gl_WorkGroupID.x;
+    uint tid = gl_LocalInvocationIndex;
+    uint id = gl_GlobalInvocationID.x;
+    shared_scalar[tid] = 0;
+    if (id < max_index) {
+        shared_scalar[tid] = scalar_new[id];
+    }
+	barrier();
+    for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {
+        if (tid < s) {
+            if (shared_scalar[tid] < shared_scalar[tid+s]) {
+                shared_scalar[tid] = shared_scalar[tid+s];
+            }
+	    }
+    }
+    if (tid == 0 && max_blocks > bid) {
+        scalar_new[bid] = shared_scalar[0];
+    }
+}

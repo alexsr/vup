@@ -8,83 +8,11 @@ layout (local_size_x = 128) in;
 
 uniform float dt;
 
-layout (std430, binding = 10) buffer bound_buffer {
-    vec4 bounds[36];
+layout (std140, binding = 0) uniform mvp {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 };
-
-vec3 calc_normal(vec4 o, vec4 a, vec4 b) {
-    vec3 v1 = vec3(a - o);
-    vec3 v2 = vec3(b - o);
-    vec3 n = cross(v1, v2);
-    return n/length(n);
-}
-
-float calc_wall_intersection(vec4 o, vec4 a, vec4 b, vec4 pos, float r) {
-    vec3 v1 = vec3(a - o);
-    vec3 v2 = vec3(b - o);
-    vec3 n = cross(v1, v2);
-    float d = dot(vec3(pos - o), n) / length(n);
-    float inside_a = dot(v1, vec3(pos-o)) / length(v1);
-    float inside_b = dot(v2, vec3(pos-o)) / length(v2);
-    if (inside_a < length(v1) && inside_b < length(v2)) {
-        return d-r;
-    }
-    return r;
-}
-
-vec3 reflect(vec3 d, vec3 n) {
-    if (dot(d, n) < 0) {
-        return d - 2.0f*dot(n, d)*n;
-    }
-    return d;
-}
-
-void collide_with_wall(float radius) {
-    bool collision = false;
-    uint id = gl_GlobalInvocationID.x;
-    float d = calc_wall_intersection(bounds[1], bounds[0], bounds[2], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[1], bounds[0], bounds[2]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-    d = calc_wall_intersection(bounds[7], bounds[6], bounds[8], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[7], bounds[6], bounds[8]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-    d = calc_wall_intersection(bounds[13], bounds[12], bounds[14], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[13], bounds[12], bounds[14]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-    d = calc_wall_intersection(bounds[19], bounds[18], bounds[20], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[19], bounds[18], bounds[20]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-    d = calc_wall_intersection(bounds[25], bounds[24], bounds[26], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[25], bounds[24], bounds[26]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-    d = calc_wall_intersection(bounds[31], bounds[30], bounds[32], p[id].pos, radius);
-    if (d < 0.0f) {
-        vec3 n = calc_normal(bounds[31], bounds[30], bounds[32]);
-        p[id].pos.xyz -= n * d;
-        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
-        collision = true;
-    }
-}
 
 void integrate_euler(float dt) {
     uint id = gl_GlobalInvocationID.x;
@@ -106,11 +34,37 @@ void integrate_euler(float dt) {
     p[id].temperature += p[id].temp_change * dt;
 }
 
+float p_in_box(vec4 pos, vec3 b) {
+    vec3 d = abs(pos.xyz) - b;
+    return -1.0f * (min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0)));
+}
+
+vec3 calc_box_normal(vec4 pos, vec3 b) {
+    vec4 eps = vec4(0.0005, 0.0, 0.0, 0.0);
+  	vec3 n = vec3(p_in_box(pos + eps, b) - p_in_box(pos - eps, b),
+                  p_in_box(pos + eps.yxyy, b) - p_in_box(pos - eps.yxyy, b),
+                  p_in_box(pos + eps.yyxy, b) - p_in_box(pos - eps.yyxy, b));
+  	return normalize(n);
+}
+vec3 reflect(vec3 d, vec3 n) {
+    if (dot(d, n) < 0) {
+        return d - 2.0f*dot(n, d)*n;
+    }
+    return d;
+}
 void main() {
     uint id = gl_GlobalInvocationID.x;
     if (id >= N) {
         return;
     }
     integrate_euler(dt);
-    collide_with_wall(demo_consts.r);
+    vec3 bounds = vec3(1, 1, 1) - demo_consts.r;
+    vec4 pos = p[id].pos;
+    float dist_p = p_in_box(pos, bounds);
+    if (dist_p < 0) {
+        vec3 n = calc_box_normal(pos, bounds);
+        p[id].pos.xyz -= dist_p * n;
+        p[id].vel.xyz = reflect(p[id].vel.xyz, n);
+    }
+
 }

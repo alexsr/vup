@@ -7,14 +7,14 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Shader/V_F_shader.h>
+#include <vup/Shader/Shader.h>
 #include <vup/GPU_Storage/Instanced_VAO.h>
 
 int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");
     vup::Trackball_camera cam(800, 600);
     vup::init_demo_OpenGL_params();
-    vup::boundary_renderer minimal("../../src/shader/rendering/mvp_instanced.vert",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_instanced.vert",
                             "../../src/shader/rendering/minimal_instanced.frag");
     unsigned int instances = 10;
     vup::Instanced_VBO offset(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f), 2);

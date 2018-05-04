@@ -7,7 +7,7 @@
 
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Shader/V_F_shader.h>
+#include <vup/Shader/Shader.h>
 #include <vup/Geometry/Mesh_loader.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
@@ -22,7 +22,7 @@ int main() {
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     vup::Compute_shader move_verts("../../src/shader/compute/randomly_move_verts.comp");
-    vup::boundary_renderer minimal("../../src/shader/rendering/mvp_ubo.vert",
+    vup::V_F_shader minimal("../../src/shader/rendering/mvp_ubo.vert",
                             "../../src/shader/rendering/normal_rendering.frag");
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));

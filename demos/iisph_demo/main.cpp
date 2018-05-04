@@ -8,8 +8,7 @@
 #include <vup/Core/demo_utils.h>
 #include <vup/Simulation/particle_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
-#include <vup/Shader/V_F_shader.h>
-#include <vup/Shader/V_G_F_shader.h>
+#include <vup/Shader/Shader.h>
 #include <vup/GPU_Storage/Instanced_VAO.h>
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>

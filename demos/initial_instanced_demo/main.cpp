@@ -8,7 +8,7 @@
 #include <vup/Core/demo_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
 #include <vup/Shader/Shader.h>
-#include <vup/GPU_Storage/Instanced_VAO.h>
+#include <vup/GPU_Storage/VAO.h>
 
 int main() {
     vup::Window window(800, 600, "Initial instanced rendering demo");

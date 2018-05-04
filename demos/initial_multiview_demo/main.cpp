@@ -9,9 +9,8 @@
 #include <vup/Rendering/Trackball_camera.h>
 #include <vup/Shader/Shader.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
-#include <vup/GPU_Storage/Instanced_VAO.h>
+#include <vup/GPU_Storage/VAO.h>
 #include <vup/Geometry/Mesh_loader.h>
-#include <vup/Geometry/Geometric_primitives.h>
 
 int main() {
     int width = 800;

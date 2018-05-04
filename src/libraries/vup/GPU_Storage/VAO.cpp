@@ -7,6 +7,18 @@
 
 #include "VAO.h"
 
+vup::Base_VAO::Base_VAO(const std::initializer_list<VBO>& vbos) {
+    glCreateVertexArrays(1, &m_name);
+    unsigned int i = 0;
+    for (auto&& v : vbos) {
+        set_attrib_buffer(v, i);
+        if (i == 0) {
+            m_count = v.get_buffer_size() / v.get_stride();
+        }
+        i++;
+    }
+}
+
 vup::Base_VAO::Base_VAO(const VBO& main_vbo,
                         const std::initializer_list<VBO>& vbos) {
     glCreateVertexArrays(1, &m_name);
@@ -32,7 +44,6 @@ vup::Base_VAO::Base_VAO(const Geometric_primitive& primitive,
         i++;
     }
 }
-
 
 vup::Base_VAO::Base_VAO(const Mesh& mesh,
                         const std::initializer_list<VBO>& vbos) {
@@ -89,13 +100,14 @@ vup::VBO vup::Base_VAO::get_vbo(const unsigned long i) const {
     return m_vbos.at(i);
 }
 
-vup::VAO::VAO(const VBO& main_vbo,
-              const std::initializer_list<VBO>& vbos)
+vup::VAO::VAO(const std::initializer_list<VBO>& vbos) : Base_VAO(vbos) {
+}
+
+vup::VAO::VAO(const VBO& main_vbo, const std::initializer_list<VBO>& vbos)
     : Base_VAO(main_vbo, vbos) {
 }
 
-vup::VAO::VAO(const Geometric_primitive& primitive,
-              const std::initializer_list<VBO>& vbos)
+vup::VAO::VAO(const Geometric_primitive& primitive, const std::initializer_list<VBO>& vbos)
     : Base_VAO(primitive, vbos) {
 }
 
@@ -112,10 +124,31 @@ void vup::VAO::render(const GLenum render_mode, const int offset, const unsigned
     glDrawArrays(render_mode, offset, count);
 }
 
+vup::Instanced_VAO::Instanced_VAO(const std::initializer_list<Instanced_VBO>& instanced_vbos)
+    : Base_VAO({}) {
+    unsigned int i = 0;
+    for (auto&& v : instanced_vbos) {
+        set_attrib_buffer(v, i);
+        set_divisor_qualifier(v, i);
+        i++;
+    }
+}
+
 vup::Instanced_VAO::Instanced_VAO(const VBO& main_vbo,
                                   const std::initializer_list<Instanced_VBO>& instanced_vbos)
     : Base_VAO(main_vbo, {}) {
     unsigned int i = 1;
+    for (auto&& v : instanced_vbos) {
+        set_attrib_buffer(v, i);
+        set_divisor_qualifier(v, i);
+        i++;
+    }
+}
+
+vup::Instanced_VAO::Instanced_VAO(const std::initializer_list<VBO>& vbos,
+                                  const std::initializer_list<Instanced_VBO>& instanced_vbos)
+    : Base_VAO(vbos) {
+    auto i = static_cast<unsigned int>(vbos.size());
     for (auto&& v : instanced_vbos) {
         set_attrib_buffer(v, i);
         set_divisor_qualifier(v, i);
@@ -185,6 +218,13 @@ void vup::Instanced_VAO::render(const GLenum render_mode, const int offset, cons
     glDrawArraysInstanced(render_mode, offset, count, instances);
 }
 
+vup::Element_VAO::Element_VAO(const Element_buffer& element_vbo,
+                              const std::initializer_list<VBO>& vbos)
+    : VAO(vbos) {
+    glVertexArrayElementBuffer(m_name, element_vbo.get_name());
+    m_count = element_vbo.get_count();
+}
+
 vup::Element_VAO::Element_VAO(const VBO& main_vbo,
                               const Element_buffer& element_vbo,
                               const std::initializer_list<VBO>& vbos)
@@ -216,10 +256,25 @@ void vup::Element_VAO::render(const GLenum render_mode, const int offset, const 
     glDrawElements(render_mode, count, GL_UNSIGNED_INT, &offset);
 }
 
+vup::Instanced_element_VAO::Instanced_element_VAO(const Element_buffer& element_vbo,
+                                                  const std::initializer_list<Instanced_VBO>& instanced_vbos) :
+    Instanced_VAO(instanced_vbos) {
+    glVertexArrayElementBuffer(m_name, element_vbo.get_name());
+    m_count = element_vbo.get_count();
+}
+
 vup::Instanced_element_VAO::Instanced_element_VAO(const VBO& main_vbo,
                                                   const Element_buffer& element_vbo,
                                                   const std::initializer_list<Instanced_VBO>& instanced_vbos)
     : Instanced_VAO(main_vbo, instanced_vbos) {
+    glVertexArrayElementBuffer(m_name, element_vbo.get_name());
+    m_count = element_vbo.get_count();
+}
+
+vup::Instanced_element_VAO::Instanced_element_VAO(const Element_buffer& element_vbo,
+                                                  const std::initializer_list<VBO>& vbos,
+                                                  const std::initializer_list<Instanced_VBO>& instanced_vbos)
+    : Instanced_VAO(vbos, instanced_vbos) {
     glVertexArrayElementBuffer(m_name, element_vbo.get_name());
     m_count = element_vbo.get_count();
 }

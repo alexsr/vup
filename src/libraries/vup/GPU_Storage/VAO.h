@@ -24,6 +24,7 @@ namespace vup
         void delete_vao() const;
         VBO get_vbo(unsigned long i) const;
     protected:
+        explicit Base_VAO(const std::initializer_list<VBO>& vbos = {});
         explicit Base_VAO(const VBO& main_vbo,
                           const std::initializer_list<VBO>& vbos = {});
         explicit Base_VAO(const Geometric_primitive& primitive,
@@ -39,6 +40,7 @@ namespace vup
 
     class VAO : public Base_VAO {
     public:
+        explicit VAO(const std::initializer_list<VBO>& vbos = {});
         explicit VAO(const VBO& main_vbo,
                      const std::initializer_list<VBO>& vbos = {});
         explicit VAO(const Geometric_primitive& primitive,
@@ -51,16 +53,19 @@ namespace vup
 
     class Instanced_VAO : public Base_VAO {
     public:
+        explicit Instanced_VAO(const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_VAO(const VBO& main_vbo,
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_VAO(const std::initializer_list<VBO>& vbos,
                                const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_VAO(const VBO& main_vbo,
                                const std::initializer_list<VBO>& vbos,
-                               const std::initializer_list<Instanced_VBO>& instanced_vbos);
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_VAO(const Geometric_primitive& primitive,
                                const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_VAO(const Geometric_primitive& primitive,
                                const std::initializer_list<VBO>& vbos,
-                               const std::initializer_list<Instanced_VBO>& instanced_vbos);
+                               const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_VAO(const Mesh& mesh,
                                const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         virtual void render(GLenum render_mode, unsigned int instances) const;
@@ -72,6 +77,8 @@ namespace vup
 
     class Element_VAO : public VAO {
     public:
+        explicit Element_VAO(const Element_buffer& element_vbo,
+                             const std::initializer_list<VBO>& vbos = {});
         explicit Element_VAO(const VBO& main_vbo, const Element_buffer& element_vbo,
                              const std::initializer_list<VBO>& vbos = {});
         explicit Element_VAO(const Geometric_primitive& primitive,
@@ -83,18 +90,23 @@ namespace vup
 
     class Instanced_element_VAO : public Instanced_VAO {
     public:
+
+        explicit Instanced_element_VAO(const Element_buffer& element_vbo,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_element_VAO(const VBO& main_vbo,
                                        const Element_buffer& element_vbo,
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
+        explicit Instanced_element_VAO(const Element_buffer& element_vbo, const std::initializer_list<VBO>& vbos = {},
                                        const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_element_VAO(const VBO& main_vbo,
                                        const Element_buffer& element_vbo,
                                        const std::initializer_list<VBO>& vbos,
-                                       const std::initializer_list<Instanced_VBO>& instanced_vbos);
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_element_VAO(const Geometric_primitive& primitive,
                                        const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         explicit Instanced_element_VAO(const Geometric_primitive& primitive,
                                        const std::initializer_list<VBO>& vbos,
-                                       const std::initializer_list<Instanced_VBO>& instanced_vbos);
+                                       const std::initializer_list<Instanced_VBO>& instanced_vbos = {});
         void render(GLenum render_mode, unsigned int instances) const override;
         void render(GLenum render_mode, int offset, unsigned int count,
                     unsigned int instances) const override;

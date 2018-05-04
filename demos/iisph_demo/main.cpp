@@ -12,7 +12,7 @@
 #include <vup/GPU_Storage/VAO.h>
 #include <vup/Utility/OpenGL_debug_logger.h>
 #include <vup/Shader/Compute_pipeline.h>
-#include <vup/Simulation/Acceleration_structure.h>
+#include <vup/Simulation/acceleration_structures.h>
 #include <vup/Core/Gui_window.h>
 
 int main() {

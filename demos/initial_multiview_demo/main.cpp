@@ -40,11 +40,11 @@ int main() {
         unsigned int viewcount_y = instances / viewcount_x;
         float right = viewcount_x / 2.0f;
         float top = viewcount_y / 2.0f;
-        for (int x = 0; x < viewcount_x; x++) {
-            for (int y = 0; y < viewcount_y; y++) {
+        for (unsigned int x = 0; x < viewcount_x; x++) {
+            for (unsigned int y = 0; y < viewcount_y; y++) {
                 unsigned long i = x * viewcount_y + y;
-                float px_step_x = width / viewcount_x;
-                float px_step_y = height / viewcount_y;
+                float px_step_x = static_cast<float>(width) / viewcount_x;
+                float px_step_y = static_cast<float>(height) / viewcount_y;
                 glm::vec3 obj_pos(x + 0.5 - right, -y + top - 0.5, 0);
                 glm::mat4 model(1.0f);
                 glm::mat4 view = glm::lookAt(obj_pos + glm::vec3(0, 0, 1),

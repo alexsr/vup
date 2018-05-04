@@ -33,20 +33,20 @@ int main() {
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float smoothing_length = 0.1;
+    float smoothing_length = 0.1f;
     float mass_scaling = 2.0f / 3.0f;
     float h = smoothing_length * mass_scaling;
 
     vup::Simulation_timer sim_timer;
     sim_timer.time_scaling = 1.0;
-    sim_timer.dt = 0.0001;
+    sim_timer.dt = 0.0001f;
     float density_rest = 1000.0f; // density at 4C
     float visc_const = 500000.0;
     float tension_const = 0.0f;
     float temperature = 0.0f;
     float max_error = 0.1f;
     float cg_max_error = 0.01f;
-    float density_eta = density_rest * max_error * 0.01;
+    float density_eta = density_rest * max_error * 0.01f;
     float div_eta = density_eta * 1.0f / sim_timer.dt;
     int max_iterations = 100;
     float heat_source_temp = 100.0f;
@@ -145,7 +145,7 @@ int main() {
                                       {{"X", "512"}, {"BUFFER_ID", "7"}, {"N", std::to_string(instances)}});
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
-    const auto reduce_instances = instances / 2.0f;
+    const auto reduce_instances = static_cast<unsigned int>(instances / 2.0f);
     const auto max_blocks = static_cast<int>(glm::ceil(reduce_instances / reduce_scalar.get_workgroup_size_x()));
     reduce_scalar.update_uniform("max_index", instances);
     reduce_scalar.update_uniform("max_blocks", max_blocks);
@@ -230,7 +230,7 @@ int main() {
         if (!pause_sim) {
             //while (sim_timer.is_iteration_due()) {
             reset_grid.run_with_barrier(grid_params.total_cell_count);
-            calc_boundary_psi.run_with_barrier(boundary_data.size());
+            calc_boundary_psi.run_with_barrier(static_cast<unsigned int>(boundary_data.size()));
             calc_density_alpha.run_with_barrier(instances);
 
             // divergence error correction
@@ -330,7 +330,7 @@ int main() {
                     max_vel = v;
                 }
             }
-            sim_timer.update_dt_cfl(0.4, demo_consts.h, glm::sqrt(max_vel));
+            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
             update_demo_consts();
             update_velocities.run_with_barrier(instances);
             // density error correction

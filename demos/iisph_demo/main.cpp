@@ -34,14 +34,14 @@ int main() {
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float smoothing_length = 0.1;
+    float smoothing_length = 0.1f;
     float mass_scaling = 2.0f / 3.0f;
     float h = smoothing_length * mass_scaling;
 
     float density_avg = 0.0f;
     float density_rest = 1000.0f;
     float eta = 1.0f;
-    vup::IISPH_demo_constants demo_consts(smoothing_length, mass_scaling);
+    vup::IISPH_demo_constants demo_consts(smoothing_length, mass_scaling, delta);
     auto particle_data = vup::create_uniform_IISPH_particles(demo_consts.r, h, -0.6f, 1.0f,
                                                              density_rest);
     const vup::Sphere sphere(demo_consts.r);
@@ -113,7 +113,7 @@ int main() {
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         if (ImGui::SliderFloat("Smoothing length", &smoothing_length, 0.0f, 1.0f)) {
-            demo_consts = vup::IISPH_demo_constants(smoothing_length, mass_scaling);
+            demo_consts = vup::IISPH_demo_constants(smoothing_length, mass_scaling, dt);
             demo_consts_buffer.update_data(demo_consts);
         }
         if (ImGui::SliderFloat("Viscosity", &visc_const, 0.0f, 1.0f)) {
@@ -148,7 +148,7 @@ int main() {
         }
         ImGui::End();
         if (!pause_sim) {
-            rotate_box.run(bounds_cube.vertices.size());
+            rotate_box.run(static_cast<unsigned int>(bounds_cube.vertices.size()));
             reset_grid.run_with_barrier(grid_params.total_cell_count);
             init_iteration.run_with_barrier(instances);
             density_avg = 0;

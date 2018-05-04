@@ -32,7 +32,6 @@ int main() {
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
     vup::UBO mvp_ubo(mats, 8);
     mvp_ubo.update_data(mats);
-    bool allow_reset;
     const float delta = 0.001f;
     auto max_blocks = static_cast<int>(glm::ceil(bunny.get_count() / calc_box1024.get_workgroup_size_x()));
     calc_box1024.update_uniform("max_index", bunny.get_count());

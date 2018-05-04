@@ -34,7 +34,7 @@ namespace vup
         const float cell_count_y = glm::ceil(grid_size_y / cell_size_y);
         const float cell_count_z = glm::ceil(grid_size_z / cell_size_z);
         cell_count = glm::ivec4(cell_count_x, cell_count_y, cell_count_z, 0);
-        total_cell_count = cell_count_x * cell_count_y * cell_count_z;
+        total_cell_count = static_cast<int>(cell_count_x * cell_count_y * cell_count_z);
         grid_capacity = total_cell_count * cell_capacity;
         cell_size = glm::vec4(cell_size_x, cell_size_y, cell_size_z, 0);
         const auto half_size = glm::vec4(cell_size_x * cell_count_x, cell_size_y * cell_count_y,

@@ -185,7 +185,7 @@ void vup::Buffer::initialize_storage(const T& data) {
 
 template <typename T>
 void vup::Buffer::initialize_storage(const std::vector<T>& data) {
-    m_buffer_size = sizeof(T) * data.size();
+    m_buffer_size = static_cast<unsigned int>(sizeof(T) * data.size());
     glNamedBufferStorage(m_name, m_buffer_size, data.data(), to_gl(m_storage_flags));
     m_storage_initialized = true;
 }

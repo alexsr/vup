@@ -18,19 +18,20 @@ namespace vup
     };
 
     inline std::vector<Boundary_particle> create_boundary_box(glm::vec3 size, glm::vec4 box_mid,
-                                                      float radius) {
+                                                              float radius) {
         size += glm::vec3(2 * radius);
         glm::vec4 box_min = box_mid - glm::vec4(size / 2.0f, 0.0f);
         glm::vec3 sampling = glm::ceil(size / (2.0f * radius));
         glm::vec3 sampling_dist = size / sampling;
-        int res_size = 2 * (sampling.x - 1) * (sampling.y - 1) + (sampling.z + 1) * 2 * (sampling.x + 2 + sampling.y);
+        const auto res_size = static_cast<int>(2 * (sampling.x - 1) * (sampling.y - 1) + (sampling.z + 1) * 2 * (
+                                                  sampling.x + 2 + sampling.y));
         std::vector<Boundary_particle> res(res_size);
         unsigned long long id = 0;
         for (unsigned long long i = 1; i < sampling.x; i++) {
             for (unsigned long long j = 1; j < sampling.y; j++) {
                 res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y, 0, 0);
                 res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, j * sampling_dist.y,
-                                                   sampling.z * sampling_dist.z, 0);
+                                                       sampling.z * sampling_dist.z, 0);
             }
         }
 
@@ -38,12 +39,12 @@ namespace vup
             for (unsigned long long i = 0; i <= sampling.x; i++) {
                 res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, 0, k * sampling_dist.z, 0);
                 res.at(id++).pos = box_min + glm::vec4(i * sampling_dist.x, sampling.y * sampling_dist.y,
-                                                   k * sampling_dist.z, 0);
+                                                       k * sampling_dist.z, 0);
             }
             for (unsigned long long j = 0; j <= sampling.y; j++) {
                 res.at(id++).pos = box_min + glm::vec4(0, j * sampling_dist.y, k * sampling_dist.z, 0);
                 res.at(id++).pos = box_min + glm::vec4(sampling.x * sampling_dist.x, j * sampling_dist.y,
-                                                   k * sampling_dist.z, 0);
+                                                       k * sampling_dist.z, 0);
             }
         }
         return res;
@@ -56,7 +57,7 @@ namespace vup
             inv_dt = 1.0f / dt;
             dt2 = dt * dt;
             h2 = h * h;
-            eps = 0.0000001;
+            eps = 0.0000001f;
             r = 1.0f / glm::pow(4.0f / 3.0f * glm::pi<float>(), 1.0f / 3.0f) * h * mass_scaling;
         }
 

@@ -19,10 +19,10 @@ namespace vup
                                   const filesystem::path& main_dir_path = "",
                                   gl::introspection introspection_flag = gl::introspection::basic);
         void reload();
-        void run(float x = 1, float y = 1, float z = 1) const;
-        void run_with_barrier(float x = 1, float y = 1, float z = 1,
+        void run(unsigned int x = 1, unsigned int y = 1, unsigned int z = 1) const;
+        void run_with_barrier(unsigned int x = 1, unsigned int y = 1, unsigned int z = 1,
                               GLbitfield barriers = GL_SHADER_STORAGE_BARRIER_BIT) const;
-        void run_workgroups(GLuint x = 1, GLuint y = 1, GLuint z = 1) const;
+        void run_workgroups(unsigned int x = 1, unsigned int y = 1, unsigned int z = 1) const;
         template <typename T>
         void update_uniform(const std::string& name, T v) const;
         template <typename T>

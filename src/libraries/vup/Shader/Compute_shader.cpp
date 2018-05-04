@@ -26,23 +26,23 @@ void vup::Compute_shader::reload() {
     glGetProgramiv(m_program_id, GL_COMPUTE_WORK_GROUP_SIZE, m_workgroup_size.data());
 }
 
-void vup::Compute_shader::run(const float x, const float y, const float z) const {
+void vup::Compute_shader::run(const unsigned int x, const unsigned int y, const unsigned int z) const {
     use();
-    glDispatchCompute(static_cast<GLuint>(glm::ceil(x / m_workgroup_size.at(0))),
-                      static_cast<GLuint>(glm::ceil(y / m_workgroup_size.at(1))),
-                      static_cast<GLuint>(glm::ceil(z / m_workgroup_size.at(2))));
+    glDispatchCompute(static_cast<GLuint>(glm::ceil(static_cast<float>(x) / m_workgroup_size.at(0))),
+                      static_cast<GLuint>(glm::ceil(static_cast<float>(y) / m_workgroup_size.at(1))),
+                      static_cast<GLuint>(glm::ceil(static_cast<float>(z) / m_workgroup_size.at(2))));
 }
 
-void vup::Compute_shader::run_with_barrier(const float x, const float y, const float z,
+void vup::Compute_shader::run_with_barrier(const unsigned int x, const unsigned int y, const unsigned int z,
                                            const GLbitfield barriers) const {
     use();
-    glDispatchCompute(static_cast<GLuint>(glm::ceil(x / m_workgroup_size.at(0))),
-                      static_cast<GLuint>(glm::ceil(y / m_workgroup_size.at(1))),
-                      static_cast<GLuint>(glm::ceil(z / m_workgroup_size.at(2))));
+    glDispatchCompute(static_cast<GLuint>(glm::ceil(static_cast<float>(x) / m_workgroup_size.at(0))),
+                      static_cast<GLuint>(glm::ceil(static_cast<float>(y) / m_workgroup_size.at(1))),
+                      static_cast<GLuint>(glm::ceil(static_cast<float>(z) / m_workgroup_size.at(2))));
     glMemoryBarrier(barriers);
 }
 
-void vup::Compute_shader::run_workgroups(const GLuint x, const GLuint y, const GLuint z) const {
+void vup::Compute_shader::run_workgroups(const unsigned int x, const unsigned int y, const unsigned int z) const {
     use();
     glDispatchCompute(x, y, z);
 }

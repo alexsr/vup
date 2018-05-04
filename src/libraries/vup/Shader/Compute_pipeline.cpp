@@ -22,20 +22,20 @@ void vup::Compute_pipeline::reload() {
     }
 }
 
-void vup::Compute_pipeline::run(const float x, const float y, const float z) const {
+void vup::Compute_pipeline::run(const unsigned int x, const unsigned int y, const unsigned int z) const {
     for (const auto& c : m_compute_shaders) {
         c.run(x, y, z);
     }
 }
 
-void vup::Compute_pipeline::run_with_barrier(const float x, const float y, const float z,
+void vup::Compute_pipeline::run_with_barrier(const unsigned x, const unsigned y, const unsigned z,
                                              const GLbitfield barriers) const {
     for (const auto& c : m_compute_shaders) {
         c.run_with_barrier(x, y, z, barriers);
     }
 }
 
-void vup::Compute_pipeline::run_workgroups(const GLuint x, const GLuint y, const GLuint z) const {
+void vup::Compute_pipeline::run_workgroups(const unsigned x, const unsigned y, const unsigned z) const {
     for (const auto& c : m_compute_shaders) {
         c.run_workgroups(x, y, z);
     }

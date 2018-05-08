@@ -17,7 +17,7 @@ GLuint vup::Shader::load_shader(const filesystem::path& path, const GLenum type)
     std::cout << "Loading shader from file: " << path.string() << "\n";
     auto f_source = load_file_str(path);
     const auto version_start = f_source.find("#version", 0);
-    auto start = f_source.find('\n', version_start) + 1;
+    const auto start = f_source.find('\n', version_start) + 1;
     std::string define_string;
     for (auto& d : m_defines) {
         define_string += "#define " + d.name + " " + d.value + "\n";

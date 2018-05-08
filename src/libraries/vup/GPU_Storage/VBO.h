@@ -35,6 +35,22 @@ namespace vup
         int m_stride;
     };
 
+    template <typename T>
+    VBO::VBO(const T& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
+        : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
+          m_format(format) {
+        m_format_size = determine_format_size(format);
+        m_stride = m_format_size * m_vertex_size;
+    }
+
+    template <typename T>
+    VBO::VBO(const std::vector<T>& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
+        : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
+          m_format(format) {
+        m_format_size = determine_format_size(format);
+        m_stride = m_format_size * m_vertex_size;
+    }
+
     class Instanced_VBO : public VBO {
     public:
         explicit Instanced_VBO(GLint vertex_size = 4, GLuint divisor = 1, GLenum type = GL_FLOAT,
@@ -47,29 +63,12 @@ namespace vup
     private:
         GLuint m_divisor;
     };
-}
 
-template <typename T>
-vup::VBO::VBO(const T& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
-    : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
-      m_format(format) {
-    m_format_size = determine_format_size(format);
-    m_stride = m_format_size * m_vertex_size;
-}
-
-template <typename T>
-vup::VBO::VBO(const std::vector<T>& data, const GLint vertex_size, const GLenum format, const gl::storage flags)
-    : Buffer(GL_ARRAY_BUFFER, data, flags), m_vertex_size(vertex_size),
-      m_format(format) {
-    m_format_size = determine_format_size(format);
-    m_stride = m_format_size * m_vertex_size;
-}
-
-template <typename T>
-vup::Instanced_VBO::Instanced_VBO(const std::vector<T>& data, const GLint vertex_size,
-    const GLuint divisor, const GLenum type, const gl::storage flags)
-    : VBO(data, vertex_size, type, flags), m_divisor(divisor) {
-
+    template <typename T>
+    Instanced_VBO::Instanced_VBO(const std::vector<T>& data, const GLint vertex_size,
+                                 const GLuint divisor, const GLenum type, const gl::storage flags)
+        : VBO(data, vertex_size, type, flags), m_divisor(divisor) {
+    }
 }
 
 #endif //VUP_VBO_H

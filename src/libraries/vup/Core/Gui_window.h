@@ -21,7 +21,7 @@ namespace vup
      */
     class Gui_window : public Window {
     public:
-        Gui_window(int width, int height, const std::string& title, bool debug = false,
+        Gui_window(unsigned int width, unsigned int height, const std::string& title, bool debug = false,
                    int swap_interval = 0, bool install_callback = true, int gl_major = 4, int gl_minor = 5,
                    GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         void run_loop_fixed(float dt, const std::function<void(float)>& loop) const override;

@@ -10,7 +10,7 @@
 // The static variable next_id has to be initialized.
 int vup::Window::next_id = 0;
 
-vup::Window::Window(const int width, const int height, const std::string& title, const bool debug,
+vup::Window::Window(const unsigned int width, const unsigned int height, const std::string& title, const bool debug,
                     const int swap_interval, const int gl_major, const int gl_minor,
                     GLFWmonitor* monitor, GLFWwindow* share)
     : m_id(next_id++), m_width(width), m_height(height) {

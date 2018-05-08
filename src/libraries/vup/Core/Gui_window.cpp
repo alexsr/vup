@@ -7,7 +7,7 @@
 
 #include "Gui_window.h"
 
-vup::Gui_window::Gui_window(const int width, const int height, const std::string& title, const bool debug,
+vup::Gui_window::Gui_window(const unsigned int width, const unsigned int height, const std::string& title, const bool debug,
                             const int swap_interval, const bool install_callback,
                             const int gl_major, const int gl_minor,
                             GLFWmonitor* monitor, GLFWwindow* share)

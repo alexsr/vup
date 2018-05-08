@@ -35,7 +35,7 @@ namespace vup
     class Window {
     public:
         virtual ~Window() = default;
-        Window(int width, int height, const std::string& title, bool debug = false,
+        Window(unsigned int width, unsigned int height, const std::string& title, bool debug = false,
                int swap_interval = 0, int gl_major = 4, int gl_minor = 5,
                GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         // Set the OpenGL context of this window to current.

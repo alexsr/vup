@@ -3,7 +3,7 @@ struct Fixed_uniform_grid_params {
     ivec4 cell_count;
     vec4 cell_size;
     vec4 grid_pos;
-    int cell_capacity;
     int total_cell_count;
+    int cell_capacity;
     int grid_capacity;
 };

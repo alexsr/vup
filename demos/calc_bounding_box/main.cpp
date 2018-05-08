@@ -42,7 +42,7 @@ int main() {
     calc_box64.update_uniform("max_blocks", max_last_blocks);
     std::vector<vup::vox::Bounds> intermediate_bounds(static_cast<unsigned long>(max_blocks));
     vup::SSBO bounds_ssbo(intermediate_bounds, 4, vup::gl::storage::read);
-    bunny.get_vbo(0).bind_base(5);
+    bunny.get_vbo(0)->bind_base(5);
     calc_box1024.run(bunny.get_count());
     calc_box64.run(max_blocks);
     intermediate_bounds.resize(static_cast<unsigned long>(max_last_blocks));
@@ -52,7 +52,7 @@ int main() {
                      (bounds.min.z + bounds.max.z) / 2.0f);
     transform_vertices.update_uniform("model", glm::translate(glm::mat4(1.0f), -center));
     transform_vertices.run(bunny.get_count());
-    vup::VBO bounds_vbo(bounds);
+    auto bounds_vbo = std::make_shared<vup::VBO>(bounds);
     vup::VAO bounds_vao(bounds_vbo);
     vup::V_G_F_shader bounds_renderer("../../src/shader/bounding_box/mvp_ubo_aabb.vert",
                                       "../../src/shader/bounding_box/aabb.geom",
@@ -72,7 +72,7 @@ int main() {
         calc_box64.run(max_blocks);
         bounds_ssbo.get_data(intermediate_bounds);
         elapsed += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start);
-        bounds_vbo.update_data(vup::vox::reduce_bounds(intermediate_bounds));
+        bounds_vbo->update_data(vup::vox::reduce_bounds(intermediate_bounds));
         minimal.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         vao.render(GL_TRIANGLES);

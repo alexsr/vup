@@ -27,7 +27,7 @@ int main() {
     vup::Mesh_loader bunny_loader("../../resources/meshes/bunny.obj");
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::VAO vao(bunny);
-    bunny.get_vbo(0).bind_base(0);
+    bunny.get_vbo(0)->bind_base(0);
     vup::SSBO random_pos(vup::generate_random_float_data(bunny.get_count() * 4, 0, 1.0f), 4);
     glm::mat4 model(1.0f);
     vup::MVP mats{model, cam.get_view(), cam.get_projection()};

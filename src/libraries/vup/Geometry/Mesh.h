@@ -9,7 +9,8 @@
 #define VUP_MESH_H
 
 #include <vup/GPU_Storage/VBO.h>
-#include <vup/GPU_Storage/Element_buffer.h>
+#include <vup/GPU_Storage/Buffer.h>
+#include <memory>
 
 namespace vup
 {
@@ -27,13 +28,13 @@ namespace vup
     class Mesh {
     public:
         explicit Mesh(const Mesh_data& m);
-        const std::vector<VBO>& get_vbos() const;
-        VBO get_vbo(unsigned int i);
-        Element_buffer get_index_buffer();
+        std::shared_ptr<VBO> get_vbo(unsigned int i) const;
+        std::shared_ptr<Element_buffer> get_index_buffer() const;
         unsigned int get_count() const;
+        unsigned int get_vbo_count() const;
     private:
-        std::vector<VBO> m_vbos;
-        Element_buffer m_index_buffer;
+        std::vector<std::shared_ptr<VBO>> m_vbos;
+        std::shared_ptr<Element_buffer> m_index_buffer;
         unsigned int m_count;
         unsigned int m_faces_count;
     };

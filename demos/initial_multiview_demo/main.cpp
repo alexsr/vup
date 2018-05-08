@@ -26,7 +26,7 @@ int main() {
     vup::Mesh bunny(bunny_loader.get_mesh_data(0));
     vup::Cube c(1.0f);
     auto color_vec = vup::generate_random_float_data(instances * 4, 0, 1);
-    vup::Instanced_VBO color(color_vec);
+    auto color = std::make_shared<vup::Instanced_VBO>(color_vec);
     vup::Instanced_VAO vao(bunny, {color});
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE,

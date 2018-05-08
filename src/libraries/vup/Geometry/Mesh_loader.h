@@ -24,7 +24,7 @@ namespace vup
     class Mesh_loader {
     public:
         explicit Mesh_loader(const filesystem::path& path);
-        const std::vector<Mesh_data>& get_data_of_meshes();
+        const std::vector<Mesh_data>& get_data_of_meshes() const;
         Mesh_data get_mesh_data(unsigned long i);
     private:
         // Creates Mesh_data from an aiMesh, while possibly omitting undefined data.

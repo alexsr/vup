@@ -19,9 +19,9 @@ int main() {
     resize_callback(nullptr, 800, 600);
     window.set_resize(resize_callback);
     vup::Cube q(1.0f);
-    vup::VBO vertices(q.vertices);
-    vup::VBO normals(q.normals, 3);
-    vup::VBO uv_coords(q.uv_coords, 2);
+    const auto vertices = std::make_shared<vup::VBO>(q.vertices);
+    const auto normals = std::make_shared<vup::VBO>(q.normals, 3);
+    const auto uv_coords = std::make_shared<vup::VBO>(q.uv_coords, 2);
     vup::VAO vao(vertices, {normals, uv_coords});
     while (!window.should_close()) {
         vup::gl::clear_buffers();

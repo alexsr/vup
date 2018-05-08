@@ -18,6 +18,7 @@ namespace vup
 {
     class Buffer {
     public:
+        virtual ~Buffer();
         template <typename T>
         void update_data(const T& data);
         template <typename T>
@@ -57,6 +58,17 @@ namespace vup
         bool m_readable = false;
         bool m_storage_initialized = false;
         unsigned int m_buffer_size = 0;
+    };
+
+    class Element_buffer : public Buffer {
+    public:
+        explicit Element_buffer(gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        explicit Element_buffer(const std::vector<unsigned int>& indices,
+                                gl::storage flags = gl::storage::dynamic | gl::storage::write);
+        void set_data(const std::vector<unsigned int>& data);
+        unsigned long get_count() const;
+    private:
+        unsigned long m_count;
     };
 }
 

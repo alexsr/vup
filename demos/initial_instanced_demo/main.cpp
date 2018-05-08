@@ -17,8 +17,8 @@ int main() {
     vup::V_F_shader minimal("../../src/shader/rendering/mvp_instanced.vert",
                             "../../src/shader/rendering/minimal_instanced.frag");
     unsigned int instances = 10;
-    vup::Instanced_VBO offset(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f), 2);
-    vup::Instanced_VBO color(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f), 3);
+    auto offset = std::make_shared<vup::Instanced_VBO>(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f), 2);
+    auto color = std::make_shared<vup::Instanced_VBO>(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f), 3);
     vup::Instanced_VAO vao(vup::Cube(1.0f), {offset, color});
     bool allow_reset = true;
     minimal.update_uniform("model", glm::mat4(1.0f));
@@ -30,8 +30,8 @@ int main() {
         minimal.update_uniform("proj", cam.get_projection());
         vao.render(GL_TRIANGLES, instances);
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_PRESS && allow_reset) {
-            offset.update_data(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f));
-            color.update_data(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f));
+            offset->update_data(vup::generate_random_float_data(instances * 2, -1.0f, 1.0f));
+            color->update_data(vup::generate_random_float_data(instances * 3, 0.0f, 1.0f));
             allow_reset = false;
         }
         if (glfwGetKey(window.get(), GLFW_KEY_X) == GLFW_RELEASE) {

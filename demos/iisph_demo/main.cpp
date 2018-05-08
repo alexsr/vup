@@ -103,7 +103,7 @@ int main() {
     new_densities.resize(max_blocks);
 
     vup::Compute_shader rotate_box("../../src/shader/compute/rotate_box.comp");
-    bounds_vao.get_vbo(0).bind_base(10);
+    bounds_vao.get_vbo(0)->bind_base(10);
     bb_model = rotate(bb_model, delta * 0.1f, glm::vec3(0.3, 0.3f, 0.3f));
     rotate_box.update_uniform("model", bb_model);
 
@@ -138,7 +138,7 @@ int main() {
             reset_grid.reload();
             init_iteration.reload();
             pressure_solver.reload();
-            bounds_vao.get_vbo(0).bind_base(10);
+            bounds_vao.get_vbo(0)->bind_base(10);
             rotate_box.update_uniform("model", bb_model);
             integrate.update_uniform("dt", dt);
             pressure_solver.update_uniform("dt", dt);

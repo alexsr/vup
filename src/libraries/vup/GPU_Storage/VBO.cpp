@@ -48,3 +48,12 @@ constexpr int vup::VBO::determine_format_size(const GLenum format) {
             return sizeof(float);
     }
 }
+
+vup::Instanced_VBO::Instanced_VBO(const GLint vertex_size, const GLuint divisor, const GLenum type, const gl::storage flags)
+    : VBO(vertex_size, type, flags), m_divisor(divisor) {
+
+}
+
+GLuint vup::Instanced_VBO::get_divisor() const {
+    return m_divisor;
+}

@@ -20,17 +20,17 @@ vup::Mesh_loader::Mesh_loader(const filesystem::path& path) {
     if ((scene == nullptr) || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mNumMeshes <= 0) {
         throw std::runtime_error{"Mesh file not working. Path: " + path.string() + "\n" + imp.GetErrorString()};
     }
-    for (int i = 0; i < scene->mNumMeshes; i++) {
+    for (auto i = 0; i < scene->mNumMeshes; i++) {
         add_mesh(scene->mMeshes[i]);
 
     }
 }
 
-const std::vector<vup::Mesh_data>& vup::Mesh_loader::get_data_of_meshes() {
+const std::vector<vup::Mesh_data>& vup::Mesh_loader::get_data_of_meshes() const {
     return m_data_of_meshes;
 }
 
-vup::Mesh_data vup::Mesh_loader::get_mesh_data(unsigned long i) {
+vup::Mesh_data vup::Mesh_loader::get_mesh_data(const unsigned long i) {
     return m_data_of_meshes.at(i);
 }
 
@@ -77,7 +77,7 @@ void vup::Mesh_loader::add_mesh(const aiMesh* m) {
     mesh.indices.resize(mesh.faces_count * 3);
 #pragma omp parallel for
     for (unsigned int i = 0; i < mesh.faces_count; i++) {
-        aiFace face = m->mFaces[i];
+        const auto face = m->mFaces[i];
 #pragma omp parallel for
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
             mesh.indices.at(i * face.mNumIndices + j) = face.mIndices[j];

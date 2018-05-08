@@ -13,8 +13,8 @@
 #include <vup/Utility/OpenGL_debug_logger.h>
 
 int main() {
-    const int width = 800;
-    const int height = 600;
+    const auto width = 800;
+    const auto height = 600;
     vup::Window window(width, height, "Initial instanced rendering demo", true);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
@@ -26,7 +26,7 @@ int main() {
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    vup::UBO mvp(mats, 8);
+    vup::UBO mvp(mats, 0);
 
     const auto loop = [&](float dt) {
         minimal.use();

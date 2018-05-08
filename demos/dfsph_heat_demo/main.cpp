@@ -26,16 +26,15 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
+    const vup::Cube bounds_cube(2.0f, 2.0f, 2.0f);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
                                  "../../src/shader/rendering/minimal.frag");
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float smoothing_length = 0.1f;
+    float h = 0.1f;
     float mass_scaling = 2.0f / 3.0f;
-    float h = smoothing_length * mass_scaling;
 
     vup::Simulation_timer sim_timer;
     sim_timer.time_scaling = 1.0;
@@ -49,16 +48,22 @@ int main() {
     float density_eta = density_rest * max_error * 0.01f;
     float div_eta = density_eta * 1.0f / sim_timer.dt;
     int max_iterations = 100;
+    float heat_const = 0.591f / 4181.3f;
+    float latent_heat_max = 100.0f;
     float heat_source_temp = 100.0f;
-    vup::DFSPH_heat_demo_constants demo_consts(smoothing_length, mass_scaling, sim_timer.dt);
-    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, -0.5f, 0.5f,
-                                                          density_rest, visc_const, temperature, 100.0f);
-    auto instances = static_cast<int>(particle_data.size());
+    vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
+    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -0.5f, 0.5f, mass_scaling, density_rest, visc_const,
+                                              temperature, heat_const, latent_heat_max);
+    vup::UBO particle_settings_ubo(particle_settings, 1);
+    //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
+    //                                                          density_rest, visc_const, temperature, 100.0f);
+    auto instances = static_cast<int>(particle_settings.res * particle_settings.res * particle_settings.res);
     const vup::Sphere sphere(demo_consts.r);
     vup::Instanced_VAO particle_spheres(sphere);
-    vup::SSBO particles(particle_data, 0, vup::gl::storage::dynamic | vup::gl::storage::read | vup::gl::storage::write);
+    vup::Empty_SSBO particles(instances * sizeof(vup::DFSPH_heat_particle), 0,
+                              vup::gl::storage::dynamic | vup::gl::storage::read | vup::gl::storage::write);
     vup::SSBO demo_consts_buffer(demo_consts, 1);
-    int neighbor_amount = 40;
+    const int neighbor_amount = 40;
     vup::Empty_SSBO neighbors_ssbo(neighbor_amount * instances * sizeof(int), 2);
     vup::Empty_SSBO neighbor_count_ssbo(instances * sizeof(int), 3);
 
@@ -88,6 +93,8 @@ int main() {
 
     vup::V_F_shader boundary_renderer("../../src/shader/particles/dfsph/instanced_boundary.vert",
                                       "../../src/shader/particles/particles.frag", sph_defines);
+
+    vup::Compute_shader gen_particles("../../src/shader/particles/dfsph/generate_particles.comp", sph_defines);
 
     vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp", sph_defines);
     vup::Compute_shader calc_boundary_psi("../../src/shader/particles/dfsph/calc_boundary_psi.comp", sph_defines);
@@ -158,24 +165,32 @@ int main() {
     initiate_viscosity_solver.update_uniform("visc_const", visc_const);
     compute_Ap.update_uniform("visc_const", visc_const);
 
-    reset_grid.run_with_barrier(grid_params.total_cell_count);
-    calc_density_alpha.run_with_barrier(instances);
+    gen_particles.run_with_barrier(instances);
 
     const auto update_demo_consts = [&]() {
-        demo_consts = vup::DFSPH_heat_demo_constants(smoothing_length, mass_scaling, sim_timer.dt);
+        demo_consts = vup::DFSPH_heat_demo_constants(h, mass_scaling, sim_timer.dt);
         demo_consts_buffer.update_data(demo_consts);
     };
 
     const auto reload_shaders = [&]() {
         particle_renderer.reload();
         box_renderer.reload();
+        gen_particles.reload();
+        reset_grid.reload();
+        calc_boundary_psi.reload();
         calc_density_alpha.reload();
+        correct_divergence_error.reload();
+        initiate_viscosity_solver.reload();
+        initial_precond_solve.reload();
+        calc_residual_squared.reload();
+        compute_Ap.reload();
+        update_solution.reload();
+        precond_solve.reload();
+        update_search_dir.reload();
         compute_accel.reload();
-        compute_accel.reload();
+        update_velocities.reload();
         correct_density_error.reload();
         update_positions.reload();
-        correct_divergence_error.reload();
-        reset_grid.reload();
         reduce_scalar.reload();
         max_scalar.reload();
     };
@@ -195,7 +210,7 @@ int main() {
             || ImGui::DragFloat("Iteration time", &sim_timer.dt, 0.0001f, 0.0001f, 1.0f, "%.8f")) {
             update_demo_consts();
         }
-        if (ImGui::SliderFloat("Smoothing length", &smoothing_length, 0.0f, 1.0f)) {
+        if (ImGui::SliderFloat("Smoothing length", &h, 0.0f, 1.0f)) {
             update_demo_consts();
         }
         if (ImGui::SliderFloat("Viscosity", &visc_const, 0.0f, 100000.0f)) {
@@ -214,7 +229,8 @@ int main() {
         }
         if (ImGui::Button("Reload scene")) {
             reload_shaders();
-            particles.update_data(particle_data);
+            particle_settings_ubo.update_data(particle_settings);
+            gen_particles.run_with_barrier(instances);
             demo_consts_buffer.update_data(demo_consts);
             compute_accel.update_uniform("tension_const", tension_const);
             reduce_scalar.update_uniform("max_index", instances);

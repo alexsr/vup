@@ -96,34 +96,3 @@ std::vector<vup::IISPH_heat_particle> vup::create_uniform_IISPH_heat_particles(c
     }
     return result;
 }
-
-std::vector<vup::DFSPH_heat_particle> vup::create_DFSPH_heat_particles(const float r,
-                                                                       const float h, const float lower,
-                                                                       const float upper,
-                                                                       const float rest_density,
-                                                                       const float viscosity,
-                                                                       const float temperature,
-                                                                       const float latent_heat_max) {
-    const auto mass = rest_density * h * h * h;
-    const auto step = r * 2.0f;
-    const auto n = static_cast<unsigned long>((upper - lower) / step);
-    std::vector<DFSPH_heat_particle> result(static_cast<unsigned long>(n * n * n));
-    for (unsigned long i = 0; i < n; i++) {
-        for (unsigned long j = 0; j < n; j++) {
-            for (unsigned long k = 0; k < n; k++) {
-                result.at(i * n * n + j * n + k).pos = glm::vec4(i * step + lower + r,
-                                                                 j * step + lower + r,
-                                                                 k * step + lower + r, 1.0f);
-                result.at(i * n * n + j * n + k).mass = mass;
-                result.at(i * n * n + j * n + k).rest_density = rest_density;
-                result.at(i * n * n + j * n + k).density = rest_density;
-                result.at(i * n * n + j * n + k).vel_diff = glm::vec4(0);
-                result.at(i * n * n + j * n + k).viscosity = viscosity;
-                result.at(i * n * n + j * n + k).temperature = temperature + 273.15f;
-                result.at(i * n * n + j * n + k).heat_const = 0.591f / 4181.3f; // 0.00143f;
-                result.at(i * n * n + j * n + k).heat_buffer = latent_heat_max;
-            }
-        }
-    }
-    return result;
-}

@@ -1,0 +1,49 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+ivec3 calc_particle_index_3D(uint id, uint res) {
+    uint temp = id / res;
+    return ivec3(temp / res, temp % res, id % res);
+}
+
+struct Particle_gen_settings {
+    uint res;
+    float lower;
+    float mass_scaling;
+    float rest_density;
+    float viscosity;
+    float temperature;
+    float heat_const;
+    float latent_heat_max;
+};
+
+layout (std140, binding = 1) uniform particle_settings_ubo {
+    Particle_gen_settings gen_settings;
+};
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    Particle p;
+    ivec3 pos_offset = calc_particle_index_3D(id, gen_settings.res);
+    float pos_step = demo_consts.r * 2;
+    float scaled_h = gen_settings.mass_scaling * demo_consts.h;
+    p.pos = vec4(pos_offset.x * pos_step + gen_settings.lower + demo_consts.r,
+                  pos_offset.y * pos_step + gen_settings.lower + demo_consts.r,
+                  pos_offset.z * pos_step + gen_settings.lower + demo_consts.r, 1.0f);
+    p.mass = gen_settings.rest_density * scaled_h * scaled_h * scaled_h;
+    p.rest_density = gen_settings.rest_density;
+    p.density = gen_settings.rest_density;
+    p.viscosity = gen_settings.viscosity;
+    p.temperature = gen_settings.temperature + 273.15f;
+    p.heat_const = gen_settings.heat_const;//0.591f / 4181.3f; // 0.00143f;
+    p.heat_buffer = gen_settings.latent_heat_max;
+    particles[id] = p;
+}

@@ -13,13 +13,15 @@
 namespace vup
 {
     class Storage_buffer : public Buffer {
+    public:
+        GLuint get_binding() const;
     protected:
         explicit Storage_buffer(GLenum target, GLuint binding = 0,
                                 gl::storage flags = gl::storage::dynamic | gl::storage::write);
         template <typename T>
         explicit Storage_buffer(GLenum target, const T& data, GLuint binding = 0,
                                 gl::storage flags = gl::storage::dynamic | gl::storage::write);
-        void bind_base(GLuint binding) const;
+        void bind_base(GLuint binding);
         GLuint m_binding;
     };
 

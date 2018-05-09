@@ -12,7 +12,12 @@ vup::Storage_buffer::Storage_buffer(const GLenum target, const GLuint binding, c
     bind_base(binding);
 }
 
-void vup::Storage_buffer::bind_base(const GLuint binding) const {
+GLuint vup::Storage_buffer::get_binding() const {
+    return m_binding;
+}
+
+void vup::Storage_buffer::bind_base(const GLuint binding) {
+    m_binding = binding;
     glBindBufferBase(m_target, binding, m_name);
 }
 

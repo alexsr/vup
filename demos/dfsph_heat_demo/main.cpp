@@ -6,7 +6,6 @@
 //
 
 #include <vup/Core/demo_utils.h>
-#include <vup/Core/cpp_utils.h>
 #include <vup/Simulation/particle_utils.h>
 #include <vup/Rendering/Trackball_camera.h>
 #include <vup/Shader/Shader.h>
@@ -54,7 +53,7 @@ int main() {
     vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
     vup::DFSPH_gen_settings particle_settings(demo_consts.r, -0.5f, 0.5f, mass_scaling, density_rest, visc_const,
                                               temperature, heat_const, latent_heat_max);
-    vup::UBO particle_settings_ubo(particle_settings, 1);
+    vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
     //                                                          density_rest, visc_const, temperature, 100.0f);
     auto instances = static_cast<int>(particle_settings.res * particle_settings.res * particle_settings.res);
@@ -152,8 +151,8 @@ int main() {
                                       {{"X", "512"}, {"BUFFER_ID", "7"}, {"N", std::to_string(instances)}});
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
-    const auto reduce_instances = static_cast<unsigned int>(instances / 2.0f);
-    const auto max_blocks = static_cast<int>(glm::ceil(reduce_instances / reduce_scalar.get_workgroup_size_x()));
+    const auto reduce_instances = static_cast<unsigned int>(glm::ceil(instances / 2.0f));
+    const auto max_blocks = static_cast<int>(reduce_instances / static_cast<float>(reduce_scalar.get_workgroup_size_x()));
     reduce_scalar.update_uniform("max_index", instances);
     reduce_scalar.update_uniform("max_blocks", max_blocks);
     max_scalar.update_uniform("max_index", instances);

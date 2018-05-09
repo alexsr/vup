@@ -34,16 +34,17 @@ namespace vup
         int shader_id = 0;
         while (m_count > 16) {
             const auto max_threads = std::min(math::next_pow2(m_count) / 2, static_cast<unsigned int>(512));
-            const auto reduce_instances = static_cast<unsigned int>(glm::ceil(m_count / 2.0f));
-            m_count = static_cast<int>(glm::ceil(reduce_instances / max_threads));
+            const auto instances = m_count;
+            const auto reduce_instances = static_cast<unsigned int>(glm::ceil(instances / 2.0f));
+            m_count = static_cast<int>(glm::ceil(instances / static_cast<float>(max_threads)));
             std::vector<Shader_define> defines{
                 {"BUFFER_ID", std::to_string(m_ssbo->get_binding())},
                 {"X", std::to_string(max_threads)},
-                {"N", std::to_string(m_count)}
+                {"N", std::to_string(instances)}
             };
             m_shaders.emplace_back(shader_path, defines);
             m_shaders.at(shader_id).update_uniform("max_blocks", m_count);
-            m_workgroup_counts.push_back(reduce_instances);
+            m_workgroup_counts.push_back(instances);
             shader_id++;
         }
     }

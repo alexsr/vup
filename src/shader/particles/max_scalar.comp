@@ -9,14 +9,11 @@ layout (std430, binding = 7) buffer scalars {
 };
 void main() {
     uint bid = gl_WorkGroupID.x;
-    uint wg_size = gl_WorkGroupSize.x;
-    uint grid_size = wg_size * 2 * gl_NumWorkGroups.x;
-    uint tid = gl_LocalInvocationID.x;
-    uint id = bid * wg_size * 2 + tid;
+    uint tid = gl_LocalInvocationIndex;
+    uint id = gl_GlobalInvocationID.x;
     scalar_shared[tid] = 0;
-    while (id < max_index) {
-        scalar_shared[tid] = max(scalar_shared[tid], max(scalar_new[id], scalar_new[id + wg_size]));
-        id += grid_size;
+    if (id < N) {
+        scalar_shared[tid] = scalar_new[id];
     }
 	barrier();
     for (uint s = gl_WorkGroupSize.x / 2; s > 0; s>>=1) {

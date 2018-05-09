@@ -40,13 +40,12 @@ int main() {
     sim_timer.time_scaling = 1.0;
     sim_timer.dt = 0.0001f;
     float density_rest = 1000.0f; // density at 4C
-    float visc_const = 500000.0;
+    float visc_const = 10.0f;
     float tension_const = 0.0f;
     float temperature = 0.0f;
     float max_error = 0.1f;
     float cg_max_error = 0.01f;
     float density_eta = density_rest * max_error * 0.01f;
-    float div_eta = density_eta * 1.0f / sim_timer.dt;
     int max_iterations = 100;
     float heat_const = 0.591f / 4181.3f;
     float latent_heat_max = 100.0f;
@@ -151,8 +150,7 @@ int main() {
     vup::Reduction reduce_scalar("../../src/shader/particles/reduce_scalar.comp", scalar_buffer, instances);
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
-    const auto reduce_instances = static_cast<unsigned int>(glm::ceil(instances / 2.0f));
-    const auto max_blocks = static_cast<int>(reduce_instances / static_cast<float>(max_scalar.get_workgroup_size_x()));
+    const auto max_blocks = static_cast<int>(instances / static_cast<float>(max_scalar.get_workgroup_size_x()));
     max_scalar.update_uniform("max_index", instances);
     max_scalar.update_uniform("max_blocks", max_blocks);
     std::vector<float> new_scalar(max_blocks);
@@ -246,6 +244,7 @@ int main() {
             // divergence error correction
             float density_div_avg = 0;
             int iteration_div = 0;
+            float div_eta = density_eta * 1.0f / sim_timer.dt;
             while ((density_div_avg > div_eta || iteration_div < 1) && iteration_div < max_iterations) {
                 correct_divergence_error.run_with_barrier(instances);
                 density_div_avg = reduce_scalar.execute<float>(std::plus<>()) / instances;
@@ -297,7 +296,7 @@ int main() {
             //            float tol_error = sqrt(residual_norm2 / rhs_norm2);
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
-            max_scalar.run_with_barrier(reduce_instances);
+            max_scalar.run_with_barrier(instances);
             scalar_buffer->get_data(new_scalar);
             float max_vel = 0;
             for (auto v : new_scalar) {

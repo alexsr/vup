@@ -15,6 +15,7 @@
 #include <vup/Core/Gui_window.h>
 #include <vup/Simulation/simulation_utils.h>
 #include <vup/Simulation/acceleration_structures.h>
+#include "vup/Simulation/compute_utils.h"
 
 int main() {
     vup::init_glfw();
@@ -71,7 +72,7 @@ int main() {
     vup::Empty_SSBO uniform_grid_cell_counter_ssbo(grid_params.total_cell_count * sizeof(int), 5);
     vup::SSBO grid_params_buffer(grid_params, 6);
 
-    vup::Empty_SSBO scalar_buffer(instances * sizeof(float), 7, vup::gl::storage::read);
+    auto scalar_buffer = std::make_shared<vup::Empty_SSBO>(instances * sizeof(float), 7, vup::gl::storage::read);
 
     const auto boundary_data = vup::create_boundary_box(glm::vec3(2.0f), glm::vec4(0.0), demo_consts.r);
     vup::SSBO boundary(boundary_data, 8);
@@ -147,14 +148,11 @@ int main() {
     vup::Compute_shader update_search_dir("../../src/shader/particles/dfsph/viscosity/update_search_direction.comp",
                                           sph_defines);
 
-    vup::Compute_shader reduce_scalar("../../src/shader/particles/reduce_scalar.comp",
-                                      {{"X", "512"}, {"BUFFER_ID", "7"}, {"N", std::to_string(instances)}});
+    vup::Reduction reduce_scalar("../../src/shader/particles/reduce_scalar.comp", scalar_buffer, instances);
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
     const auto reduce_instances = static_cast<unsigned int>(glm::ceil(instances / 2.0f));
-    const auto max_blocks = static_cast<int>(reduce_instances / static_cast<float>(reduce_scalar.get_workgroup_size_x()));
-    reduce_scalar.update_uniform("max_index", instances);
-    reduce_scalar.update_uniform("max_blocks", max_blocks);
+    const auto max_blocks = static_cast<int>(reduce_instances / static_cast<float>(max_scalar.get_workgroup_size_x()));
     max_scalar.update_uniform("max_index", instances);
     max_scalar.update_uniform("max_blocks", max_blocks);
     std::vector<float> new_scalar(max_blocks);
@@ -190,7 +188,6 @@ int main() {
         update_velocities.reload();
         correct_density_error.reload();
         update_positions.reload();
-        reduce_scalar.reload();
         max_scalar.reload();
     };
 
@@ -232,8 +229,6 @@ int main() {
             gen_particles.run_with_barrier(instances);
             demo_consts_buffer.update_data(demo_consts);
             compute_accel.update_uniform("tension_const", tension_const);
-            reduce_scalar.update_uniform("max_index", instances);
-            reduce_scalar.update_uniform("max_blocks", max_blocks);
             max_scalar.update_uniform("max_index", instances);
             max_scalar.update_uniform("max_blocks", max_blocks);
             initiate_viscosity_solver.update_uniform("visc_const", visc_const);
@@ -253,53 +248,28 @@ int main() {
             int iteration_div = 0;
             while ((density_div_avg > div_eta || iteration_div < 1) && iteration_div < max_iterations) {
                 correct_divergence_error.run_with_barrier(instances);
-                reduce_scalar.run_with_barrier(reduce_instances);
-                scalar_buffer.get_data(new_scalar);
-                for (auto v : new_scalar) {
-                    density_div_avg += v;
-                }
-                density_div_avg /= instances;
+                density_div_avg = reduce_scalar.execute<float>(std::plus<>()) / instances;
                 iteration_div++;
             }
 
             // implicit viscosity solver
             // initiate conjugate gradient solver
             initiate_viscosity_solver.run_with_barrier(instances);
-            float residual_norm2 = 0;
-            reduce_scalar.run_with_barrier(reduce_instances);
-            scalar_buffer.get_data(new_scalar);
-            float rhs_norm2 = 0;
-            for (auto v : new_scalar) {
-                rhs_norm2 += v;
-            }
+            float rhs_norm2 = reduce_scalar.execute<float>(std::plus<>());
             calc_residual_squared.run_with_barrier(instances);
-            reduce_scalar.run_with_barrier(reduce_instances);
-            scalar_buffer.get_data(new_scalar);
-            for (auto v : new_scalar) {
-                residual_norm2 += v;
-            }
+            float residual_norm2 = reduce_scalar.execute<float>(std::plus<>());
             int iterations = 0;
             float cg_threshold = cg_max_error * cg_max_error * rhs_norm2;
             if (rhs_norm2 != 0 && residual_norm2 >= cg_threshold) {
                 float abs_r = 0.0f;
                 initial_precond_solve.run_with_barrier(instances);
-                reduce_scalar.run_with_barrier(reduce_instances);
-                scalar_buffer.get_data(new_scalar);
-                for (auto v : new_scalar) {
-                    abs_r += v;
-                }
-                abs_r = glm::abs(abs_r);
+                abs_r = reduce_scalar.execute<float>(std::plus<>());
                 float abs_r_old = 0.0f;
                 for (int it = 0; it < max_iterations; it++) {
                     iterations++;
                     float alpha_denom = 0.0f;
                     compute_Ap.run_with_barrier(instances);
-                    reduce_scalar.run_with_barrier(reduce_instances);
-                    scalar_buffer.get_data(new_scalar);
-                    for (auto v : new_scalar) {
-                        alpha_denom += v;
-                    }
-                    alpha_denom = glm::abs(alpha_denom);
+                    alpha_denom = reduce_scalar.execute<float>(std::plus<>());
                     float alpha = abs_r / alpha_denom;
                     if (alpha_denom == 0) {
                         alpha = 0.0f;
@@ -308,24 +278,14 @@ int main() {
                     update_solution.run_with_barrier(instances);
                     calc_residual_squared.run_with_barrier(instances);
                     residual_norm2 = 0;
-                    reduce_scalar.run_with_barrier(reduce_instances);
-                    scalar_buffer.get_data(new_scalar);
-                    for (auto v : new_scalar) {
-                        residual_norm2 += v;
-                    }
-                    residual_norm2 = glm::abs(residual_norm2);
+                    residual_norm2 = reduce_scalar.execute<float>(std::plus<>());
                     if (residual_norm2 < cg_threshold) {
                         break;
                     }
                     abs_r_old = abs_r;
                     abs_r = 0.0f;
                     precond_solve.run_with_barrier(instances);
-                    reduce_scalar.run_with_barrier(reduce_instances);
-                    scalar_buffer.get_data(new_scalar);
-                    for (auto v : new_scalar) {
-                        abs_r += v;
-                    }
-                    abs_r = glm::abs(abs_r);
+                    abs_r = reduce_scalar.execute<float>(std::plus<>());
                     float beta = abs_r / abs_r_old;
                     if (abs_r_old == 0) {
                         beta = 0.0f;
@@ -338,7 +298,7 @@ int main() {
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
             max_scalar.run_with_barrier(reduce_instances);
-            scalar_buffer.get_data(new_scalar);
+            scalar_buffer->get_data(new_scalar);
             float max_vel = 0;
             for (auto v : new_scalar) {
                 if (max_vel < v) {
@@ -354,12 +314,7 @@ int main() {
             while ((density_avg - density_rest > density_eta || iteration_density < 2) && iteration_density <
                    max_iterations) {
                 correct_density_error.run_with_barrier(instances);
-                reduce_scalar.run_with_barrier(instances);
-                scalar_buffer.get_data(new_scalar);
-                for (auto v : new_scalar) {
-                    density_avg += v;
-                }
-                density_avg /= instances;
+                density_avg = reduce_scalar.execute<float>(std::plus<>()) / instances;
                 iteration_density++;
             }
             update_positions.run_with_barrier(instances);

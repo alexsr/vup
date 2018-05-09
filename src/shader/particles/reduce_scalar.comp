@@ -1,6 +1,5 @@
 #version 450
 
-uniform int max_index;
 uniform int max_blocks;
 layout (local_size_x = X) in;
 shared float scalar_shared[gl_WorkGroupSize.x];
@@ -16,7 +15,7 @@ void main() {
     uint tid = gl_LocalInvocationID.x;
     uint id = bid * wg_size * 2 + tid;
     scalar_shared[tid] = 0;
-    while (id < max_index) {
+    while (id < N) {
         scalar_shared[tid] += scalar_new[id] + scalar_new[id + wg_size];
         id += grid_size;
     }

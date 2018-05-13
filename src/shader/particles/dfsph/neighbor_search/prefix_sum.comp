@@ -1,0 +1,64 @@
+#version 450
+
+layout (local_size_x = X) in;
+shared float sum_shared[DOUBLE_X];
+
+layout (std430, binding = PREFIX_SUM_BUFFER_ID) buffer prefix_sum_buffer {
+    float prefix_sum[];
+};
+
+layout (std430, binding = BLOCK_SUM_BUFFER_ID) buffer block_sum_buffer {
+    float block_sum[];
+};
+
+void main() {
+    uint bid = gl_WorkGroupID.x;
+    uint tid = gl_LocalInvocationID.x;
+    uint id = gl_GlobalInvocationID.x;
+    uint id_left_local = 2 * tid;
+    uint id_right_local = 2 * tid + 1;
+    uint id_left_global = bid * DOUBLE_X + 2 * tid;
+    uint id_right_global = bid * DOUBLE_X + 2 * tid + 1;
+    uint step_size_left = id_left_local + 1;
+    uint step_size_right = id_right_local + 1;
+    if (id_right_global < N) {
+        sum_shared[id_left_local] = prefix_sum[id_left_global]; // load input into shared memory
+        sum_shared[id_right_local] = prefix_sum[id_right_global];
+    }
+    else {
+        sum_shared[id_left_local] = 0;
+        sum_shared[id_right_local] = 0;
+    }
+    int offset = 1;
+    for (int d = DOUBLE_X >> 1; d > 0; d >>= 1) { // build sum in place up the tree
+        barrier();
+        if (tid < d) {
+            uint ai = offset * step_size_left - 1;
+            uint bi = offset * step_size_right - 1;
+            sum_shared[bi] += sum_shared[ai];
+        }
+        offset *= 2;
+    }
+    if (tid == 0) {
+        block_sum[bid] = sum_shared[DOUBLE_X - 1];
+        sum_shared[DOUBLE_X - 1] = 0;
+    } // clear the last element
+    for (int d = 1; d < DOUBLE_X; d *= 2) { // traverse down tree & build scan
+        offset >>= 1;
+        barrier();
+        if (tid < d) {
+            uint ai = offset * step_size_left - 1;
+            uint bi = offset * step_size_right - 1;
+            float t = sum_shared[ai];
+            sum_shared[ai] = sum_shared[bi];
+            sum_shared[bi] += t; 
+        }
+    }
+    barrier();
+    float block_start = 0;
+    while (bid > 0) {
+        block_start += block_sum[--bid];
+    }
+    prefix_sum[id_left_global] = sum_shared[id_left_local] + block_start; // write results to device memory
+    prefix_sum[id_right_global] = sum_shared[id_right_local] + block_start;
+}

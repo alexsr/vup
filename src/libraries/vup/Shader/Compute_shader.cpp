@@ -47,6 +47,13 @@ void vup::Compute_shader::run_workgroups(const unsigned int x, const unsigned in
     glDispatchCompute(x, y, z);
 }
 
+void vup::Compute_shader::run_workgroups_with_barrier(const unsigned int x, const unsigned int y, const unsigned int z,
+    const GLbitfield barriers) const {
+    use();
+    glDispatchCompute(x, y, z);
+    glMemoryBarrier(barriers);
+}
+
 std::array<GLint, 3> vup::Compute_shader::get_workgroup_size() const {
     return m_workgroup_size;
 }

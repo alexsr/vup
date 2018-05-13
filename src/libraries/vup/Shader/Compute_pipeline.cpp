@@ -40,3 +40,10 @@ void vup::Compute_pipeline::run_workgroups(const unsigned x, const unsigned y, c
         c.run_workgroups(x, y, z);
     }
 }
+
+void vup::Compute_pipeline::run_workgroups_with_barrier(const unsigned x, const unsigned y, const unsigned z,
+                                                        const GLbitfield barriers) const {
+    for (const auto& c : m_compute_shaders) {
+        c.run_workgroups_with_barrier(x, y, z, barriers);
+    }
+}

@@ -27,6 +27,14 @@ glm::mat4 vup::Trackball_camera::get_projection() const {
     return m_projection;
 }
 
+glm::vec4 vup::Trackball_camera::get_position() const {
+    return m_position;
+}
+
+glm::vec3 vup::Trackball_camera::get_center() const {
+    return m_center;
+}
+
 void vup::Trackball_camera::update(const Window& window, const float dt) {
     const auto cursor = window.get_cursor_pos();
     if (window.check_mouse_action(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS)) {
@@ -72,6 +80,7 @@ void vup::Trackball_camera::update_view() {
                                glm::cos(m_theta),
                                sin_theta * glm::cos(m_phi));
     m_view = glm::lookAt(eye, m_center, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_position = glm::vec4(eye, 1.0f);
 }
 
 void vup::Trackball_camera::move_camera(const Window& window, const float dt) {

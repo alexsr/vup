@@ -39,6 +39,8 @@ namespace vup
 
         glm::mat4 get_view() const;
         glm::mat4 get_projection() const;
+        glm::vec4 get_position() const;
+        glm::vec3 get_center() const;
 
         // Updates the camera view using mouse controls
         // * GLFWwindow* window - window to access mouse position and controls
@@ -55,6 +57,7 @@ namespace vup
         float m_radius;
         float m_zoom_sens;
         glm::vec3 m_center;
+        glm::vec4 m_position;
         float m_theta;
         float m_phi;
         double m_x{};

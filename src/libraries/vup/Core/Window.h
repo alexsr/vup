@@ -59,6 +59,7 @@ namespace vup
         GLFWwindow* get() const;
         Context get_context() const;
         glm::dvec2 get_cursor_pos() const;
+        glm::vec2 get_resolution() const;
         virtual bool check_mouse_action(int button, int action) const;
         virtual bool check_key_action(int, int) const;
     protected:

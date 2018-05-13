@@ -107,6 +107,10 @@ glm::dvec2 vup::Window::get_cursor_pos() const {
     return pos;
 }
 
+glm::vec2 vup::Window::get_resolution() const {
+    return glm::vec2(m_width, m_height);
+}
+
 bool vup::Window::check_mouse_action(const int button, const int action) const {
     return glfwGetMouseButton(m_window, button) == action;
 }

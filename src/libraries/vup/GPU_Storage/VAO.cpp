@@ -122,7 +122,7 @@ void vup::VAO::render(const GLenum render_mode) const {
     glDrawArrays(render_mode, 0, m_count);
 }
 
-void vup::VAO::render(const GLenum render_mode, const int offset, const unsigned int count) const {
+void vup::VAO::render(const GLenum render_mode, const int count, const unsigned int offset) const {
     bind();
     glDrawArrays(render_mode, offset, count);
 }
@@ -215,7 +215,7 @@ void vup::Instanced_VAO::render(const GLenum render_mode, const unsigned int ins
     glDrawArraysInstanced(render_mode, 0, m_count, instances);
 }
 
-void vup::Instanced_VAO::render(const GLenum render_mode, const int offset, const unsigned int count,
+void vup::Instanced_VAO::render(const GLenum render_mode, const int count, const unsigned int offset,
                                 const unsigned int instances) const {
     bind();
     glDrawArraysInstanced(render_mode, offset, count, instances);
@@ -254,7 +254,7 @@ void vup::Element_VAO::render(const GLenum render_mode) const {
     glDrawElements(render_mode, m_count, GL_UNSIGNED_INT, nullptr);
 }
 
-void vup::Element_VAO::render(const GLenum render_mode, const int offset, const unsigned int count) const {
+void vup::Element_VAO::render(const GLenum render_mode, const int count, const unsigned int offset) const {
     bind();
     glDrawElements(render_mode, count, GL_UNSIGNED_INT, &offset);
 }
@@ -269,7 +269,7 @@ vup::Instanced_element_VAO::Instanced_element_VAO(const std::shared_ptr<Element_
 vup::Instanced_element_VAO::Instanced_element_VAO(const std::shared_ptr<VBO>& main_vbo,
                                                   const std::shared_ptr<Element_buffer>& element_vbo,
                                                   const std::initializer_list<std::shared_ptr<Instanced_VBO>>& instanced_vbos)
-    : Instanced_VAO(main_vbo, instanced_vbos), main_vbo(std::move(main_vbo)) {
+    : Instanced_VAO(main_vbo, instanced_vbos), main_vbo(main_vbo) {
     glVertexArrayElementBuffer(m_name, element_vbo->get_name());
     m_count = element_vbo->get_count();
 }
@@ -286,7 +286,7 @@ vup::Instanced_element_VAO::Instanced_element_VAO(const std::shared_ptr<VBO>& ma
                                                   const std::shared_ptr<Element_buffer>& element_vbo,
                                                   const std::initializer_list<std::shared_ptr<VBO>>& vbos,
                                                   const std::initializer_list<std::shared_ptr<Instanced_VBO>>& instanced_vbos)
-    : Instanced_VAO(main_vbo, vbos, instanced_vbos), main_vbo(std::move(main_vbo)) {
+    : Instanced_VAO(main_vbo, vbos, instanced_vbos), main_vbo(main_vbo) {
     glVertexArrayElementBuffer(m_name, element_vbo->get_name());
     m_count = element_vbo->get_count();
 }
@@ -314,7 +314,7 @@ void vup::Instanced_element_VAO::render(const GLenum render_mode, const unsigned
 }
 
 void
-vup::Instanced_element_VAO::render(const GLenum render_mode, const int offset, const unsigned int count,
+vup::Instanced_element_VAO::render(const GLenum render_mode, const int count, const unsigned int offset,
                                    const unsigned int instances) const {
     bind();
     glDrawElementsInstanced(render_mode, count, GL_UNSIGNED_INT, &offset, instances);

@@ -48,7 +48,7 @@ namespace vup
         explicit VAO(const Mesh& mesh,
                      const std::initializer_list<std::shared_ptr<VBO>>& vbos = {});
         virtual void render(GLenum render_mode) const;
-        virtual void render(GLenum render_mode, int offset, unsigned int count) const;
+        virtual void render(GLenum render_mode, int count, unsigned int offset = 0) const;
     };
 
     class Instanced_VAO : public Base_VAO {
@@ -69,7 +69,7 @@ namespace vup
         explicit Instanced_VAO(const Mesh& mesh,
                                const std::initializer_list<std::shared_ptr<Instanced_VBO>>& instanced_vbos = {});
         virtual void render(GLenum render_mode, unsigned int instances) const;
-        virtual void render(GLenum render_mode, int offset, unsigned int count,
+        virtual void render(GLenum render_mode, int count, unsigned int offset,
                             unsigned int instances) const;
     private:
         void set_divisor_qualifier(const std::shared_ptr<Instanced_VBO>& v, unsigned int index) const;
@@ -86,7 +86,7 @@ namespace vup
                              const std::initializer_list<std::shared_ptr<VBO>>& vbos = {});
         explicit Element_VAO(const Mesh& mesh);
         void render(GLenum render_mode) const override;
-        void render(GLenum render_mode, int offset, unsigned int count) const override;
+        void render(GLenum render_mode, int count, unsigned int offset) const override;
     };
 
     class Instanced_element_VAO : public Instanced_VAO {
@@ -115,7 +115,7 @@ namespace vup
                                        const std::initializer_list<std::shared_ptr<Instanced_VBO>>& instanced_vbos = {
                                        });
         void render(GLenum render_mode, unsigned int instances) const override;
-        void render(GLenum render_mode, int offset, unsigned int count,
+        void render(GLenum render_mode, int count, unsigned int offset,
                     unsigned int instances) const override;
         const std::shared_ptr<VBO> main_vbo;
     };

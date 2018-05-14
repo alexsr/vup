@@ -8,6 +8,8 @@ layout (local_size_x = 128) in;
 
 #include "boundary.inc.comp"
 
+#include "/../../data_structures/compact_grid.inc.comp"
+
 void main() {    
     uint id = gl_GlobalInvocationID.x;
     if (id >= B) {
@@ -15,13 +17,38 @@ void main() {
     }
     float boundary_psi = 0.0f;
     Boundary_particle this_boundary = boundaries[id];
-    for (int j = 0; j < B; j++) {
-        if (j == id) {
-            continue;
-        }
-        vec4 pij = vec4((this_boundary.pos - boundaries[j].pos).xyz, 0.0f);
-        if (dot(pij, pij) <= demo_consts.h2) {
-            boundary_psi += demo_consts.kernel * cubic(demo_consts.h, pij);
+    vec4 pos = this_boundary.pos;
+    int i = int((pos.x - grid_params.grid_min.x) / grid_params.cell_size.x);
+    int j = int((pos.y - grid_params.grid_min.y) / grid_params.cell_size.y);
+    int k = int((pos.z - grid_params.grid_min.z) / grid_params.cell_size.z);
+    int max_x = min(i + 2, grid_params.cell_count.x);
+    int max_y = min(j + 2, grid_params.cell_count.y);
+    int max_z = min(k + 2, grid_params.cell_count.z);
+    for (int x = max(0, i - 1); x < max_x; x++) {
+        int x_counter_offset = x * grid_params.cell_count.y * grid_params.cell_count.z;
+        for (int y = max(0, j - 1); y < max_y; y++) {
+            int y_counter_offset = y * grid_params.cell_count.z;
+            for (int z = max(0, k - 1); z < max_z; z++) {
+                int counter_id = x_counter_offset + y_counter_offset + z;
+                if (counter_id >= CELL_COUNT) {
+                    continue;
+                }
+                int grid_offset = 0;
+                if (counter_id > 0) {
+                    grid_offset = boundary_cell_counter[counter_id - 1];
+                }
+                int n = boundary_cell_counter[counter_id] - grid_offset;
+                for (int o = 0; o < n; o++) {
+                    int other = boundary_grid[grid_offset + o];
+                    if (other == id) {
+                        continue;
+                    }
+                    vec4 pij = vec4((this_boundary.pos - boundaries[other].pos).xyz, 0.0f);
+                    if (dot(pij, pij) <= demo_consts.h2) {
+                        boundary_psi += demo_consts.kernel * cubic(demo_consts.h, pij);
+                    }
+                }
+            }
         }
     }
     boundaries[id].pos.w = 1000.0f / boundary_psi;

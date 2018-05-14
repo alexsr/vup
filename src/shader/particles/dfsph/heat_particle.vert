@@ -5,14 +5,8 @@ layout (location = 1) in vec4 normal;
 
 #include "particle_util.inc.comp"
 
-#include "/../../data_structures/uniform_grid.inc.comp"
-
 layout (std430, binding = 0) buffer particles {
     Particle p[];
-};
-
-layout (std430, binding = 6) buffer grid_parameters {
-    Fixed_uniform_grid_params grid_params;
 };
 
 layout (std140, binding = 0) uniform mvp {

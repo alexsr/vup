@@ -3,6 +3,14 @@ struct Boundary_particle {
     vec4 vel;
 };
 
-layout (std430, binding = 8) buffer boundary_buffer {
+layout (std430, binding = 6) buffer boundary_buffer {
     Boundary_particle boundaries[];
+};
+
+layout (std430, binding = 7) buffer boundary_cell_counter_buffer {
+    int boundary_cell_counter[];
+};
+
+layout (std430, binding = 8) buffer boundary_grid_buffer {
+    int boundary_grid[];
 };

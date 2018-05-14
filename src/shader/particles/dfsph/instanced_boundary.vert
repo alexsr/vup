@@ -5,8 +5,6 @@ layout (location = 1) in vec4 normal;
 
 #include "particle_util.inc.comp"
 
-#include "/../../data_structures/uniform_grid.inc.comp"
-
 #include "boundary.inc.comp"
 
 layout (std140, binding = 0) uniform mvp {

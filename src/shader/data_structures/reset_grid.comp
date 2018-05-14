@@ -2,8 +2,12 @@
 
 layout (local_size_x = 128) in;
 
-layout (std430, binding = 5) buffer cell_counter_buffer {
+layout (std430, binding = 3) buffer cell_counter_buffer {
     int cell_counter[];
+};
+
+layout (std430, binding = 7) buffer boundary_cell_counter_buffer {
+    int boundary_cell_counter[];
 };
 
 void main() {
@@ -12,4 +16,5 @@ void main() {
         return;
     }
     cell_counter[id] = 0;
+    boundary_cell_counter[id] = 0;
 }

@@ -62,26 +62,45 @@ int main() {
     vup::Empty_SSBO particles(instances * sizeof(vup::DFSPH_heat_particle), 0,
                               vup::gl::storage::dynamic | vup::gl::storage::read | vup::gl::storage::write);
     vup::SSBO demo_consts_buffer(demo_consts, 1);
-    const int neighbor_amount = 40;
-    vup::Empty_SSBO neighbors_ssbo(neighbor_amount * instances * sizeof(int), 2);
-    vup::Empty_SSBO neighbor_count_ssbo(instances * sizeof(int), 3);
 
-    vup::Cube_uniform_grid_params grid_params(3.0f, demo_consts.h, neighbor_amount);
-    vup::Empty_SSBO uniform_grid_ssbo(grid_params.grid_capacity * sizeof(int), 4);
-    vup::Empty_SSBO uniform_grid_cell_counter_ssbo(grid_params.total_cell_count * sizeof(int), 5);
-    vup::SSBO grid_params_buffer(grid_params, 6);
+    vup::Cube_compact_grid_params grid_params(2.2f, demo_consts.h);
+    vup::SSBO grid_params_buffer(grid_params, 2);
+    vup::Empty_SSBO grid_counter_buffer(grid_params.total_cell_count * sizeof(int), 3);
+    vup::Empty_SSBO grid_buffer(instances * sizeof(int), 4);
 
-    auto scalar_buffer = std::make_shared<vup::Empty_SSBO>(instances * sizeof(float), 7, vup::gl::storage::read);
+    auto scalar_buffer = std::make_shared<vup::Empty_SSBO>(instances * sizeof(float), 5, vup::gl::storage::read);
 
     const auto boundary_data = vup::create_boundary_box(glm::vec3(2.0f), glm::vec4(0.0), demo_consts.r);
-    vup::SSBO boundary(boundary_data, 8);
+    auto const boundary_size = static_cast<unsigned int>(boundary_data.size());
+    vup::SSBO boundary(boundary_data, 6);
+
+    vup::Empty_SSBO boundary_grid_counter(grid_params.total_cell_count * sizeof(int), 7);
+    vup::Empty_SSBO boundary_grid(boundary_data.size() * sizeof(int), 8);
+
+    const int prefix_sum_local_size = 256;
+    const auto block_sum_size = static_cast<int>(glm::ceil(
+        grid_params.total_cell_count / static_cast<float>(2.0f * prefix_sum_local_size)));
+    const std::vector<vup::Shader_define> prefix_sum_defines{
+        {"N", std::to_string(grid_params.total_cell_count)},
+        {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
+        {"PREFIX_SUM_BUFFER_ID", "3"}, {"BLOCK_SUM_BUFFER_ID", "11"}
+    };
+
+    const std::vector<vup::Shader_define> prefix_sum_boundary_defines{
+        {"N", std::to_string(grid_params.total_cell_count)},
+        {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
+        {"PREFIX_SUM_BUFFER_ID", "7"}, {"BLOCK_SUM_BUFFER_ID", "11"}
+    };
+
+    vup::Empty_SSBO block_sum_buffer(block_sum_size * sizeof(int), 11);
+    vup::Compute_shader prefix_sum("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",
+                                   prefix_sum_defines);
+    vup::Compute_shader prefix_sum_boundary("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",
+                                            prefix_sum_boundary_defines);
 
     const std::vector<vup::Shader_define> sph_defines = {
         {"N", std::to_string(instances)},
         {"B", std::to_string(boundary_data.size())},
-        {"NEIGHBOR_AMOUNT", std::to_string(neighbor_amount)},
-        {"NEIGHBOR_ARRAY_SIZE", std::to_string(instances * neighbor_amount)},
-        {"GRID_CAPACITY", std::to_string(grid_params.grid_capacity)},
         {"CELL_COUNT", std::to_string(grid_params.total_cell_count)}
     };
 
@@ -96,14 +115,25 @@ int main() {
     vup::Compute_shader gen_particles("../../src/shader/particles/dfsph/generate_particles.comp", sph_defines);
 
     vup::Compute_shader reset_grid("../../src/shader/data_structures/reset_grid.comp", sph_defines);
+
+    vup::Compute_shader populate_grid_counter(
+        "../../src/shader/particles/dfsph/neighbor_search/populate_grid_counter.comp",
+        sph_defines);
+
+    vup::Compute_shader populate_grid("../../src/shader/particles/dfsph/neighbor_search/populate_grid.comp",
+                                      sph_defines);
+
+    vup::Compute_shader populate_boundary_grid_counter(
+        "../../src/shader/particles/dfsph/neighbor_search/populate_boundary_grid_counter.comp",
+        sph_defines);
+
+    vup::Compute_shader populate_boundary_grid(
+        "../../src/shader/particles/dfsph/neighbor_search/populate_boundary_grid.comp",
+        sph_defines);
+
     vup::Compute_shader calc_boundary_psi("../../src/shader/particles/dfsph/calc_boundary_psi.comp", sph_defines);
 
-    vup::Compute_pipeline calc_density_alpha({
-                                                 "populate_grid.comp", "find_neighbors_in_grid.comp",
-                                                 "calc_density_alpha.comp"
-                                             },
-                                             sph_defines,
-                                             "../../src/shader/particles/dfsph/");
+    vup::Compute_shader calc_density_alpha("../../src/shader/particles/dfsph/calc_density_alpha.comp", sph_defines);
 
     vup::Compute_pipeline correct_divergence_error({
                                                        "predict_density_div.comp",
@@ -238,7 +268,16 @@ int main() {
         if (!pause_sim) {
             //while (sim_timer.is_iteration_due()) {
             reset_grid.run_with_barrier(grid_params.total_cell_count);
-            calc_boundary_psi.run_with_barrier(static_cast<unsigned int>(boundary_data.size()));
+
+            populate_grid_counter.run_with_barrier(instances);
+            prefix_sum.run_workgroups_with_barrier(block_sum_size);
+            populate_grid.run_with_barrier(instances);
+
+            populate_boundary_grid_counter.run_with_barrier(boundary_size);
+            prefix_sum_boundary.run_workgroups_with_barrier(block_sum_size);
+            populate_boundary_grid.run_with_barrier(boundary_size);
+
+            calc_boundary_psi.run_with_barrier(boundary_size);
             calc_density_alpha.run_with_barrier(instances);
 
             // divergence error correction

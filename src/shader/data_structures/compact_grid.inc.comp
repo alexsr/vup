@@ -1,0 +1,11 @@
+struct Compact_grid_params {
+    vec4 grid_min;
+    ivec4 cell_count;
+    vec4 cell_size;
+    vec4 grid_pos;
+    int total_cell_count;
+};
+
+layout (std430, binding = 2) buffer grid_parameters {
+    Compact_grid_params grid_params;
+};

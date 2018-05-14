@@ -1,0 +1,26 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "/../particle_util.inc.comp"
+
+#include "/../../../data_structures/compact_grid.inc.comp"
+
+#include "/../ssbos.inc.comp"
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) {
+        return;
+    }
+    vec4 pos = particles[id].pos;
+    int i = int((pos.x - grid_params.grid_min.x) / grid_params.cell_size.x);
+    int j = int((pos.y - grid_params.grid_min.y) / grid_params.cell_size.y);
+    int k = int((pos.z - grid_params.grid_min.z) / grid_params.cell_size.z);
+    int cell_index = i * grid_params.cell_count.y * grid_params.cell_count.z
+                     + j * grid_params.cell_count.z + k;
+    if (cell_index < CELL_COUNT) {
+        int offset = atomicAdd(cell_counter[cell_index], 1);
+        grid[offset] = int(id);
+    }
+}

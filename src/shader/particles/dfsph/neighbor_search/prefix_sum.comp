@@ -1,14 +1,14 @@
 #version 450
 
 layout (local_size_x = X) in;
-shared float sum_shared[DOUBLE_X];
+shared int sum_shared[DOUBLE_X];
 
 layout (std430, binding = PREFIX_SUM_BUFFER_ID) buffer prefix_sum_buffer {
-    float prefix_sum[];
+    int prefix_sum[];
 };
 
 layout (std430, binding = BLOCK_SUM_BUFFER_ID) buffer block_sum_buffer {
-    float block_sum[];
+    int block_sum[];
 };
 
 void main() {
@@ -49,15 +49,16 @@ void main() {
         if (tid < d) {
             uint ai = offset * step_size_left - 1;
             uint bi = offset * step_size_right - 1;
-            float t = sum_shared[ai];
+            int t = sum_shared[ai];
             sum_shared[ai] = sum_shared[bi];
             sum_shared[bi] += t; 
         }
     }
     barrier();
-    float block_start = 0;
+    int block_start = 0;
     while (bid > 0) {
-        block_start += block_sum[--bid];
+        bid--;
+        block_start += block_sum[bid];
     }
     prefix_sum[id_left_global] = sum_shared[id_left_local] + block_start; // write results to device memory
     prefix_sum[id_right_global] = sum_shared[id_right_local] + block_start;

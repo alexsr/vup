@@ -13,8 +13,9 @@
 namespace vup
 {
     struct Compact_grid_params {
-        Compact_grid_params(float grid_size_x, float grid_size_y, float grid_size_z, float cell_size_x,
-                            float cell_size_y, float cell_size_z, glm::vec4 pos = glm::vec4(0.0f))
+        Compact_grid_params(const float grid_size_x, const float grid_size_y, const float grid_size_z,
+                            const float cell_size_x, const float cell_size_y, const float cell_size_z,
+                            const glm::vec4 pos = glm::vec4(0.0f))
             : grid_pos(pos) {
             const float cell_count_x = glm::ceil(grid_size_x / cell_size_x);
             const float cell_count_y = glm::ceil(grid_size_y / cell_size_y);
@@ -35,17 +36,17 @@ namespace vup
     };
 
     struct Cube_compact_grid_params : Compact_grid_params {
-        Cube_compact_grid_params(float grid_size, float cell_size,
-                                 glm::vec4 pos = glm::vec4(0.0f))
+        Cube_compact_grid_params(const float grid_size, const float cell_size,
+                                 const glm::vec4 pos = glm::vec4(0.0f))
             : Compact_grid_params(grid_size, grid_size, grid_size, cell_size,
                                   cell_size, cell_size, pos) {
         }
     };
 
     struct Uniform_grid_params : Compact_grid_params {
-        Uniform_grid_params(float grid_size_x, float grid_size_y, float grid_size_z,
-                            float cell_size_x, float cell_size_y, float cell_size_z,
-                            int cell_capacity, glm::vec4 pos = glm::vec4(0.0f))
+        Uniform_grid_params(const float grid_size_x, const float grid_size_y, const float grid_size_z,
+                            const float cell_size_x, const float cell_size_y, const float cell_size_z,
+                            const int cell_capacity, const glm::vec4 pos = glm::vec4(0.0f))
             : Compact_grid_params(grid_size_x, grid_size_y, grid_size_z, cell_size_x, cell_size_y, cell_size_z, pos),
               cell_capacity(cell_capacity) {
             grid_capacity = total_cell_count * cell_capacity;
@@ -56,8 +57,8 @@ namespace vup
     };
 
     struct Cube_uniform_grid_params : Uniform_grid_params {
-        Cube_uniform_grid_params(float grid_size, float cell_size, int cell_capacity,
-                                 glm::vec4 pos = glm::vec4(0.0f))
+        Cube_uniform_grid_params(const float grid_size, const float cell_size, const int cell_capacity,
+                                 const glm::vec4 pos = glm::vec4(0.0f))
             : Uniform_grid_params(grid_size, grid_size, grid_size, cell_size,
                                   cell_size, cell_size, cell_capacity, pos) {
         }

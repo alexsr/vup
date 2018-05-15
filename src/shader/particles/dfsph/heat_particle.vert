@@ -15,7 +15,9 @@ layout (std140, binding = 0) uniform mvp {
     mat4 projection;
 };
 
+out vec3 pass_position;
 out vec3 pass_normal;
+out vec4 pass_color;
 
 vec3 clamped_mix(vec3 a, vec3 b, float t) {
     t = clamp(t, 0, 1);
@@ -54,7 +56,8 @@ vec3 hsv_to_rgb(vec3 hsv) {
 
 void main() {
     vec4 pos = p[gl_InstanceID].pos;
-    pass_normal = hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), (float(p[gl_InstanceID].temperature) - 273.15f)/100.0f));
-    // pass_normal = vec3(normal);
+    pass_color = vec4(hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), (float(p[gl_InstanceID].temperature) - 273.15f)/100.0f)), 1.0f);
+    pass_normal = vec3(normal);
+	pass_position = vec3(projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0));
 	gl_Position = projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0);
 }

@@ -31,7 +31,7 @@ namespace vup
         int iterations = 0;
         float time = 0.0f;
         float dt = 0.001f;
-        float max_dt = 0.001f;
+        float max_dt = 0.01f;
         float time_scaling = 1.0f;
         float accumulator = 0.0f;
     };

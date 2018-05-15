@@ -15,6 +15,30 @@
 namespace vup
 {
     typedef std::chrono::high_resolution_clock high_res_clock;
+    struct Time_profiler {
+        void start() {
+            start_time = high_res_clock::now();
+        }
+        float profile_event() {
+            const std::chrono::duration<float> dt = high_res_clock::now() - start_time;
+            count_in_second++;
+            accumulate_until_second += dt.count();
+            if (accumulate_until_second >= 1.0f) {
+                one_second_average = accumulate_until_second / count_in_second;
+                count_in_second = 0;
+                accumulate_until_second = 0.0f;
+            }
+            start_time = high_res_clock::now();
+            return std::chrono::duration_cast<std::chrono::milliseconds>(dt).count();;
+        }
+        float get_one_second_average() const {
+            return one_second_average;
+        }
+        high_res_clock::time_point start_time = high_res_clock::now();
+        int count_in_second = 0;
+        float accumulate_until_second = 0;
+        float one_second_average = 0.0f;
+    };
     struct Time_counter {
         float average_aps() {
             return counter / time;

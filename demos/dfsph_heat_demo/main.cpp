@@ -77,22 +77,28 @@ int main() {
     vup::Empty_SSBO boundary_grid_counter(grid_params.total_cell_count * sizeof(int), 7);
     vup::Empty_SSBO boundary_grid(boundary_data.size() * sizeof(int), 8);
 
+    const int neighbor_amount = 40;
+    vup::Empty_SSBO neighbors_ssbo(neighbor_amount * instances * sizeof(int), 9);
+    vup::Empty_SSBO neighbor_count_ssbo(instances * sizeof(int), 10);
+    vup::Empty_SSBO boundary_neighbors_ssbo(neighbor_amount * instances * sizeof(int), 11);
+    vup::Empty_SSBO boundary_neighbor_count_ssbo(instances * sizeof(int), 12);
+
     const int prefix_sum_local_size = 256;
     const auto block_sum_size = static_cast<int>(glm::ceil(
         grid_params.total_cell_count / static_cast<float>(2.0f * prefix_sum_local_size)));
     const std::vector<vup::Shader_define> prefix_sum_defines{
         {"N", std::to_string(grid_params.total_cell_count)},
         {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
-        {"PREFIX_SUM_BUFFER_ID", "3"}, {"BLOCK_SUM_BUFFER_ID", "11"}
+        {"PREFIX_SUM_BUFFER_ID", "3"}, {"BLOCK_SUM_BUFFER_ID", "14"}
     };
 
     const std::vector<vup::Shader_define> prefix_sum_boundary_defines{
         {"N", std::to_string(grid_params.total_cell_count)},
         {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
-        {"PREFIX_SUM_BUFFER_ID", "7"}, {"BLOCK_SUM_BUFFER_ID", "11"}
+        {"PREFIX_SUM_BUFFER_ID", "7"}, {"BLOCK_SUM_BUFFER_ID", "14"}
     };
 
-    vup::Empty_SSBO block_sum_buffer(block_sum_size * sizeof(int), 11);
+    vup::Empty_SSBO block_sum_buffer(block_sum_size * sizeof(int), 14);
     vup::Compute_shader prefix_sum("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",
                                    prefix_sum_defines);
     vup::Compute_shader prefix_sum_boundary("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",
@@ -101,6 +107,7 @@ int main() {
     const std::vector<vup::Shader_define> sph_defines = {
         {"N", std::to_string(instances)},
         {"B", std::to_string(boundary_data.size())},
+        {"NEIGHBOR_AMOUNT", std::to_string(neighbor_amount)},
         {"CELL_COUNT", std::to_string(grid_params.total_cell_count)}
     };
 
@@ -128,52 +135,42 @@ int main() {
         "../../src/shader/particles/dfsph/neighbor_search/populate_boundary_grid.comp",
         sph_defines);
 
+    vup::Compute_shader find_neighbors("../../src/shader/particles/dfsph/neighbor_search/find_neighbors.comp", sph_defines);
     vup::Compute_shader calc_boundary_psi("../../src/shader/particles/dfsph/calc_boundary_psi.comp", sph_defines);
-
     vup::Compute_shader calc_density_alpha("../../src/shader/particles/dfsph/calc_density_alpha.comp", sph_defines);
-
     vup::Compute_pipeline correct_divergence_error({
                                                        "predict_density_div.comp",
                                                        "adapt_vel_div.comp"
                                                    },
                                                    sph_defines,
                                                    "../../src/shader/particles/dfsph/divergence_solver/");
-
     vup::Compute_shader compute_accel("../../src/shader/particles/dfsph/calc_non_pressure_accel.comp", sph_defines);
     vup::Compute_shader update_velocities("../../src/shader/particles/dfsph/update_velocities.comp", sph_defines);
-
     vup::Compute_pipeline correct_density_error({
                                                     "predict_density.comp",
                                                     "adapt_vel_density.comp"
                                                 },
                                                 sph_defines,
                                                 "../../src/shader/particles/dfsph/density_solver/");
-
     vup::Compute_pipeline update_positions({"calc_heat_transfer.comp", "update_positions.comp"},
                                            sph_defines, "../../src/shader/particles/dfsph/");
-
     vup::Compute_pipeline initiate_viscosity_solver({
                                                         "jacobi_preconditioner.comp",
                                                         "calc_initial_residual.comp"
                                                     },
                                                     sph_defines,
                                                     "../../src/shader/particles/dfsph/viscosity/");
-
     vup::Compute_shader initial_precond_solve("../../src/shader/particles/dfsph/viscosity/initial_precond_solve.comp",
                                               sph_defines);
-
     vup::Compute_shader compute_Ap("../../src/shader/particles/dfsph/viscosity/compute_Ap.comp",
                                    sph_defines);
     vup::Compute_shader calc_residual_squared("../../src/shader/particles/dfsph/viscosity/calc_residual_squared.comp",
                                               sph_defines);
     vup::Compute_shader update_solution("../../src/shader/particles/dfsph/viscosity/update_solution.comp", sph_defines);
-
     vup::Compute_shader precond_solve("../../src/shader/particles/dfsph/viscosity/precond_solve.comp",
                                       sph_defines);
-
     vup::Compute_shader update_search_dir("../../src/shader/particles/dfsph/viscosity/update_search_direction.comp",
                                           sph_defines);
-
     vup::Reduction reduce_scalar("../../src/shader/particles/reduce_scalar.comp", scalar_buffer, instances);
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
@@ -277,7 +274,7 @@ int main() {
             populate_boundary_grid_counter.run_with_barrier(boundary_size);
             prefix_sum_boundary.run_workgroups_with_barrier(block_sum_size);
             populate_boundary_grid.run_with_barrier(boundary_size);
-
+            find_neighbors.run_with_barrier(instances);
             calc_boundary_psi.run_with_barrier(boundary_size);
             calc_density_alpha.run_with_barrier(instances);
 

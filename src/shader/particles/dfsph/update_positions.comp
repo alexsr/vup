@@ -48,6 +48,6 @@ void main() {
     //     particles[id].vel.xyz = reflect(p.vel.xyz, n);
     // }
     particles[id].pos = p.pos;
-    particles[id].temperature += p.temp_change * demo_consts.dt;
+    particles[id].temperature += p.temp_change * demo_consts.dt * p.heat_const;
     particles[id].viscosity = 500000.0f * exp(temp_scaling * (273.0f - p.temperature));
 }

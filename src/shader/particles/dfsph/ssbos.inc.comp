@@ -13,3 +13,19 @@ layout (std430, binding = 3) buffer cell_counter_buffer {
 layout (std430, binding = 4) buffer grid_buffer {
     int grid[];
 };
+
+layout (std430, binding = 9) buffer neighborhood_data {
+    int neighbors[];
+};
+
+layout (std430, binding = 10) buffer neighborhood_count {
+    int neighbors_counter[];
+};
+
+layout (std430, binding = 11) buffer boundary_neighborhood_data {
+    int boundary_neighbors[];
+};
+
+layout (std430, binding = 12) buffer boundary_neighborhood_count {
+    int boundary_neighbors_counter[];
+};

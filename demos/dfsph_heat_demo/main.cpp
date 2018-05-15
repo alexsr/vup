@@ -26,7 +26,7 @@ int main() {
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
-    const vup::Cube bounds_cube(4.0f);
+    const vup::Cube bounds_cube(4.0f, 2.0f, 4.0f);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
                                  "../../src/shader/rendering/minimal.frag");
@@ -38,7 +38,7 @@ int main() {
 
     vup::Simulation_timer sim_timer;
     sim_timer.time_scaling = 1.0;
-    sim_timer.dt = 0.0005f;
+    sim_timer.dt = 0.000005f;
     float density_rest = 1000.0f; // density at 4C
     float visc_const = 500000.0f;
     float tension_const = 0.0f;
@@ -51,7 +51,7 @@ int main() {
     float latent_heat_max = 100.0f;
     float heat_source_temp = 100.0f;
     vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
-    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -1.8f, 1.8f, mass_scaling, density_rest, visc_const,
+    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -0.8f, 0.8f, mass_scaling, density_rest, visc_const,
                                               temperature, heat_const, latent_heat_max);
     vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
@@ -63,14 +63,14 @@ int main() {
                               vup::gl::storage::dynamic | vup::gl::storage::read | vup::gl::storage::write);
     vup::SSBO demo_consts_buffer(demo_consts, 1);
 
-    vup::Cube_compact_grid_params grid_params(4.1f, demo_consts.h);
+    vup::Compact_grid_params grid_params(4.1f, 2.1f, 4.1f, demo_consts.h, demo_consts.h, demo_consts.h);
     vup::SSBO grid_params_buffer(grid_params, 2);
     vup::Empty_SSBO grid_counter_buffer(grid_params.total_cell_count * sizeof(int), 3);
     vup::Empty_SSBO grid_buffer(instances * sizeof(int), 4);
 
     auto scalar_buffer = std::make_shared<vup::Empty_SSBO>(instances * sizeof(float), 5, vup::gl::storage::read);
 
-    const auto boundary_data = vup::create_boundary_box(glm::vec3(4.0f), glm::vec4(0.0), demo_consts.r);
+    const auto boundary_data = vup::create_boundary_box(glm::vec3(4.0f, 2.0f, 4.0f), glm::vec4(0.0), demo_consts.r);
     auto const boundary_size = static_cast<unsigned int>(boundary_data.size());
     vup::SSBO boundary(boundary_data, 6);
 
@@ -231,7 +231,7 @@ int main() {
         ImGui::TextWrapped("Rendering average %.3f ms/frame (%.1f FPS)",
                            1000.0f / fps_counter.average_aps(), fps_counter.average_aps());
         if (ImGui::DragFloat("Time scaling", &sim_timer.time_scaling, 0.01f, 0.01f, 10.0f)
-            || ImGui::DragFloat("Iteration time", &sim_timer.dt, 0.0001f, 0.0001f, 1.0f, "%.8f")) {
+            || ImGui::DragFloat("Iteration time", &sim_timer.dt, 0.0001f, 0.000005f, 1.0f, "%.8f")) {
             update_demo_consts();
         }
         if (ImGui::SliderFloat("Smoothing length", &h, 0.0f, 1.0f)) {

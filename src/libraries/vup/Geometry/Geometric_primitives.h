@@ -34,7 +34,7 @@ namespace vup
     };
 
     struct Sphere : Geometric_primitive {
-        explicit Sphere(float r = 0.1f, int hres = 10, int vres = 10);
+        explicit Sphere(float r = 1.0f, int hres = 10, int vres = 10);
     };
 }
 

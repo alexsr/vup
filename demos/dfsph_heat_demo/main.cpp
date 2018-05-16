@@ -19,26 +19,30 @@
 
 int main() {
     vup::init_glfw();
-    const int width = 800;
-    const int height = 600;
+    const int width = 1280;
+    const int height = 720;
     vup::Gui_window curr_window(width, height, "DFSPH heat transfer demo", true);
     vup::OpenGL_debug_logger gl_debug_logger;
     gl_debug_logger.disable_messages(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION);
     vup::Trackball_camera cam(width, height);
     vup::init_demo_OpenGL_params();
     const vup::Cube bounds_cube(4.0f, 2.0f, 4.0f);
+    const vup::Cube heat_source(0.3f);
+    glm::mat4 heat_source_model = glm::translate(glm::mat4(1.0f), glm::vec3(1.8, 0.2f, 0));
+    vup::VAO heat_source_vao(heat_source);
     vup::VAO bounds_vao(bounds_cube);
     vup::V_F_shader box_renderer("../../src/shader/rendering/mvp_ubo.vert",
                                  "../../src/shader/rendering/minimal.frag");
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float h = 0.08f;
+    float h = 0.1f;
     float mass_scaling = 2.0f / 3.0f;
 
     vup::Simulation_timer sim_timer;
     sim_timer.time_scaling = 1.0;
     sim_timer.dt = 0.000005f;
+    sim_timer.max_dt = 0.001f;
     float density_rest = 1000.0f; // density at 4C
     float visc_const = 500000.0f;
     float tension_const = 0.0f;
@@ -51,8 +55,8 @@ int main() {
     float latent_heat_max = 100.0f;
     float heat_source_temp = 100.0f;
     vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
-    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.8f, 0.8, 1.8f, 0.0f),
-                                              glm::vec4(1.8f, 0.8, 1.8f, 0.0f), mass_scaling, density_rest, visc_const,
+    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.2f, 0.95, 1.2f, 0.0f),
+                                              glm::vec4(1.2f, 0.65, 1.2f, 0.0f), mass_scaling, density_rest, visc_const,
                                               temperature, heat_const, latent_heat_max);
     vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
@@ -64,7 +68,7 @@ int main() {
                               vup::gl::storage::dynamic | vup::gl::storage::read | vup::gl::storage::write);
     vup::SSBO demo_consts_buffer(demo_consts, 1);
 
-    vup::Compact_grid_params grid_params(4.1f, 2.1f, 4.1f, demo_consts.h, demo_consts.h, demo_consts.h);
+    vup::Compact_grid_params grid_params(4.2f, 2.2f, 4.2f, demo_consts.h, demo_consts.h, demo_consts.h);
     vup::SSBO grid_params_buffer(grid_params, 2);
     vup::Empty_SSBO grid_counter_buffer(grid_params.total_cell_count * sizeof(int), 3);
     vup::Empty_SSBO grid_buffer(instances * sizeof(int), 4);
@@ -140,6 +144,8 @@ int main() {
                                        sph_defines);
     vup::Compute_shader calc_boundary_psi("../../src/shader/particles/dfsph/calc_boundary_psi.comp", sph_defines);
     vup::Compute_shader calc_density_alpha("../../src/shader/particles/dfsph/calc_density_alpha.comp", sph_defines);
+//    vup::Compute_shader calc_heat_transfer_grad("../../src/shader/particles/dfsph/calc_heat_transfer_grad.comp", sph_defines);
+    vup::Compute_shader calc_heat_transfer("../../src/shader/particles/dfsph/calc_heat_transfer.comp", sph_defines);
     vup::Compute_pipeline correct_divergence_error({
                                                        "predict_density_div.comp",
                                                        "adapt_vel_div.comp"
@@ -280,6 +286,8 @@ int main() {
             find_neighbors.run_with_barrier(instances);
             calc_boundary_psi.run_with_barrier(boundary_size);
             calc_density_alpha.run_with_barrier(instances);
+//            calc_heat_transfer_grad.run_with_barrier(instances);
+            calc_heat_transfer.run_with_barrier(instances);
 
             // divergence error correction
             float density_div_avg = 0;
@@ -336,17 +344,17 @@ int main() {
             //            float tol_error = sqrt(residual_norm2 / rhs_norm2);
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
-            //            // calc cfl
-            //            max_scalar.run_with_barrier(instances);
-            //            scalar_buffer->get_data(new_scalar);
-            //            float max_vel = 0;
-            //            for (auto v : new_scalar) {
-            //                if (max_vel < v) {
-            //                    max_vel = v;
-            //                }
-            //            }
-            //            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
-            //            update_demo_consts();
+            // calc cfl
+//            max_scalar.run_with_barrier(instances);
+//            scalar_buffer->get_data(new_scalar);
+//            float max_vel = 0;
+//            for (auto v : new_scalar) {
+//                if (max_vel < v) {
+//                    max_vel = v;
+//                }
+//            }
+//            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
+//            update_demo_consts();
             update_velocities.run_with_barrier(instances);
             // density error correction
             int iteration_density = 0;
@@ -371,9 +379,16 @@ int main() {
         particle_renderer.use();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         particle_spheres.render(GL_TRIANGLES, static_cast<unsigned int>(instances));
+        box_renderer.use();
+
+        mats.update(heat_source_model, cam.get_view(), cam.get_projection());
+        mvp.update_data(mats);
+        heat_source_vao.render(GL_TRIANGLES);
         //        boundary_renderer.use();
         //        particle_spheres.render(GL_TRIANGLES, boundary_data.size());
         box_renderer.use();
+        mats.update(model, cam.get_view(), cam.get_projection());
+        mvp.update_data(mats);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         bounds_vao.render(GL_TRIANGLES);
         //gl_debug_logger.retrieve_log(std::cout);

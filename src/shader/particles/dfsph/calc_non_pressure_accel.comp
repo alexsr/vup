@@ -40,11 +40,6 @@ void main() {
             surface_tension_force -= p_other.mass * pij * demo_consts.kernel * cubic(demo_consts.h, diam);
         }
     }
-    for (int i = 0; i < boundary_neighbors_counter[id]; i++) {
-        int j = boundary_neighbors[id * NEIGHBOR_AMOUNT + i];
-        float boundary_psi = boundaries[j].pos.w;
-        vec4 pij = vec4((p.pos - boundaries[j].pos).xyz, 0);
-    }
     vec4 extern_accel = vec4(0.0f);
     extern_accel.y = -9.81f;
     p.accel += extern_accel + (surface_tension_force * tension_const * 0.0f) / p.mass;

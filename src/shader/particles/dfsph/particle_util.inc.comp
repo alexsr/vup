@@ -65,7 +65,7 @@ float cubic(float h, vec4 v) {
 }
 
 vec4 cubic_grad(float h, vec4 v) {
-    vec4 res;
+    vec4 res = vec4(0);
     v = vec4(v.xyz, 0.0);
     float rl = length(v);
     float q = rl / h;
@@ -80,9 +80,6 @@ vec4 cubic_grad(float h, vec4 v) {
                 res = (-factor * factor)*gradq;
             }
         }
-    }
-    else {
-        res = vec4(0);
     }
     return res;
 }

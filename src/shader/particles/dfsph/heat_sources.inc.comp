@@ -1,0 +1,11 @@
+struct Heat_source {
+	vec4 pos;
+	float wattage;
+	float time;
+	int movement_pattern;
+	float speed;
+};
+
+layout (std430, binding = 16) buffer heat_sources_buffer {
+    Heat_source heat_sources[];
+};

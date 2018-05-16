@@ -3,11 +3,7 @@
 layout (location = 0) in vec4 position;
 layout (location = 1) in vec4 normal;
 
-#include "particle_util.inc.comp"
-
-layout (std430, binding = 0) buffer particles {
-    Particle p[];
-};
+#include "heat_sources.inc.comp"
 
 layout (std140, binding = 0) uniform mvp {
     mat4 model;
@@ -55,9 +51,10 @@ vec3 hsv_to_rgb(vec3 hsv) {
 }
 
 void main() {
-    vec4 pos = p[gl_InstanceID].pos;
-    pass_color = vec4(hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), (p[gl_InstanceID].temperature - 273.15f)/100.0f)), 1.0f);
+    vec4 pos = heat_sources[gl_InstanceID].pos;
+    pass_color = vec4(hsv_to_rgb(clamped_mix(vec3(240.0f, 1, 1), vec3(0, 1, 1), heat_sources[gl_InstanceID].wattage / 6000.0f)), 1.0f);
+	vec4(heat_sources[gl_InstanceID].wattage / 6000.0f, 0.2, 0.2, 1.0f);
     pass_normal = vec3(normal);
-	pass_position = projection * view * model * vec4((position + p[gl_InstanceID].pos).xyz, 1.0);
+	pass_position = projection * view * vec4((pos.w * 0.1f * position + heat_sources[gl_InstanceID].pos).xyz, 1.0);
 	gl_Position = pass_position;
 }

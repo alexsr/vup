@@ -10,6 +10,8 @@ layout (local_size_x = 128) in;
 
 #include "/../../data_structures/compact_grid.inc.comp"
 
+#include "heat_sources.inc.comp"
+
 //https://animation.rwth-aachen.de/media/papers/2018-EG-ImplicitVisco.pdf
 
 void main() {    
@@ -18,7 +20,7 @@ void main() {
         return;
     }
     Particle p = particles[id];
-    float temp = 0;
+    float temp_change_ext = 0;
     p.temp_change = 0.0f;
     vec4 normal = vec4(0.0f);
     for (int i = 0; i < neighbors_counter[id]; i++) {
@@ -31,14 +33,13 @@ void main() {
                             / (dot(pij, pij) + 0.01f * demo_consts.h2);
     }
     normal *= demo_consts.h;
-    vec4 heat_source_pos = vec4(1.8, 0.2f, 0, 1.0f);
-    if (length(normal) > 0.00001f) {
-        float q = 60000.0f * 1.0f / pow((sqrt(2.0f) - 1) / 0.2f * length((p.pos - heat_source_pos).xyz) + 1, 2);
-        temp += q * 3.1415f * demo_consts.r * demo_consts.r;
-    }
-    // float t = clamp(distance(p.pos, vec4(0,-1,0,1)), 0, 1);
-    // float temp_ext = (demo_consts.temperature - p.temperature) * demo_consts.heat_const;
-    particles[id].temp_change = 2.0f * p.temp_change * p.heat_const / p.density + temp;// + temp_ext * (1 - t);
-    
-    //p[id].density = p[id].density / (1.0f + 0.88 * 0.0001 * p[id].temp_change);
+	
+	if (length(normal) > 0.00001f) {
+		for (int i = 0; i < H_COUNT; i++) {
+			Heat_source h_source = heat_sources[i];
+			float q = h_source.wattage * 1.0f / pow((sqrt(2.0f) - 1) / h_source.pos.w * length((p.pos - h_source.pos).xyz) + 1, 2);
+			temp_change_ext += q * 3.1415f * demo_consts.r * demo_consts.r;
+		}
+	}
+    particles[id].temp_change = 2.0f * p.temp_change * p.heat_const / p.density + temp_change_ext;
 }

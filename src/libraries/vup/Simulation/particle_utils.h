@@ -50,6 +50,14 @@ namespace vup
         return res;
     }
 
+	struct Heat_source {
+		glm::vec4 pos;
+		float wattage{};
+		float time{};
+		int movement_pattern{};
+		float speed{};
+	};
+
     struct SPH_demo_constants {
         SPH_demo_constants(const float smoothing_length, const float mass_scaling, const float dt)
             : dt(dt), h(smoothing_length), kernel_const(0), kernel_grad_const(0), kernel_laplace_const(0),

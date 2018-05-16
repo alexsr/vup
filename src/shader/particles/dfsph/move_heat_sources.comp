@@ -1,0 +1,32 @@
+#version 450
+
+layout (local_size_x = 128) in;
+
+#include "particle_util.inc.comp"
+
+#include "ssbos.inc.comp"
+
+#include "heat_sources.inc.comp"
+
+void main() {    
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= H_COUNT) {
+        return;
+    }
+    Heat_source h_source = heat_sources[id];
+	if (h_source.movement_pattern == 1) {
+		h_source.time += h_source.speed * demo_consts.dt;
+		vec4 point_a = vec4(-2.0, 0.5, 0.0, 1.0);
+		vec4 point_b = vec4(2.0, 0.5, 0.0, 1.0);
+		if (h_source.time >= 1.0f) {
+			heat_sources[id].speed *= -1.0f;
+			h_source.time = 1.0f;
+		}
+		if (h_source.time <= 0.0f) {
+			heat_sources[id].speed *= -1.0f;
+			h_source.time = 0.0f;
+		}
+		heat_sources[id].time = h_source.time;
+		heat_sources[id].pos.xyz = (point_a * h_source.time + point_b * (1.0f - h_source.time)).xyz;
+	}
+}

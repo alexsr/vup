@@ -19,15 +19,19 @@ void main() {
     for (int i = 0; i < neighbors_counter[id]; i++) {
         int j = neighbors[id * NEIGHBOR_AMOUNT + i];
         Particle p_other = particles[j];
-        vec4 pij = vec4((p.pos - p_other.pos).xyz, 0);
-        vel_adjustment += p_other.mass * (p.K + p_other.K)
-                            * demo_consts.kernel_grad * cubic_grad(demo_consts.h, p.pos - p_other.pos);
+        if (abs(p.K + p_other.K) > demo_consts.eps) {
+            vec4 pij = vec4((p.pos - p_other.pos).xyz, 0);
+            vel_adjustment += p_other.mass * (p.K + p_other.K)
+                                * demo_consts.kernel_grad * cubic_grad(demo_consts.h, p.pos - p_other.pos);
+        }
     }
-    for (int i = 0; i < boundary_neighbors_counter[id]; i++) {
-        int j = boundary_neighbors[id * NEIGHBOR_AMOUNT + i];
-        float boundary_psi = boundaries[j].pos.w;
-        vec4 pij = vec4((p.pos - boundaries[j].pos).xyz, 0);
-        vel_adjustment += p.K * boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+    if (abs(p.K) > demo_consts.eps) {
+        for (int i = 0; i < boundary_neighbors_counter[id]; i++) {
+            int j = boundary_neighbors[id * NEIGHBOR_AMOUNT + i];
+            float boundary_psi = boundaries[j].pos.w;
+            vec4 pij = vec4((p.pos - boundaries[j].pos).xyz, 0);
+            vel_adjustment += p.K * boundary_psi * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
+        }
     }
     particles[id].vel = p.vel + demo_consts.dt * vel_adjustment;
 }

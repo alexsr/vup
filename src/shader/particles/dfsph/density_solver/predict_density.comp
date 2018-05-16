@@ -26,7 +26,7 @@ void main() {
         Particle p_other = particles[j];
         vec4 pij = vec4((p.pos - p_other.pos).xyz, 0);
         p.density_adv += p_other.mass * dot(p.vel - p_other.vel, demo_consts.kernel_grad
-                            * cubic_grad(demo_consts.h, p.pos - p_other.pos));
+                            * cubic_grad(demo_consts.h, pij));
     }
     for (int i = 0; i < boundary_neighbors_counter[id]; i++) {
         int j = boundary_neighbors[id * NEIGHBOR_AMOUNT + i];

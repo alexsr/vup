@@ -32,8 +32,8 @@ namespace vup
     inline Reduction::Reduction(const filesystem::path& shader_path, const std::shared_ptr<Empty_SSBO>& ssbo, const unsigned int count)
         : m_ssbo(ssbo), m_count(count) {
         int shader_id = 0;
-        while (m_count > 16) {
-            const auto max_threads = std::min(math::next_pow2(m_count) / 2, static_cast<unsigned int>(512));
+        while (m_count > 256) {
+            const auto max_threads = std::min(math::next_pow2(m_count) / 2, static_cast<unsigned int>(256));
             const auto instances = m_count;
             m_count = static_cast<int>(glm::ceil(instances / static_cast<float>(max_threads)));
             std::vector<Shader_define> defines{

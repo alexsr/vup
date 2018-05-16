@@ -56,7 +56,7 @@ int main() {
     float heat_source_temp = 100.0f;
     vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
     vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.2f, 0.95, 1.2f, 0.0f),
-                                              glm::vec4(1.2f, 0.65, 1.2f, 0.0f), mass_scaling, density_rest, visc_const,
+                                              glm::vec4(1.6f, 0.95, 1.6f, 0.0f), mass_scaling, density_rest, visc_const,
                                               temperature, heat_const, latent_heat_max);
     vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
@@ -182,7 +182,7 @@ int main() {
 
     vup::Reduction reduce_scalar("../../src/shader/particles/reduce_scalar.comp", scalar_buffer, instances);
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
-                                   {{"X", "512"}, {"N", std::to_string(instances)}});
+                                   {{"X", "128"}, {"N", std::to_string(instances)}});
     const auto max_blocks = static_cast<int>(instances / static_cast<float>(max_scalar.get_workgroup_size_x()));
     max_scalar.update_uniform("max_index", instances);
     max_scalar.update_uniform("max_blocks", max_blocks);
@@ -345,16 +345,16 @@ int main() {
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
             // calc cfl
-//            max_scalar.run_with_barrier(instances);
-//            scalar_buffer->get_data(new_scalar);
-//            float max_vel = 0;
-//            for (auto v : new_scalar) {
-//                if (max_vel < v) {
-//                    max_vel = v;
-//                }
-//            }
-//            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
-//            update_demo_consts();
+            max_scalar.run_with_barrier(instances);
+            scalar_buffer->get_data(new_scalar);
+            float max_vel = 0;
+            for (auto v : new_scalar) {
+                if (max_vel < v) {
+                    max_vel = v;
+                }
+            }
+            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
+            update_demo_consts();
             update_velocities.run_with_barrier(instances);
             // density error correction
             int iteration_density = 0;

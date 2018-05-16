@@ -33,7 +33,7 @@ void main() {
     normal *= demo_consts.h;
     vec4 heat_source_pos = vec4(1.8, 0.2f, 0, 1.0f);
     if (length(normal) > 0.00001f) {
-        float q = 3000.0f * 1.0f / pow((sqrt(2.0f) - 1) / 0.2f * abs(dot((p.pos - heat_source_pos).xyz, normalize(vec3(0) - heat_source_pos.xyz))) + 1, 2);
+        float q = 60000.0f * 1.0f / pow((sqrt(2.0f) - 1) / 0.2f * length((p.pos - heat_source_pos).xyz) + 1, 2);
         temp += q * 3.1415f * demo_consts.r * demo_consts.r;
     }
     // float t = clamp(distance(p.pos, vec4(0,-1,0,1)), 0, 1);

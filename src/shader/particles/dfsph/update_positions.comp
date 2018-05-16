@@ -6,7 +6,7 @@ layout (local_size_x = 128) in;
 
 #include "ssbos.inc.comp"
 
-uniform float temp_scaling = 0.1;
+uniform float temp_scaling = 0.17;
 
 layout (std140, binding = 0) uniform mvp {
     mat4 model;
@@ -48,6 +48,6 @@ void main() {
     //     // particles[id].vel.xyz = reflect(p.vel.xyz, n);
     // }
     particles[id].pos = p.pos;
-    particles[id].temperature = min(particles[id].temperature + p.temp_change * demo_consts.dt, 323.15f);
+    particles[id].temperature = min(particles[id].temperature + p.temp_change * demo_consts.dt, 373.15f);
     particles[id].viscosity = 500000.0f * exp(temp_scaling * (273.15f - float(p.temperature)));
 }

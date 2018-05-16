@@ -98,22 +98,17 @@ namespace vup
 
 
     struct DFSPH_gen_settings {
-        DFSPH_gen_settings(const float r, const float lower_bounds, float upper_bounds,
+        DFSPH_gen_settings(const float r, const glm::vec4 lower_bounds, const glm::vec4 upper_bounds,
                            const float mass_scaling, const float rest_density, const float viscosity,
                            const float temperature, const float heat_const, const float lantent_heat_max)
             : lower(lower_bounds), mass_scaling(mass_scaling), rest_density(rest_density), viscosity(viscosity),
               temperature(temperature),
               heat_const(heat_const), latent_heat_max(lantent_heat_max) {
-            if (lower_bounds > upper_bounds) {
-                const auto temp = lower_bounds;
-                lower = upper_bounds;
-                upper_bounds = temp;
-            }
-            res = static_cast<unsigned long>((upper_bounds - lower) / (r * 2.0f));
+            res = glm::uvec4((upper_bounds - lower) / (r * 2.0f));
         }
 
-        unsigned int res;
-        float lower;
+        glm::uvec4 res;
+        glm::vec4 lower;
         float mass_scaling;
         float rest_density;
         float viscosity;

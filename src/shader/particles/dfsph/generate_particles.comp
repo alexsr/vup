@@ -6,14 +6,14 @@ layout (local_size_x = 128) in;
 
 #include "ssbos.inc.comp"
 
-ivec3 calc_particle_index_3D(uint id, uint res) {
-    uint temp = id / res;
-    return ivec3(temp / res, temp % res, id % res);
+ivec3 calc_particle_index_3D(uint id, uvec4 res) {
+    uint temp = id % (res.x * res.y);
+    return ivec3(temp % res.x, temp / res.x, id / (res.x * res.y));
 }
 
 struct Particle_gen_settings {
-    uint res;
-    float lower;
+    uvec4 res;
+    vec4 lower;
     float mass_scaling;
     float rest_density;
     float viscosity;
@@ -35,9 +35,9 @@ void main() {
     ivec3 pos_offset = calc_particle_index_3D(id, gen_settings.res);
     float pos_step = demo_consts.r * 2;
     float scaled_h = gen_settings.mass_scaling * demo_consts.h;
-    p.pos = vec4(pos_offset.x * pos_step + gen_settings.lower + demo_consts.r,
-                  pos_offset.y * pos_step + gen_settings.lower + demo_consts.r,
-                  pos_offset.z * pos_step + gen_settings.lower + demo_consts.r, 1.0f);
+    p.pos = vec4(pos_offset.x * pos_step + gen_settings.lower.x + demo_consts.r,
+                  pos_offset.y * pos_step + gen_settings.lower.y + demo_consts.r,
+                  pos_offset.z * pos_step + gen_settings.lower.z + demo_consts.r, 1.0f);
     p.precond = mat4(0);
     p.residual = vec4(0);
     p.p = vec4(0);

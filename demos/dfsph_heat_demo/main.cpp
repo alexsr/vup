@@ -33,7 +33,7 @@ int main() {
     glm::mat4 model(1.0f);
     glm::mat4 bb_model(1.0f);
     vup::MVP mats{glm::mat4(1.0f), cam.get_view(), cam.get_projection()};
-    float h = 0.1f;
+    float h = 0.08f;
     float mass_scaling = 2.0f / 3.0f;
 
     vup::Simulation_timer sim_timer;
@@ -47,16 +47,17 @@ int main() {
     float cg_max_error = 0.01f;
     float density_eta = density_rest * max_error * 0.01f;
     int max_iterations = 100;
-    float heat_const = 0.591f / 4181.3f;
+    float heat_const = 0.602f / 4186.0f;
     float latent_heat_max = 100.0f;
     float heat_source_temp = 100.0f;
     vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
-    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -0.8f, 0.8f, mass_scaling, density_rest, visc_const,
+    vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.8f, 0.8, 1.8f, 0.0f),
+                                              glm::vec4(1.8f, 0.8, 1.8f, 0.0f), mass_scaling, density_rest, visc_const,
                                               temperature, heat_const, latent_heat_max);
     vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
     //                                                          density_rest, visc_const, temperature, 100.0f);
-    auto instances = static_cast<int>(particle_settings.res * particle_settings.res * particle_settings.res);
+    auto instances = static_cast<int>(particle_settings.res.x * particle_settings.res.y * particle_settings.res.z);
     const vup::Sphere sphere(demo_consts.r);
     vup::Instanced_VAO particle_spheres(sphere);
     vup::Empty_SSBO particles(instances * sizeof(vup::DFSPH_heat_particle), 0,
@@ -135,7 +136,8 @@ int main() {
         "../../src/shader/particles/dfsph/neighbor_search/populate_boundary_grid.comp",
         sph_defines);
 
-    vup::Compute_shader find_neighbors("../../src/shader/particles/dfsph/neighbor_search/find_neighbors.comp", sph_defines);
+    vup::Compute_shader find_neighbors("../../src/shader/particles/dfsph/neighbor_search/find_neighbors.comp",
+                                       sph_defines);
     vup::Compute_shader calc_boundary_psi("../../src/shader/particles/dfsph/calc_boundary_psi.comp", sph_defines);
     vup::Compute_shader calc_density_alpha("../../src/shader/particles/dfsph/calc_density_alpha.comp", sph_defines);
     vup::Compute_pipeline correct_divergence_error({
@@ -152,8 +154,8 @@ int main() {
                                                 },
                                                 sph_defines,
                                                 "../../src/shader/particles/dfsph/density_solver/");
-    vup::Compute_pipeline update_positions({"calc_heat_transfer.comp", "update_positions.comp"},
-                                           sph_defines, "../../src/shader/particles/dfsph/");
+    vup::Compute_shader update_positions("../../src/shader/particles/dfsph/update_positions.comp",
+                                         sph_defines);
     vup::Compute_pipeline initiate_viscosity_solver({
                                                         "jacobi_preconditioner.comp",
                                                         "calc_initial_residual.comp"
@@ -171,6 +173,7 @@ int main() {
                                       sph_defines);
     vup::Compute_shader update_search_dir("../../src/shader/particles/dfsph/viscosity/update_search_direction.comp",
                                           sph_defines);
+
     vup::Reduction reduce_scalar("../../src/shader/particles/reduce_scalar.comp", scalar_buffer, instances);
     vup::Compute_shader max_scalar("../../src/shader/particles/max_scalar.comp",
                                    {{"X", "512"}, {"N", std::to_string(instances)}});
@@ -333,17 +336,17 @@ int main() {
             //            float tol_error = sqrt(residual_norm2 / rhs_norm2);
             //            std::cout << "Total error: " << tol_error << " in " << iterations << " iterations\n";
             compute_accel.run_with_barrier(instances);
-//            // calc cfl
-//            max_scalar.run_with_barrier(instances);
-//            scalar_buffer->get_data(new_scalar);
-//            float max_vel = 0;
-//            for (auto v : new_scalar) {
-//                if (max_vel < v) {
-//                    max_vel = v;
-//                }
-//            }
-//            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
-//            update_demo_consts();
+            //            // calc cfl
+            //            max_scalar.run_with_barrier(instances);
+            //            scalar_buffer->get_data(new_scalar);
+            //            float max_vel = 0;
+            //            for (auto v : new_scalar) {
+            //                if (max_vel < v) {
+            //                    max_vel = v;
+            //                }
+            //            }
+            //            sim_timer.update_dt_cfl(0.4f, demo_consts.h, glm::sqrt(max_vel));
+            //            update_demo_consts();
             update_velocities.run_with_barrier(instances);
             // density error correction
             int iteration_density = 0;
@@ -354,6 +357,7 @@ int main() {
                 density_avg = reduce_scalar.execute<float>(std::plus<>()) / instances;
                 iteration_density++;
             }
+
             update_positions.run_with_barrier(instances);
             iteration_time = profiler.profile_event();
             sim_timer.advance();

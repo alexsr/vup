@@ -114,7 +114,7 @@ namespace vup
             const auto h6 = h3 * h3;
             kernel_const = 8.0f / (glm::pi<float>() * h3);
             kernel_grad_const = 48.0f / (glm::pi<float>() * h3);
-            kernel_laplace_const = 945.0f / (32.0f * glm::pi<float>() * h3 * h6);
+            kernel_laplace_const = 945.0f / (32.0f * glm::pi<float>() * h2 * h6);
             visc_const = 45.0f / (glm::pi<float>() * h6);
         }
     };

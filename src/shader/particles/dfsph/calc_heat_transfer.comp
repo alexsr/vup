@@ -29,12 +29,12 @@ void main() {
         vec4 pij = vec4((p.pos - p_other.pos).xyz, 0);
         normal += p_other.mass / p_other.density * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
         p.temp_change += p_other.mass / p_other.density * (p.temperature - p_other.temperature)
-                            * dot(pij, demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij))
+                            * dot(pij, demo_consts.kernel_laplace * cubic_grad(demo_consts.h, pij))
                             / (dot(pij, pij) + 0.01f * demo_consts.h2);
     }
     normal *= demo_consts.h;
 	
-	if (length(normal) > 0.00001f) {
+	if (length(normal) > 0.0001f) {
 		for (int i = 0; i < H_COUNT; i++) {
 			Heat_source h_source = heat_sources[i];
 			float q = h_source.wattage * 1.0f / pow((sqrt(2.0f) - 1) / h_source.pos.w * length((p.pos - h_source.pos).xyz) + 1, 2);

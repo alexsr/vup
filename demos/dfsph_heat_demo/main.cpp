@@ -60,7 +60,7 @@ int main() {
 	vup::Instanced_VAO heat_source_vao(heat_source_sphere);
 
 	std::vector<vup::Heat_source> heat_sources;
-	vup::Heat_source heat_source_a{ glm::vec4(1.5, 0.5, 1.5, 0.5), 5000.0f, 0.0f, 0, 0.5f };
+	vup::Heat_source heat_source_a{ glm::vec4(1.7, 0.8, 1.7, 0.2), 500000.0f, 0.0f, 1, 2.5f };
 	heat_sources.push_back(heat_source_a);
 
 	vup::SSBO heat_source_ssbo(heat_sources, 16);

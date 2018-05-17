@@ -34,7 +34,7 @@ void main() {
     }
     normal *= demo_consts.h;
 	
-	if (length(normal) > 0.0001f) {
+	if (length(normal) > 0.1f) {
 		for (int i = 0; i < H_COUNT; i++) {
 			Heat_source h_source = heat_sources[i];
 			float q = h_source.wattage * 1.0f / pow((sqrt(2.0f) - 1) / h_source.pos.w * length((p.pos - h_source.pos).xyz) + 1, 2);

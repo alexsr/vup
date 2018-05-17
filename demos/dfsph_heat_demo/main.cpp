@@ -15,7 +15,7 @@
 #include <vup/Core/Gui_window.h>
 #include <vup/Simulation/simulation_utils.h>
 #include <vup/Simulation/acceleration_structures.h>
-#include "vup/Simulation/compute_utils.h"
+#include <vup/Simulation/compute_utils.h>
 
 int main() {
 	vup::init_glfw();
@@ -64,7 +64,6 @@ int main() {
 	heat_sources.push_back(heat_source_a);
 
 	vup::SSBO heat_source_ssbo(heat_sources, 16);
-
     vup::SSBO particle_settings_ubo(particle_settings, 15);
     //    auto particle_data = vup::create_DFSPH_heat_particles(demo_consts.r, h, mass_scaling, -0.5f, 0.5f,
     //                                                          density_rest, visc_const, temperature, 100.0f);
@@ -101,16 +100,16 @@ int main() {
     const std::vector<vup::Shader_define> prefix_sum_defines{
         {"N", std::to_string(grid_params.total_cell_count)},
         {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
-        {"PREFIX_SUM_BUFFER_ID", "3"}, {"BLOCK_SUM_BUFFER_ID", "14"}
+        {"PREFIX_SUM_BUFFER_ID", "3"}, {"BLOCK_SUM_BUFFER_ID", "13"}
     };
 
     const std::vector<vup::Shader_define> prefix_sum_boundary_defines{
         {"N", std::to_string(grid_params.total_cell_count)},
         {"X", std::to_string(prefix_sum_local_size)}, {"DOUBLE_X", std::to_string(prefix_sum_local_size * 2)},
-        {"PREFIX_SUM_BUFFER_ID", "7"}, {"BLOCK_SUM_BUFFER_ID", "14"}
+        {"PREFIX_SUM_BUFFER_ID", "7"}, {"BLOCK_SUM_BUFFER_ID", "13"}
     };
 
-    vup::Empty_SSBO block_sum_buffer(block_sum_size * sizeof(int), 14);
+    vup::Empty_SSBO block_sum_buffer(block_sum_size * sizeof(int), 13);
     vup::Compute_shader prefix_sum("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",
                                    prefix_sum_defines);
     vup::Compute_shader prefix_sum_boundary("../../src/shader/particles/dfsph/neighbor_search/prefix_sum.comp",

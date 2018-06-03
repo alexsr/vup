@@ -13,8 +13,18 @@ void main() {
     if (id >= H_COUNT) {
         return;
     }
+	float angle = demo_consts.dt * 3.1415f / 6.0f;
+	mat4 rot_y = mat4(cos(angle), 0, -sin(angle), 0,
+					  0, 1, 0, 0,
+					  sin(angle), 0, cos(angle), 0,
+					  0, 0, 0, 1);
     Heat_source h_source = heat_sources[id];
-	if (h_source.movement_pattern == 1) {
+	if (h_source.movement_pattern == 2) {
+		h_source.time += h_source.speed * demo_consts.dt;
+		vec4 point_a = rot_y * h_source.pos;
+		heat_sources[id].pos = point_a;
+	}
+	else if (h_source.movement_pattern == 1) {
 		h_source.time += h_source.speed * demo_consts.dt;
 		vec4 point_a = h_source.pos;
 		point_a.x = -2.0f;

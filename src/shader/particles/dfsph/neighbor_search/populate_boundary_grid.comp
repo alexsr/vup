@@ -2,11 +2,11 @@
 
 layout (local_size_x = 128) in;
 
-#include "/../particle_util.inc.comp"
+#include "../particle_util.inc.comp"
 
-#include "/../../../data_structures/compact_grid.inc.comp"
+#include "../../../data_structures/compact_grid.inc.comp"
 
-#include "/../boundary.inc.comp"
+#include "../boundary.inc.comp"
 
 void main() {
     uint id = gl_GlobalInvocationID.x;

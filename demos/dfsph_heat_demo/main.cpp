@@ -52,16 +52,22 @@ int main() {
 	float latent_heat_max = 100.0f;
 	float heat_source_temp = 100.0f;
 	vup::DFSPH_heat_demo_constants demo_consts(h, mass_scaling, sim_timer.dt);
-	vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.2f, 0.95, 1.2f, 0.0f),
-		glm::vec4(1.6f, 0.95, 1.6f, 0.0f), mass_scaling, density_rest, visc_const,
+	vup::DFSPH_gen_settings particle_settings(demo_consts.r, -glm::vec4(1.4f, 0.95, 1.4f, 0.0f),
+		glm::vec4(1.4f, 0.95, 1.4f, 0.0f), mass_scaling, density_rest, visc_const,
 		temperature, heat_const, latent_heat_max);
 
 	const vup::Sphere heat_source_sphere;
 	vup::Instanced_VAO heat_source_vao(heat_source_sphere);
 
 	std::vector<vup::Heat_source> heat_sources;
-	vup::Heat_source heat_source_a{ glm::vec4(1.7, 0.8, 1.7, 0.2), 500000.0f, 0.0f, 1, 2.5f };
-	heat_sources.push_back(heat_source_a);
+    vup::Heat_source heat_source_a{ glm::vec4(0.8, -1.1, 0.8, 0.2), 60000.0f, 0.0f, 2, 1.5f };
+    vup::Heat_source heat_source_b{ glm::vec4(-0.8, -1.1, 0.8, 0.2), 60000.0f, 0.0f, 2, 1.5f };
+    vup::Heat_source heat_source_c{ glm::vec4(-0.8, -1.1, -0.8, 0.2), 60000.0f, 0.0f, 2, 1.5f };
+    vup::Heat_source heat_source_d{ glm::vec4(0.8, -1.1, -0.8, 0.2), 60000.0f, 0.0f, 2, 1.5f };
+    heat_sources.push_back(heat_source_a);
+    heat_sources.push_back(heat_source_b);
+    heat_sources.push_back(heat_source_c);
+    heat_sources.push_back(heat_source_d);
 
 	vup::SSBO heat_source_ssbo(heat_sources, 16);
     vup::SSBO particle_settings_ubo(particle_settings, 15);

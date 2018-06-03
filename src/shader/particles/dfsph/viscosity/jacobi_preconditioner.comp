@@ -26,7 +26,7 @@ void main() {
         vec3 grad = 10.0f * (p.viscosity + p_other.viscosity) / 2.0f
                     * p_other.mass / p_other.density
                     * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij).xyz
-                    / (dot(pij, pij) + 0.01 * demo_consts.h2);
+                    / max((dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2), demo_consts.eps);
         A[0] += grad * pij.x;
         A[1] += grad * pij.y;
         A[2] += grad * pij.z;
@@ -38,12 +38,39 @@ void main() {
         vec3 grad = 10.0f
                     * boundary_psi / p.density
                     * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij).xyz
-                    / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+                    / max((dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2), demo_consts.eps);
         A[0] += grad * pij.x;
         A[1] += grad * pij.y;
         A[2] += grad * pij.z;
     }
     A = inverse(mat3(1.0) - demo_consts.dt / p.density * A);
+    if (isnan(A[0].x)) {
+        A[0].x = demo_consts.eps;
+    }
+    if (isnan(A[0].y)) {
+        A[0].y = demo_consts.eps;
+    }
+    if (isnan(A[0].z)) {
+        A[0].z = demo_consts.eps;
+    }
+    if (isnan(A[1].x)) {
+        A[1].x = demo_consts.eps;
+    }
+    if (isnan(A[1].y)) {
+        A[1].y = demo_consts.eps;
+    }
+    if (isnan(A[1].z)) {
+        A[1].z = demo_consts.eps;
+    }
+    if (isnan(A[2].x)) {
+        A[2].x = demo_consts.eps;
+    }
+    if (isnan(A[2].y)) {
+        A[2].y = demo_consts.eps;
+    }
+    if (isnan(A[2].z)) {
+        A[2].z = demo_consts.eps;
+    }
     particles[id].precond[0] = vec4(A[0], 0);
     particles[id].precond[1] = vec4(A[1], 0);
     particles[id].precond[2] = vec4(A[2], 0);

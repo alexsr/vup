@@ -32,7 +32,7 @@ void main() {
                     * p_other.mass / p_other.density
                     * dot((p.x - p_other.vel - p_other.vel_diff).xyz, pij.xyz)
                     * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij)
-                    / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+                    / max((dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2), demo_consts.eps);
     }
     for (int i = 0; i < boundary_neighbors_counter[id]; i++) {
         int j = boundary_neighbors[id * NEIGHBOR_AMOUNT + i];
@@ -42,7 +42,7 @@ void main() {
                     * boundary_psi / p.density
                     * dot((p.x).xyz, pij.xyz)
                     * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij)
-                    / (dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2);
+                    / max((dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2), demo_consts.eps);
     }
     p.residual.xyz = p.vel.xyz - (p.x - demo_consts.dt / p.density * residual).xyz;
     particles[id].residual = p.residual;

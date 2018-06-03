@@ -8,7 +8,7 @@ layout (local_size_x = 128) in;
 
 #include "boundary.inc.comp"
 
-#include "/../../data_structures/compact_grid.inc.comp"
+#include "../../data_structures/compact_grid.inc.comp"
 
 void main() {    
     uint id = gl_GlobalInvocationID.x;
@@ -39,6 +39,7 @@ void main() {
     }
     density_length_sum += dot(density_grad_sum, density_grad_sum);
     density_length_sum = max(density_length_sum, demo_consts.eps);
-    particles[id].density = p.density;
-    particles[id].alpha = -1.0f / density_length_sum;
+    particles[id].density = max(p.density, demo_consts.eps);
+    p.alpha = -1.0f / density_length_sum;
+    particles[id].alpha = p.alpha;
 }

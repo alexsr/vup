@@ -8,7 +8,7 @@ layout (local_size_x = 128) in;
 
 #include "boundary.inc.comp"
 
-#include "/../../data_structures/compact_grid.inc.comp"
+#include "../../data_structures/compact_grid.inc.comp"
 
 #include "heat_sources.inc.comp"
 
@@ -29,8 +29,8 @@ void main() {
         vec4 pij = vec4((p.pos - p_other.pos).xyz, 0);
         normal += p_other.mass / p_other.density * demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij);
         p.temp_change += p_other.mass / p_other.density * (p.temperature - p_other.temperature)
-                            * dot(pij, demo_consts.kernel_laplace * cubic_grad(demo_consts.h, pij))
-                            / (dot(pij, pij) + 0.01f * demo_consts.h2);
+                            * dot(pij, demo_consts.kernel_grad * cubic_grad(demo_consts.h, pij))
+                            / max((dot(pij.xyz, pij.xyz) + 0.01 * demo_consts.h2), demo_consts.eps);
     }
     normal *= demo_consts.h;
 	

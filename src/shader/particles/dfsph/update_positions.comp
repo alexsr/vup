@@ -49,5 +49,5 @@ void main() {
     // }
     particles[id].pos = p.pos;
     particles[id].temperature = min(particles[id].temperature + p.temp_change * demo_consts.dt, 373.15f);
-    particles[id].viscosity = 500000.0f * exp(temp_scaling * (273.15f - float(p.temperature)));
+    particles[id].viscosity = 500000.0f * max(exp(temp_scaling * (273.15f - float(p.temperature))), demo_consts.eps);
 }
